@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="war" name="handicraft-api:war">
-    <output-path>$PROJECT_DIR$/handicraft-api/target</output-path>
-    <root id="archive" name="handicraft-api-0.0.1-SNAPSHOT.war">
-      <element id="artifact" artifact-name="handicraft-api:war exploded" />
-    </root>
-  </artifact>
-</component>
