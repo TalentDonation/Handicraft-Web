@@ -9,5 +9,6 @@
   <modules>
   	<module>handicraft-api</module>
   	<module>handicraft-admin</module>
+  	<module>handicraft-core</module>
   </modules>
 </project>

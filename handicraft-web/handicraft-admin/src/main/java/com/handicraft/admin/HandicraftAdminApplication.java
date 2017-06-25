@@ -3,7 +3,7 @@ package com.handicraft.admin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages={"com.handicraft.*"})
 public class HandicraftAdminApplication {
 
 	public static void main(String[] args) {
