@@ -1,4 +1,4 @@
-package com.handicraft.api.dto;
+package com.handicraft.core.dto;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
