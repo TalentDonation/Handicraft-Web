@@ -1,4 +1,4 @@
-package com.handicraft.admin.config;
+package com.handicraft.admin.util;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +29,9 @@ public class AuthenticationSuccessAfter implements AuthenticationSuccessHandler{
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
         System.out.println("Login Success");
+
+        httpServletRequest.getSession().setMaxInactiveInterval(300);
+
         redirectStrategy.sendRedirect(httpServletRequest , httpServletResponse , "/");
 
     }
