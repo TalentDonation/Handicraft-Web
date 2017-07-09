@@ -1,22 +1,21 @@
 package com.handicraft.api.controller;
 
-
-
+import com.handicraft.core.dto.Furniture;
+import com.handicraft.core.service.FurnitureService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.handicraft.core.dto.User;
-import com.handicraft.core.service.UserService;
+/**
+ * Created by 고승빈 on 2017-07-06.
+ */
 
 @RestController
-public class UserController {
-	
-	@Autowired
-	UserService userSv;
-	
+public class FurnitureController {
+
+    @Autowired
+    FurnitureService furnitureService;
 
 
 }
