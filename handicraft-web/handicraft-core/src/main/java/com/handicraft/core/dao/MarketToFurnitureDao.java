@@ -1,6 +1,5 @@
 package com.handicraft.core.dao;
 
-import com.handicraft.core.dto.Furniture;
 import com.handicraft.core.dto.MarketToFurniture;
 import org.springframework.data.jpa.repository.JpaRepository;
 

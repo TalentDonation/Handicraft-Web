@@ -8,7 +8,6 @@ import lombok.NonNull;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Timestamp;
 
 /**
  * Created by 고승빈 on 2017-07-06.
