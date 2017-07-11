@@ -1,47 +1,37 @@
 package com.handicraft.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.Getter;
+import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serializable;
 
-@Entity(name = "User")
-@Table(name = "user")
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Entity(name = "user")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User implements Serializable{
 
-	// ignore lombok
 	private static final long serialVersionUID = -6625860888600498405L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name="u_id")
-	@NonNull
-	private int uid;
+	int mid;
 
-	@NonNull
-	private String token;
-
-	@Column(name="naver_token")
-	private String naverToken;
-
-	private String name;
-
-	private boolean gender;
-
-	private String phone;
-
-	private String address;
-
-	private String feature;
-
-	private String joinAt;
+	@Getter @Setter
+	String user_id;
+	@Getter @Setter
+	String password;
+	@Getter @Setter
+	String name;
+	@Getter @Setter
+	String address;
+	@Getter @Setter
+	String phone;
+	@Getter @Setter
+	String register_date;
+	
 
 }
