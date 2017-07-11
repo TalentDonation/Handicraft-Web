@@ -6,8 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.net.URLEncoder;
-
 @Controller
 public class MainController {
 
@@ -20,7 +18,7 @@ public class MainController {
 
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("main");
-		mv.addObject("user",userService.getUser());
+		mv.addObject("user",userService.getByUserAll());
 		return mv;
 	}
 }
