@@ -2,6 +2,8 @@ package com.handicraft.api.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.*;
 /**
@@ -10,19 +12,13 @@ import java.util.*;
 public class ResponseStatus {
 
 
-    public Map responseSuccess(Object object) {
+    public ResponseEntity responseByResult(Object object , HttpStatus status) {
 
-        Map map = new HashMap<String , Object>();
-        map.put("status" , StatusType.SUCCESS);
-        map.put("result" , object);
-        return map;
+        if(object == null)
+            return new ResponseEntity<String>(status);
+        else
+            return new ResponseEntity<Object>(object, status);
+
     }
 
-    public Map responseError(String message) {
-
-        Map map = new HashMap<String , Object>();
-        map.put("status" , StatusType.ERROR);
-        map.put("result" , message);
-        return map;
-    }
 }

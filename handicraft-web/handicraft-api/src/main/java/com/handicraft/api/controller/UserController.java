@@ -8,7 +8,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/user")
@@ -18,30 +21,43 @@ public class UserController {
 	@Autowired
 	UserService userService;
 
-	// SELETE
 
-	@GetMapping(value="/{u_id}")
-	@org.springframework.web.bind.annotation.ResponseStatus(value = HttpStatus.OK)
+	@GetMapping(value="/{uid}")
 	@ApiOperation(value = "" , notes = " {u_id}에 대한 한명의 유저 정보")
-	public Object getByUser(@PathVariable("u_id") int u_id )
+	public ResponseEntity<?> getByUser(@PathVariable("uid") int uidParam )
 	{
-		return new ResponseStatus().responseSuccess(userService.getByUser(u_id));
+		User user = userService.getByUser(uidParam);
+
+		if(user == null)
+			return new ResponseEntity(HttpStatus.NOT_FOUND);
+		else
+			return new ResponseEntity<User>(user , HttpStatus.OK);
+
 	}
 
 	@GetMapping(value="/all")
 	@ApiOperation(value = "" , notes = "모든 유저 정보")
-	public Object getByUserAll()
+	public ResponseEntity<?> getByUserAll()
 	{
-		return userService.getByUserAll();
+		return new ResponseEntity<List<User>>(userService.getByUserAll() , HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/insert")
 	@ApiOperation(value = "" , notes = "유저 생성")
-	public User insertToUser(@ModelAttribute User user)
+	public ResponseEntity<?> insertToUser(@ModelAttribute User userParams)
 	{
-		return userService.insertToUser(user);
+		return new ResponseEntity<User>(userService.insertToUser(userParams) , HttpStatus.CREATED);
 	}
 
+	@PostMapping(value = "/update")
+	@ApiOperation(value = "" , notes = "유저 수정")
+	public ResponseEntity<?> updateToUser(@ModelAttribute User userParams)
+	{
+		User user = userService.updateToUser(userParams);
 
+		if(user == null)	return new ResponseEntity(HttpStatus.BAD_REQUEST);
+
+		return new ResponseEntity<User>(user , HttpStatus.CREATED);
+	}
 
 }

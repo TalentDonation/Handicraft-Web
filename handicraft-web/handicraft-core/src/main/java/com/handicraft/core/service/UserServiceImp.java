@@ -27,6 +27,18 @@ public class UserServiceImp implements UserService{
 	@Override
 	public User insertToUser(User user) {
 
+		if(userDao.exists(user.getUid()))
+		{
+			user.setUid((int)userDao.count()+1);
+		}
+
+		return userDao.save(user);
+	}
+
+	@Override
+	public User updateToUser(User user) {
+
+		if(userDao.exists(user.getUid()))	return null;
 
 		return userDao.save(user);
 	}
