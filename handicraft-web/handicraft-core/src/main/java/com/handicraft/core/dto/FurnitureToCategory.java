@@ -11,17 +11,18 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by 고승빈 on 2017-07-06.
+ * Created by 고승빈 on 2017-07-15.
  */
-@Entity(name = "Furniture")
+
+@Entity(name = "FurnitureToCategory")
 @Table(name = "furniture")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Furniture implements Serializable {
+public class FurnitureToCategory implements Serializable{
 
-    private static final long serialVersionUID = -3750423939072711694L;
+    private static final long serialVersionUID = 5649056397978792148L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,7 +46,7 @@ public class Furniture implements Serializable {
 
     private String createAt;
 
+    @ManyToOne
+    @JoinColumn(name = "t_id")
     private List<Integer> tidList;
-
-
 }

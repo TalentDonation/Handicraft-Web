@@ -48,7 +48,11 @@ public class FurnitureController {
     @ApiOperation(value = "" , notes = "가구 생성")
     public ResponseEntity<?> insertToFurniture(@ModelAttribute Furniture furnitureParam)
     {
-        return new ResponseEntity<Furniture>(furnitureService.insertToFurniture(furnitureParam) , HttpStatus.CREATED);
+        Furniture furniture = furnitureService.insertToFurniture(furnitureParam);
+
+        if(furniture == null)   return new ResponseEntity(HttpStatus.BAD_REQUEST);
+
+        return new ResponseEntity<Furniture>(furniture, HttpStatus.CREATED);
     }
 
     @PostMapping("/update")

@@ -2,6 +2,7 @@ package com.handicraft.core.service;
 
 import com.handicraft.core.dao.FurnitureDao;
 import com.handicraft.core.dto.Furniture;
+import com.handicraft.core.dto.FurnitureToCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,9 +31,7 @@ public class FurnitureServiceImp implements FurnitureService{
     public Furniture insertToFurniture(Furniture furniture) {
 
         if(furnitureDao.exists(furniture.getFid()))
-        {
-            furniture.setFid((int)furnitureDao.count()+1);
-        }
+            furniture.setFid(furnitureDao.findTopByOrderByFidDesc().getFid() + 1);
 
         return furnitureDao.save(furniture);
     }

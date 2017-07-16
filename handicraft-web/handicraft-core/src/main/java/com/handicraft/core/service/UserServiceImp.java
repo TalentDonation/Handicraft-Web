@@ -29,7 +29,7 @@ public class UserServiceImp implements UserService{
 
 		if(userDao.exists(user.getUid()))
 		{
-			user.setUid((int)userDao.count()+1);
+			user.setUid(userDao.findTopByOrderByUidDesc().getUid() + 1);
 		}
 
 		return userDao.save(user);
