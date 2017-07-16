@@ -15,6 +15,7 @@ public class SiteMeshConfig extends ConfigurableSiteMeshFilter{
 		
 		builder.addDecoratorPath("/*", "/decoreators/decorator.html")
 				.addExcludedPath("/login");
+
 		
 		builder.addTagRuleBundles(new Sm2TagRuleBundle());
 	}
