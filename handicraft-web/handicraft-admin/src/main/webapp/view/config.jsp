@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=utf8"
-    pageEncoding="utf8"%>
+<%@ page language="java" contentType="text/html; charset=utf8" pageEncoding="utf8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -54,6 +54,15 @@
             <td>Activeson</td>
             <td>act@example.com</td>
         </tr>
+        <c:if test="${members.size() - 1 >= 0}" var="bool">
+            <c:forEach begin="0" end="${members.size() - 1}" step="1" var="i">
+                <tr>
+                <c:forEach var="member" items="${members.get(i)}">
+                    <td>${member}</td>
+                </c:forEach>
+                </tr>
+            </c:forEach>
+        </c:if>
         </tbody>
     </table>
 </div>

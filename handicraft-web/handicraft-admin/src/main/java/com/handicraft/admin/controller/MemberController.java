@@ -23,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -77,10 +78,10 @@ public class MemberController {
     @RequestMapping(value = "/upload" , method = RequestMethod.GET)
     public ModelAndView uploadFile() throws IOException{
         ModelAndView mv = new ModelAndView();
-        mv.setViewName("member");
+        mv.setViewName("config");
 
         Sheets service = getSheetsService();
-        spreadsheetId = "1RHsuq_Jc-UhGE4URjJgS_QaXX1MV5AVgNXCSMAum-lE";
+        spreadsheetId = "15JuidiRH-K_Z0bjkag70Fdrjt5KR0HaSR7dbcdwquXY";
         range = "Sheet1!A2:U1000";
         ValueRange response = service.spreadsheets().values().get(spreadsheetId,range).execute();
 
@@ -89,15 +90,15 @@ public class MemberController {
             System.out.println("No data found");
         }
         else{
-            System.out.println("Membes");
-            for(List row : values){
+            ArrayList<List<Object>> result = new ArrayList<>();
+            System.out.println("Members");
+            for(List<Object> row : values){
                 if(row.isEmpty()) continue;
-                for(Object col : row){
-                    System.out.printf(col.toString());
-                    mv.addObject(col);
-                }
-                System.out.println("");
+                System.out.println(row.toString());
+                System.out.println(row.getClass());
+                result.add(row);
             }
+            mv.addObject("members",result);
         }
 
         return mv;

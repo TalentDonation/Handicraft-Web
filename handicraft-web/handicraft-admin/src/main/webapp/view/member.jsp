@@ -6,11 +6,6 @@
 <html>
 <head>
     <title>member</title>
-    <style>
-        input[type=submit]{
-
-        }
-    </style>
 </head>
 <body>
     <form action="/upload" accept-charset="utf-8" method="get">
