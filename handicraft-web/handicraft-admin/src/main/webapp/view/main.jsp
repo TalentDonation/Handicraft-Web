@@ -8,9 +8,7 @@
 </head>
 
 <body>
-<c:set var="user" value="${user}"/>
 
-    <h1>${user.mid}</h1>
 
 </body>
 </html>
