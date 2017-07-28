@@ -1,8 +1,7 @@
 package com.handicraft.core.service;
 
-import com.handicraft.core.dao.FurnitureDao;
+import com.handicraft.core.repository.FurnitureRepository;
 import com.handicraft.core.dto.Furniture;
-import com.handicraft.core.dto.FurnitureToCategory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,32 +14,40 @@ import java.util.List;
 public class FurnitureServiceImp implements FurnitureService{
 
     @Autowired
-    FurnitureDao furnitureDao;
+    FurnitureRepository furnitureRepository;
 
     @Override
     public Furniture getByFurniture(int f_id) {
-        return furnitureDao.findOne(f_id);
+        return furnitureRepository.findOne(f_id);
     }
 
     @Override
     public List<Furniture> getByFurnitureAll() {
-        return furnitureDao.findAll();
+        return furnitureRepository.findAll();
     }
 
     @Override
     public Furniture insertToFurniture(Furniture furniture) {
 
-        if(furnitureDao.exists(furniture.getFid()))
-            furniture.setFid(furnitureDao.findTopByOrderByFidDesc().getFid() + 1);
+        if(furnitureRepository.exists(furniture.getFid()))  furniture.setFid(furnitureRepository.findTopByOrderByFidDesc().getFid() + 1);
 
-        return furnitureDao.save(furniture);
+        return furnitureRepository.save(furniture);
     }
 
     @Override
     public Furniture updateToFurniture(Furniture furniture) {
 
-        if(!furnitureDao.exists(furniture.getFid())) return null;
+        if(!furnitureRepository.exists(furniture.getFid())) return null;
 
-        return furnitureDao.save(furniture);
+        return furnitureRepository.save(furniture);
+    }
+
+    @Override
+    public Boolean deleteToFurniture(int f_id) {
+
+        if(!furnitureRepository.exists(f_id)) return false;
+
+        furnitureRepository.delete(f_id);
+        return true;
     }
 }

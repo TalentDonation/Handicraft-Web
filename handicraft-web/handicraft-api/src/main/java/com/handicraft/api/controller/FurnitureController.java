@@ -1,9 +1,12 @@
 package com.handicraft.api.controller;
 
-import com.handicraft.api.util.ResponseStatus;
+import com.handicraft.api.exception.NotFoundException;
 import com.handicraft.core.dto.Furniture;
-import com.handicraft.core.dto.User;
+import com.handicraft.core.dto.FurnitureCategory;
+import com.handicraft.core.dto.FurnitureToFurnitureCategory;
+import com.handicraft.core.service.FurnitureCategoryService;
 import com.handicraft.core.service.FurnitureService;
+import com.handicraft.core.service.FurnitureToFurnitureCategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -25,45 +30,71 @@ public class FurnitureController {
     @Autowired
     FurnitureService furnitureService;
 
-    @GetMapping("/{f_id}")
-    @ApiOperation(value = "" , notes = " {f_id}에 대한 가구 정보")
-    public ResponseEntity<?> getByFurniture(@PathVariable("f_id") int f_id )
-    {
-        Furniture furniture = furnitureService.getByFurniture(f_id);
+    @Autowired
+    FurnitureCategoryService furnitureCategoryService;
 
-        if(furniture == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        else
-            return new ResponseEntity<Furniture>(furniture , HttpStatus.OK);
-    }
+    @Autowired
+    FurnitureToFurnitureCategoryService furnitureToFurnitureCategoryService;
 
-    @GetMapping("/all")
+    @GetMapping
     @ApiOperation(value = "" , notes = " 모든 가구 List")
-    public ResponseEntity<?> getByFurnitureAll()
+    public List<FurnitureToFurnitureCategory> getByFurnitureAll()
     {
-        return new ResponseEntity<List<Furniture>>(furnitureService.getByFurnitureAll() , HttpStatus.OK);
+
+        return furnitureToFurnitureCategoryService.getByFurnitureAll();
     }
 
-    @PostMapping("/insert")
+    @PostMapping
     @ApiOperation(value = "" , notes = "가구 생성")
-    public ResponseEntity<?> insertToFurniture(@ModelAttribute Furniture furnitureParam)
+    public ResponseEntity insertToFurniture(@ModelAttribute Furniture furnitureParam)
     {
         Furniture furniture = furnitureService.insertToFurniture(furnitureParam);
 
-        if(furniture == null)   return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        List<FurnitureCategory> furnitureCategoryList = new ArrayList<>();
 
-        return new ResponseEntity<Furniture>(furniture, HttpStatus.CREATED);
+        for(Integer index : furnitureParam.getTid())
+        {
+            furnitureCategoryList.add(new FurnitureCategory(furniture.getFid(),index));
+        }
+
+        furnitureCategoryService.insertToFurnitureCategory(furnitureCategoryList);
+
+        return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @PostMapping("/update")
+    @PutMapping
     @ApiOperation(value = "" , notes = "가구 수정")
-    public ResponseEntity<?> updateToFurniture(@ModelAttribute Furniture furnitureParam)
+    public ResponseEntity updateToFurniture(@ModelAttribute Furniture furnitureParam)
     {
         Furniture furniture = furnitureService.updateToFurniture(furnitureParam);
 
-        if(furniture == null) return  new ResponseEntity(HttpStatus.BAD_REQUEST);
+        if(furniture == null) throw new NotFoundException();
 
-        return new ResponseEntity<Furniture>(furniture , HttpStatus.OK);
+        return new ResponseEntity(HttpStatus.OK);
     }
+
+    @DeleteMapping
+    @ApiOperation(value = "" , notes = "가구 삭제")
+    public ResponseEntity deleteToFurniture(@RequestParam("fid") int fid)
+    {
+        Boolean resultByDelete = furnitureService.deleteToFurniture(fid);
+
+        if(!resultByDelete)	throw new NotFoundException();
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/{fid}")
+    @ApiOperation(value = "" , notes = " {f_id}에 대한 가구 정보")
+    public FurnitureToFurnitureCategory getByFurniture(@PathVariable("fid") int fid )
+    {
+        FurnitureToFurnitureCategory furnitureToFurnitureCategory = furnitureToFurnitureCategoryService.getByFurniture(fid);
+
+        if(furnitureToFurnitureCategory == null)   throw new NotFoundException();
+
+        return furnitureToFurnitureCategory ;
+    }
+
+
 
 }

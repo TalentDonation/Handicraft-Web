@@ -7,8 +7,8 @@
         <!--<query>select m from Market m where m.mid =:m_id</query>-->
     <!--</named-query>-->
 
-    <!--<named-native-query name="findLastname" result-class="com.handicraft.core.dto.Market">-->
-        <!--<query>select m.* from market m where m.m_id =? </query>-->
+    <!--<named-native-query name="insertToFurnitures" >-->
+        <!--<query>insert into furniture VALUES (? , ?)</query>-->
     <!--</named-native-query>-->
 
 

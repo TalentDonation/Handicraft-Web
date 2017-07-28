@@ -1,34 +1,32 @@
 package com.handicraft.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by 고승빈 on 2017-07-15.
+ * Created by 고승빈 on 2017-07-28.
  */
 
-@Entity(name = "FurnitureToCategory")
+@Entity(name = "FurnitureToFurnitureCategory")
 @Table(name = "furniture")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class FurnitureToCategory implements Serializable{
+public class FurnitureToFurnitureCategory implements Serializable {
 
-    private static final long serialVersionUID = 5649056397978792148L;
+
+    private static final long serialVersionUID = -3403046483143769375L;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "f_id")
-    @NonNull
-    private int fid;
+    private Integer fid;
 
     private double width;
 
@@ -46,7 +44,7 @@ public class FurnitureToCategory implements Serializable{
 
     private String createAt;
 
-    @ManyToOne
-    @JoinColumn(name = "t_id")
-    private List<Integer> tidList;
+    @OneToMany(mappedBy = "fid")
+    private List<FurnitureCategory> furnitureCategories;
+
 }

@@ -1,13 +1,13 @@
 package com.handicraft.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.sql.Date;
-import java.sql.Timestamp;
 
 @Entity(name = "User")
 @Table(name = "user")
@@ -15,21 +15,19 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class User implements Serializable{
+public class User implements  Serializable{
 
 	// ignore lombok
 	private static final long serialVersionUID = -6625860888600498405L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name="u_id")
-	@NonNull
+	@Column(name = "u_id")
 	private int uid;
 
-	@NonNull
 	private String token;
 
-	@Column(name="naver_token")
+	@Column(name = "naver_token")
 	private String naverToken;
 
 	private String name;

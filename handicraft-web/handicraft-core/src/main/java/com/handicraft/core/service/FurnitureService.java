@@ -17,4 +17,6 @@ public interface FurnitureService {
     Furniture insertToFurniture(Furniture furniture);
 
     Furniture updateToFurniture(Furniture furniture);
+
+    Boolean deleteToFurniture(int f_id);
 }

@@ -1,6 +1,8 @@
 package com.handicraft.api.controller;
 
 
+import com.handicraft.api.exception.BadRequestException;
+import com.handicraft.api.exception.NotFoundException;
 import com.handicraft.api.util.ResponseStatus;
 import com.handicraft.core.dto.User;
 import com.handicraft.core.service.UserService;
@@ -22,42 +24,55 @@ public class UserController {
 	UserService userService;
 
 
-	@GetMapping(value="/{uid}")
-	@ApiOperation(value = "" , notes = " {u_id}에 대한 한명의 유저 정보")
-	public ResponseEntity<?> getByUser(@PathVariable("uid") int uidParam )
-	{
-		User user = userService.getByUser(uidParam);
-
-		if(user == null)
-			return new ResponseEntity(HttpStatus.NOT_FOUND);
-		else
-			return new ResponseEntity<User>(user , HttpStatus.OK);
-
-	}
-
-	@GetMapping(value="/all")
+	@GetMapping
 	@ApiOperation(value = "" , notes = "모든 유저 정보")
-	public ResponseEntity<?> getByUserAll()
+	public List<User> getByUserAll()
 	{
-		return new ResponseEntity<List<User>>(userService.getByUserAll() , HttpStatus.OK);
+		return	userService.getByUserAll() ;
 	}
 
-	@PostMapping(value = "/insert")
+	@PostMapping
 	@ApiOperation(value = "" , notes = "유저 생성")
-	public ResponseEntity<?> insertToUser(@ModelAttribute User userParams)
+	public ResponseEntity insertToUser(@ModelAttribute User userParams)
 	{
-		return new ResponseEntity<User>(userService.insertToUser(userParams) , HttpStatus.CREATED);
+		userService.insertToUser(userParams);
+
+		return new ResponseEntity(HttpStatus.CREATED);
 	}
 
-	@PostMapping(value = "/update")
+	@PutMapping
 	@ApiOperation(value = "" , notes = "유저 수정")
-	public ResponseEntity<?> updateToUser(@ModelAttribute User userParams)
+	public ResponseEntity updateToUser(@ModelAttribute User userParams)
 	{
 		User user = userService.updateToUser(userParams);
 
-		if(user == null)	return new ResponseEntity(HttpStatus.BAD_REQUEST);
+		if(user == null)	throw new NotFoundException();
 
-		return new ResponseEntity<User>(user , HttpStatus.CREATED);
+		return new ResponseEntity(HttpStatus.OK);
 	}
+
+	@DeleteMapping
+	@ApiOperation(value = "" , notes = "유저 삭제")
+	public ResponseEntity deleteToUser(@RequestParam("uid") int uid)
+	{
+		Boolean resultByDelete = userService.deleteToUser(uid);
+
+		if(!resultByDelete)	throw new NotFoundException();
+
+		return new ResponseEntity(HttpStatus.OK);
+	}
+
+
+	@GetMapping(value="/{uid}")
+	@ApiOperation(value = "" , notes = " {u_id}에 대한 한명의 유저 정보")
+	public User getByUser(@PathVariable("uid") int uid)
+	{
+		User user = userService.getByUser(uid);
+
+		if(user == null)	throw new NotFoundException();
+
+		return user;
+	}
+
 
 }

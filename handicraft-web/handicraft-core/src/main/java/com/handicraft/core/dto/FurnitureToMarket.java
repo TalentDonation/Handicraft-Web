@@ -19,14 +19,13 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class MarketToFurniture implements Serializable{
+public class FurnitureToMarket implements Serializable{
 
     private static final long serialVersionUID = -6624106109067348212L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "m_id")
-    @NonNull
     protected int mid;
 
     protected boolean admin;

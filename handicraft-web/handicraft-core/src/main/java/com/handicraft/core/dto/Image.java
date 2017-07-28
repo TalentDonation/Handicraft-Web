@@ -8,32 +8,31 @@ import lombok.NonNull;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Created by 고승빈 on 2017-07-15.
+ * Created by 고승빈 on 2017-07-26.
  */
 
-@Entity(name = "Category")
-@Table(name = "category")
+@Entity(name = "Image")
+@Table(name = "image")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Category implements Serializable{
+public class Image implements Serializable {
 
-    private static final long serialVersionUID = 5308432605493884368L;
+
+    private static final long serialVersionUID = 294219108849226406L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "t_id")
-    private int t_id;
+    @Column(name = "g_id")
+    private int gid;
 
-    private String type;
+    private String uri;
+
+    private String extension;
 
     private String registerAt;
 
-    @OneToMany
-    private List<FurnitureCategory> furnitureCategories;
 }
