@@ -11,4 +11,8 @@ public interface UserService {
     List<User> getByUserAll();
 
     User insertToUser(User user);
+
+    User updateToUser(User user);
+
+    Boolean deleteToUser(int u_id);
 }

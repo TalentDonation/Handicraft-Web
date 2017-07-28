@@ -1,30 +1,32 @@
 package com.handicraft.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Created by 고승빈 on 2017-07-06.
+ * Created by 고승빈 on 2017-07-26.
  */
-@Entity(name = "Furniture")
+
+@Entity(name = "FurnitureToImage")
 @Table(name = "furniture")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Furniture implements Serializable {
+public class FurnitureToImage implements Serializable {
 
-    private static final long serialVersionUID = -3750423939072711694L;
+    private static final long serialVersionUID = 7105682100267586260L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "f_id")
-    private Integer fid;
+    private int fid;
 
     private double width;
 
@@ -42,9 +44,7 @@ public class Furniture implements Serializable {
 
     private String createAt;
 
-    @Transient
-    private List<Integer> tid;
-
-
-
+    @ManyToOne
+    @JoinColumn(name = "g_id")
+    private Image image;
 }

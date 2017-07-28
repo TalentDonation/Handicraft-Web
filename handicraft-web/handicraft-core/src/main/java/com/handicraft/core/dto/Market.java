@@ -26,7 +26,6 @@ public class Market implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "m_id")
-    @NonNull
     protected int mid;
 
     protected boolean admin;

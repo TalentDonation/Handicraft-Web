@@ -5,21 +5,23 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by 고승빈 on 2017-07-06.
+ * Created by 고승빈 on 2017-07-28.
  */
-@Entity(name = "Furniture")
+
+@Entity(name = "FurnitureToFurnitureCategory")
 @Table(name = "furniture")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Furniture implements Serializable {
+public class FurnitureToFurnitureCategory implements Serializable {
 
-    private static final long serialVersionUID = -3750423939072711694L;
+
+    private static final long serialVersionUID = -3403046483143769375L;
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,9 +44,7 @@ public class Furniture implements Serializable {
 
     private String createAt;
 
-    @Transient
-    private List<Integer> tid;
-
-
+    @OneToMany(mappedBy = "fid")
+    private List<FurnitureCategory> furnitureCategories;
 
 }

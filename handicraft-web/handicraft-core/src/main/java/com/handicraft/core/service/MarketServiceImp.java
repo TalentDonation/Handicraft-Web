@@ -1,8 +1,8 @@
 package com.handicraft.core.service;
 
-import com.handicraft.core.dao.MarketDao;
-import com.handicraft.core.dao.MarketToFurnitureDao;
-import com.handicraft.core.dao.MarketToUserDao;
+import com.handicraft.core.repository.MarketRepository;
+import com.handicraft.core.repository.FurnitureToMarketRepository;
+import com.handicraft.core.repository.UserToMarketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
 public class MarketServiceImp implements MarketService{
 
     @Autowired
-    MarketDao marketDao;
+    MarketRepository marketDao;
 
     @Autowired
-    MarketToUserDao marketToUserDao;
+    UserToMarketRepository marketToUserDao;
 
     @Autowired
-    MarketToFurnitureDao marketToFurnitureDao;
+    FurnitureToMarketRepository marketToFurnitureDao;
 
 
 }
