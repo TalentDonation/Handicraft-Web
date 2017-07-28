@@ -10,6 +10,9 @@ import com.handicraft.core.service.FurnitureToFurnitureCategoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,11 +40,12 @@ public class FurnitureController {
     FurnitureToFurnitureCategoryService furnitureToFurnitureCategoryService;
 
     @GetMapping
-    @ApiOperation(value = "" , notes = " 모든 가구 List")
-    public List<FurnitureToFurnitureCategory> getByFurnitureAll()
+    @ApiOperation(value = "" , notes = "가구 List")
+    public Page<FurnitureToFurnitureCategory> findByFurniturePerPage(@RequestParam("page") int page , @RequestParam("per_page") int page_page)
     {
+        PageRequest pageRequest  = new PageRequest(page , page_page , Sort.Direction.ASC , "fid");
 
-        return furnitureToFurnitureCategoryService.getByFurnitureAll();
+        return furnitureToFurnitureCategoryService.getByFurniturePerPage(pageRequest);
     }
 
     @PostMapping
@@ -86,7 +90,7 @@ public class FurnitureController {
 
     @GetMapping("/{fid}")
     @ApiOperation(value = "" , notes = " {f_id}에 대한 가구 정보")
-    public FurnitureToFurnitureCategory getByFurniture(@PathVariable("fid") int fid )
+    public FurnitureToFurnitureCategory findByFurniture(@PathVariable("fid") int fid )
     {
         FurnitureToFurnitureCategory furnitureToFurnitureCategory = furnitureToFurnitureCategoryService.getByFurniture(fid);
 
@@ -94,6 +98,15 @@ public class FurnitureController {
 
         return furnitureToFurnitureCategory ;
     }
+
+    @GetMapping(value = "/all")
+    @ApiOperation(value = "" , notes = " 모든 가구 List")
+    public List<FurnitureToFurnitureCategory> findByFurnitureAll()
+    {
+        return furnitureToFurnitureCategoryService.getByFurnitureAll();
+    }
+
+
 
 
 
