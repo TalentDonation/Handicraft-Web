@@ -10,6 +10,7 @@
 <body>
     <form action="/upload" accept-charset="utf-8" method="get">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+        <input type="text" name="name" placeholder="이름"/>
         <input type="submit" value="upload" />
     </form>
 </body>

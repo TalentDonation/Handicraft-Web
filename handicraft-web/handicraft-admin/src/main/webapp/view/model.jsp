@@ -10,9 +10,13 @@
 <h1>Login</h1>
 <div class="container" >
 
-
-
     <a href="/calender/naverlogin" >naver</a>
+
+    <form action="/model/upload" method="post" enctype="multipart/form-data">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+        <input type="file" name="submitFile"/>
+        <input type="submit" value="제출"/>
+    </form>
 
 
 </div>
