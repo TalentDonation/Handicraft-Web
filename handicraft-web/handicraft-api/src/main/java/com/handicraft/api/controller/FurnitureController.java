@@ -26,8 +26,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/furniture")
-@Api(value = "/furniture" , description = "Furniture API")
+@Api(value = "furniture" , description = "Furniture API")
 public class FurnitureController {
 
     @Autowired
@@ -39,7 +38,7 @@ public class FurnitureController {
     @Autowired
     FurnitureToFurnitureCategoryService furnitureToFurnitureCategoryService;
 
-    @GetMapping
+    @GetMapping("/furniture")
     @ApiOperation(value = "" , notes = "가구 List")
     public Page<FurnitureToFurnitureCategory> findByFurniturePerPage(@RequestParam("page") int page , @RequestParam("per_page") int page_page)
     {
@@ -48,7 +47,7 @@ public class FurnitureController {
         return furnitureToFurnitureCategoryService.getByFurniturePerPage(pageRequest);
     }
 
-    @PostMapping
+    @PostMapping("/furniture")
     @ApiOperation(value = "" , notes = "가구 생성")
     public ResponseEntity insertToFurniture(@ModelAttribute Furniture furnitureParam)
     {
@@ -66,7 +65,7 @@ public class FurnitureController {
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
-    @PutMapping
+    @PutMapping("/furniture")
     @ApiOperation(value = "" , notes = "가구 수정")
     public ResponseEntity updateToFurniture(@ModelAttribute Furniture furnitureParam)
     {
@@ -77,7 +76,7 @@ public class FurnitureController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/furniture")
     @ApiOperation(value = "" , notes = "가구 삭제")
     public ResponseEntity deleteToFurniture(@RequestParam("fid") int fid)
     {
@@ -88,7 +87,7 @@ public class FurnitureController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @GetMapping("/{fid}")
+    @GetMapping("furniture/{fid}")
     @ApiOperation(value = "" , notes = " {f_id}에 대한 가구 정보")
     public FurnitureToFurnitureCategory findByFurniture(@PathVariable("fid") int fid )
     {
@@ -99,7 +98,7 @@ public class FurnitureController {
         return furnitureToFurnitureCategory ;
     }
 
-    @GetMapping(value = "/all")
+    @GetMapping("/furnitures")
     @ApiOperation(value = "" , notes = " 모든 가구 List")
     public List<FurnitureToFurnitureCategory> findByFurnitureAll()
     {

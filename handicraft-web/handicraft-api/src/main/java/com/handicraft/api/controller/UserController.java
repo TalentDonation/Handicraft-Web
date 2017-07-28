@@ -16,22 +16,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/user")
-@Api(value = "/user" , description = "USER API")
+@Api(value = "user" , description = "USER API")
 public class UserController {
 
 	@Autowired
 	UserService userService;
 
 
-	@GetMapping
-	@ApiOperation(value = "" , notes = "모든 유저 정보")
-	public List<User> getByUserAll()
-	{
-		return	userService.getByUserAll() ;
-	}
-
-	@PostMapping
+	@PostMapping("/user")
 	@ApiOperation(value = "" , notes = "유저 생성")
 	public ResponseEntity insertToUser(@ModelAttribute User userParams)
 	{
@@ -40,7 +32,7 @@ public class UserController {
 		return new ResponseEntity(HttpStatus.CREATED);
 	}
 
-	@PutMapping
+	@PutMapping("/user")
 	@ApiOperation(value = "" , notes = "유저 수정")
 	public ResponseEntity updateToUser(@ModelAttribute User userParams)
 	{
@@ -51,7 +43,7 @@ public class UserController {
 		return new ResponseEntity(HttpStatus.OK);
 	}
 
-	@DeleteMapping
+	@DeleteMapping("/user")
 	@ApiOperation(value = "" , notes = "유저 삭제")
 	public ResponseEntity deleteToUser(@RequestParam("uid") int uid)
 	{
@@ -63,9 +55,9 @@ public class UserController {
 	}
 
 
-	@GetMapping(value="/{uid}")
+	@GetMapping(value="user/{uid}")
 	@ApiOperation(value = "" , notes = " {u_id}에 대한 한명의 유저 정보")
-	public User getByUser(@PathVariable("uid") int uid)
+	public User findByUser(@PathVariable("uid") int uid)
 	{
 		User user = userService.getByUser(uid);
 
@@ -74,5 +66,11 @@ public class UserController {
 		return user;
 	}
 
+	@GetMapping("/users")
+	@ApiOperation(value = "" , notes = "모든 유저 정보")
+	public List<User> findByUserAll()
+	{
+		return	userService.getByUserAll() ;
+	}
 
 }
