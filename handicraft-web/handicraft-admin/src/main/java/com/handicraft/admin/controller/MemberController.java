@@ -15,9 +15,12 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import org.mortbay.util.ajax.JSON;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
@@ -75,13 +78,45 @@ public class MemberController {
         return mv;
     }
 
-    @RequestMapping(value = "/upload" , method = RequestMethod.GET)
-    public ModelAndView uploadFile() throws IOException{
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("config");
+//    @RequestMapping(value = "/upload" , method = RequestMethod.GET)
+//    public ModelAndView uploadFile() throws IOException{
+//        ModelAndView mv = new ModelAndView();
+//        mv.setViewName("config");
+//
+//        Sheets service = getSheetsService();
+//        spreadsheetId = "15JuidiRH-K_Z0bjkag70Fdrjt5KR0HaSR7dbcdwquXY";
+//        range = "Sheet1!A2:U1000";
+//        ValueRange response = service.spreadsheets().values().get(spreadsheetId,range).execute();
+//
+//        List<List<Object>> values = response.getValues();
+//        if(values == null || values.size() == 0){
+//            System.out.println("No data found");
+//        }
+//        else{
+//            ArrayList<List<Object>> result = new ArrayList<>();
+//            System.out.println("Members");
+//            for(List<Object> row : values){
+//                if(row.isEmpty()) continue;
+//                System.out.println(row.toString());
+//                System.out.println(row.getClass());
+//                result.add(row);
+//            }
+//            mv.addObject("members",result);
+//        }
+//        System.out.println("나 실행되고 있어!");
+//        return mv;
+//    }
+
+
+    @RequestMapping(value = "/sheets" , method = RequestMethod.GET)
+    public ResponseEntity getFile(@RequestParam(value="google")String google) throws IOException{
+
+        ResponseEntity<ArrayList<List<Object>>> results = null;
+
+        String url[] = google.split("/");
 
         Sheets service = getSheetsService();
-        spreadsheetId = "15JuidiRH-K_Z0bjkag70Fdrjt5KR0HaSR7dbcdwquXY";
+        spreadsheetId = url[5];
         range = "Sheet1!A2:U1000";
         ValueRange response = service.spreadsheets().values().get(spreadsheetId,range).execute();
 
@@ -98,12 +133,11 @@ public class MemberController {
                 System.out.println(row.getClass());
                 result.add(row);
             }
-            mv.addObject("members",result);
+
+            results = new ResponseEntity<>(result,HttpStatus.ACCEPTED);
         }
 
-        return mv;
+        return results;
     }
-
-
 
 }
