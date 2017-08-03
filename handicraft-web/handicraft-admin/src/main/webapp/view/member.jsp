@@ -8,23 +8,48 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
 <body>
-    <form action="/upload" accept-charset="utf-8" method="get" id="urlUpload">
-        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
-        <input type="text" name="name" placeholder="google url"/>
-        <input type="submit" value="upload" name="btnSubmit"/><br>
-    </form>
+    <div id="addInput">
+        <input type="text" placeholder="google url" class="url"/>
+        <input type="button" value="조회" name="btnSubmit" id="search" class="btnSearch" /><br>
+    </div>
 
-    <form accept-charset="utf-8" method="get">
-        <input type="button" value="+" id="btnAdd" />
-    </form>
+    <input type="button" value="+" id="btnAdd" />
+
+    <div id="table"></div>
 
     <script>
+        var count;
         $(document).ready(
             $('#btnAdd').click(function(){
-                $('#urlUpload').append('<input type="text" name="name" placeholder="google url"/>');
-                $('#urlUpload').append('<input type="submit" value="upload"/><br>');
+                count++;
+                var url = "url" + count;
+                $('#addInput').append('<input type="text" placeholder="google url" class="url"/>' + '<input type="button" value="조회" name="btnSubmit" class="btnSearch"/><br>');
+            }),
+
+            // TODO: url 바꾸기
+            $(document).on("click",".btnSearch", function(){
+                $.ajax({
+                    type: 'GET',
+                    url: 'http://localhost:8080/sheets',
+                    data: {"google" : $(this).prev().val()},
+                    dataType: 'json',
+                    success: function(response){
+                        var data = response.toString();
+                        var arr = data.split(',');
+                        // TODO: 표에 나타나야할 개수에 따라 i 바꾸기
+                        for(var i = 0; i < arr.length - 2; i += 3){
+                            $("#table").append('<tr><td>'+ arr[i] +'</td><td>'+ arr[i + 1] +'</td><td>'+ arr[i + 2] +'</td></tr>');
+                        }
+                    },
+                    timeout: 10000,
+                    error: function(xhr, status, err){
+                        alert("error detected!");
+                    }
+                });
             })
-        )
+        );
     </script>
+
+
 </body>
 </html>
