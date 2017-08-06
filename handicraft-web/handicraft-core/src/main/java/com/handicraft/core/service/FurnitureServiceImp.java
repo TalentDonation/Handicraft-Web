@@ -1,9 +1,11 @@
 package com.handicraft.core.service;
 
+import com.handicraft.core.dto.FurnitureToImage;
 import com.handicraft.core.dto.Image;
 import com.handicraft.core.id.FurnitureCategoryId;
 import com.handicraft.core.repository.FurnitureRepository;
 import com.handicraft.core.dto.Furniture;
+import com.handicraft.core.repository.FurnitureToImageRepository;
 import com.handicraft.core.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -24,11 +26,14 @@ public class FurnitureServiceImp implements FurnitureService{
     FurnitureRepository furnitureRepository;
 
     @Autowired
+    FurnitureToImageRepository furnitureToImageRepository;
+
+    @Autowired
     ImageRepository imageRepository;
 
     @Override
-    public Page<Furniture> findFurniturePerPage(PageRequest pageRequest) {
-        return furnitureRepository.findAll(pageRequest);
+    public Page<FurnitureToImage> findFurniturePerPage(PageRequest pageRequest) {
+        return furnitureToImageRepository.findAll(pageRequest);
     }
 
     @Override

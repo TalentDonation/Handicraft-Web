@@ -8,6 +8,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,9 @@ public class FurnitureController {
     FurnitureService furnitureService;
 
     @Autowired
+    FurnitureToImageService furnitureToImageService;
+
+    @Autowired
     FurnitureCategoryService furnitureCategoryService;
 
     @Autowired
@@ -48,19 +52,67 @@ public class FurnitureController {
 
     @GetMapping("/furniture")
     @ApiOperation(value = "" , notes = "Show several furniture by page")
-    public Page<Furniture> findByFurniturePerPage(@RequestParam("page") int page , @RequestParam("per_page") int page_page)
+    public List<Furniture> findByFurniturePerPage(@RequestParam("page") int page , @RequestParam("per_page") int page_page)
     {
         PageRequest pageRequest  = new PageRequest(page , page_page , Sort.Direction.ASC , "fid");
 
-        return furnitureService.findFurniturePerPage(pageRequest);
+        Page<FurnitureToImage> furniturePage = furnitureService.findFurniturePerPage(pageRequest);
+
+        List<Furniture> furnitures  = new ArrayList<>();
+
+        for(FurnitureToImage furnitureToImage : furniturePage)
+        {
+            Furniture furniture = new Furniture(furnitureToImage);
+
+            List<String> imageList = new ArrayList<>();
+
+            for(Image image : furnitureToImage.getImages())
+            {
+                imageList.add(image.getUri());
+            }
+            furniture.setImages(imageList);
+            furnitures.add(furniture);
+        }
+
+        return furnitures;
     }
 
     @PostMapping("/furniture")
     @ApiOperation(value = "" , notes = "Create a new furniture")
-    public ResponseEntity insertFurnitureByFid(@ModelAttribute Furniture furniture )
+    public ResponseEntity insertFurnitureByFid(@ModelAttribute Furniture furniture , MultipartFile multipartFile)
     {
+        FurnitureToImage furnitureToImage = new FurnitureToImage(furniture);
 
-        furnitureService.insertFurnitureByFid(furniture);
+        File file;
+        Image image , savedImage;
+
+        // upload file
+
+
+        String[] originFile = multipartFile.getOriginalFilename().split("\\.");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date currentDateTime = new Date();
+        String dateTime = dateFormat.format(currentDateTime);
+
+        image = new Image();
+        image.setGid(1);
+        image.setExtension(originFile[1]);
+        image.setRegisterAt(dateTime);
+        image.setUri("/resources/images/"+image.getGid());
+
+        List<Image> imageList = new ArrayList<>();
+        imageList.add(image);
+        furnitureToImage.setImages(imageList);
+       furnitureToImageService.insertFurnitureToImage(furnitureToImage);
+
+
+        file = new File(image.getUri());
+        try {
+            multipartFile.transferTo(file);
+        } catch (Exception e) {
+            e.printStackTrace();
+            new InternalServerErrorException();
+        }
 
         return new ResponseEntity(HttpStatus.CREATED);
     }

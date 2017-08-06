@@ -58,9 +58,28 @@ public class Furniture implements Serializable {
     private String createAt;
 
     @Transient
-    private String url;
+    private List<String> images;
 
-//    @OneToMany( fetch = FetchType.LAZY  ,cascade= javax.persistence.CascadeType.ALL)
+    public Furniture(FurnitureToImage furnitureToImage) {
+
+        this.fid = furnitureToImage.getFid();
+        this.width = furnitureToImage.getWidth();
+        this.length = furnitureToImage.getLength();
+        this.height = furnitureToImage.getHeight();
+        this.title = furnitureToImage.getTitle();
+        this.description = furnitureToImage.getDescription();
+        this.brand = furnitureToImage.getBrand();
+        this.grade = furnitureToImage.getGrade();
+        this.state = furnitureToImage.getState();
+        this.type = furnitureToImage.getType();
+        this.lat = furnitureToImage.getLat();
+        this.lon = furnitureToImage.getLon();
+        this.periodOfUse = furnitureToImage.getPeriodOfUse();
+        this.createAt = furnitureToImage.getCreateAt();
+
+    }
+
+    //    @OneToMany( fetch = FetchType.LAZY  ,cascade= javax.persistence.CascadeType.ALL)
 //    @JoinColumn(name = "f_id" , nullable = false)
 //    private List<FurnitureCategory> furnitureCategories;
 

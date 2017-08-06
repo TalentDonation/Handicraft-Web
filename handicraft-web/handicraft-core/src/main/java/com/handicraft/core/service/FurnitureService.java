@@ -1,6 +1,7 @@
 package com.handicraft.core.service;
 
 import com.handicraft.core.dto.Furniture;
+import com.handicraft.core.dto.FurnitureToImage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -13,7 +14,7 @@ import java.util.List;
 
 public interface FurnitureService {
 
-    Page<Furniture> findFurniturePerPage(PageRequest pageRequest);
+    Page<FurnitureToImage> findFurniturePerPage(PageRequest pageRequest);
 
     Furniture findFurnitureByFid(long f_id);
 
