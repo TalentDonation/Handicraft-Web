@@ -32,10 +32,21 @@ public class FurnitureAbs {
 
     protected String description;
 
-    protected int grade;
+    protected String brand;
 
-    @Column(nullable = false)
-    protected String manufactureAt;
+    protected String grade;
+
+    protected String state;
+
+    protected String location;
+
+    protected String type;
+
+    protected double lat;
+
+    protected double lon;
+
+    protected int periodOfUse;
 
     protected String createAt;
 

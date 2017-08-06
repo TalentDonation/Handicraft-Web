@@ -2,13 +2,17 @@ package com.handicraft.api.controller;
 
 import com.handicraft.api.exception.InternalServerErrorException;
 import com.handicraft.api.exception.NotFoundException;
-import com.handicraft.core.dto.*;
-import com.handicraft.core.service.*;
+import com.handicraft.core.dto.Furniture;
+import com.handicraft.core.dto.FurnitureToImage;
+import com.handicraft.core.dto.Image;
+import com.handicraft.core.service.FurnitureCategoryService;
+import com.handicraft.core.service.FurnitureService;
+import com.handicraft.core.service.FurnitureToImageService;
+import com.handicraft.core.service.ImageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -16,10 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -56,17 +57,18 @@ public class FurnitureController {
     {
         PageRequest pageRequest  = new PageRequest(page , page_page , Sort.Direction.ASC , "fid");
 
-        Page<FurnitureToImage> furniturePage = furnitureService.findFurniturePerPage(pageRequest);
+        Page<FurnitureToImage> furniturePage = furnitureToImageService.findFurniturePerPage(pageRequest);
 
         List<Furniture> furnitures  = new ArrayList<>();
 
-        for(FurnitureToImage furnitureToImage : furniturePage)
+        for(FurnitureToImage furnitureToImage : furniturePage.getContent())
         {
+
             Furniture furniture = new Furniture(furnitureToImage);
 
             List<String> imageList = new ArrayList<>();
 
-            for(Image image : furnitureToImage.getImages())
+            for(Image image : furnitureToImage.getImageList())
             {
                 imageList.add(image.getUri());
             }
@@ -98,11 +100,11 @@ public class FurnitureController {
         image.setGid(1);
         image.setExtension(originFile[1]);
         image.setRegisterAt(dateTime);
-        image.setUri("/resources/images/"+image.getGid());
+        image.setUri("$HOME/resources/images/"+image.getGid());
 
         List<Image> imageList = new ArrayList<>();
         imageList.add(image);
-        furnitureToImage.setImages(imageList);
+        furnitureToImage.setImageList(imageList);
        furnitureToImageService.insertFurnitureToImage(furnitureToImage);
 
 

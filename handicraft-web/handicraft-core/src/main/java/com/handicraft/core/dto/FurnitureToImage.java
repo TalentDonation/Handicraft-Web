@@ -12,46 +12,17 @@ import java.util.List;
  * Created by 고승빈 on 2017-08-06.
  */
 
-@Entity(name = "Furniture")
+@Entity(name = "FurnitureToImage")
 @Table(name = "furniture")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class FurnitureToImage {
+public class FurnitureToImage extends  FurnitureAbs{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "f_id" , nullable = false)
-    private long fid;
 
-    private double width;
 
-    private double length;
 
-    private double height;
-
-    private String title;
-
-    private String description;
-
-    private String brand;
-
-    private String grade;
-
-    private String state;
-
-    private String location;
-
-    private String type;
-
-    private double lat;
-
-    private double lon;
-
-    private int periodOfUse;
-
-    private String createAt;
 
 
     public FurnitureToImage(Furniture furniture) {
@@ -75,5 +46,5 @@ public class FurnitureToImage {
 
     @OneToMany( fetch = FetchType.EAGER ,cascade= javax.persistence.CascadeType.ALL)
     @JoinColumn(name = "f_id" , nullable = false)
-    private List<Image> images;
+    private List<Image> imageList;
 }

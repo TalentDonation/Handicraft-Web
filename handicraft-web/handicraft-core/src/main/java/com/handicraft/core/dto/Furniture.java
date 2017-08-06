@@ -20,42 +20,10 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Furniture implements Serializable {
+public class Furniture extends FurnitureAbs implements Serializable {
 
     private static final long serialVersionUID = -3750423939072711694L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "f_id" , nullable = false)
-    private long fid;
-
-    private double width;
-
-    private double length;
-
-    private double height;
-
-    private String title;
-
-    private String description;
-
-    private String brand;
-
-    private String grade;
-
-    private String state;
-
-    private String location;
-
-    private String type;
-
-    private double lat;
-
-    private double lon;
-
-    private int periodOfUse;
-
-    private String createAt;
 
     @Transient
     private List<String> images;
