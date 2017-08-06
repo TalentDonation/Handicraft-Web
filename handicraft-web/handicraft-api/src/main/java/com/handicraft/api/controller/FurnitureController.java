@@ -100,7 +100,7 @@ public class FurnitureController {
         image.setGid(1);
         image.setExtension(originFile[1]);
         image.setRegisterAt(dateTime);
-        image.setUri("$HOME/resources/images/"+image.getGid());
+        image.setUri("resources/images/"+image.getGid());
 
         List<Image> imageList = new ArrayList<>();
         imageList.add(image);
