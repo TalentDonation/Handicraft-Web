@@ -26,7 +26,7 @@ public class UserToMarket implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "m_id")
-    protected int mid;
+    protected long mid;
 
     protected boolean admin;
 

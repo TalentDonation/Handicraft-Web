@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true"  scanperiod="30 seconds">
+
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <property name="LOG_DIR" value="logs" />
+    <property name="LOG_PATH_NAME" value="${LOG_DIR}\\handicraft-api" />
+
+
+    <appender name="Handicraft-api" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH_NAME}.%d{yyMMdd-HH}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5p] --- [%thread] [%F]%M\(%L\) : %m%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <logger name="org.springframework.web" level="INFO">
+        <appender-ref ref="Handicraft-api" />
+    </logger>
+    <logger name="org.hibernate.SQL" level="DEBUG">
+        <appender-ref ref="Handicraft-api" />
+    </logger>
+
+</configuration>

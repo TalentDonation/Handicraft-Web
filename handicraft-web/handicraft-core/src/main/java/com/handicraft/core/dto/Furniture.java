@@ -1,7 +1,10 @@
 package com.handicraft.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -22,9 +25,9 @@ public class Furniture implements Serializable {
     private static final long serialVersionUID = -3750423939072711694L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "f_id")
-    private Integer fid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "f_id" , nullable = false)
+    private long fid;
 
     private double width;
 
@@ -36,15 +39,32 @@ public class Furniture implements Serializable {
 
     private String description;
 
-    private int grade;
+    private String brand;
 
-    private String manufactureAt;
+    private String grade;
 
-    private String createAt;
+    private String state;
 
-    @Transient
-    private List<Integer> tid;
+    private String location;
 
+    private String type;
+
+    private double lat;
+
+    private double lon;
+
+    @Column(nullable = false)
+    protected String periodOfUse;
+
+    protected String createAt;
+
+//    @OneToMany( fetch = FetchType.LAZY  ,cascade= javax.persistence.CascadeType.ALL)
+//    @JoinColumn(name = "f_id" , nullable = false)
+//    private List<FurnitureCategory> furnitureCategories;
+
+//    @OneToMany( fetch = FetchType.EAGER ,cascade= javax.persistence.CascadeType.ALL)
+//    @JoinColumn(name = "f_id" , nullable = false)
+//    private List<Image> images;
 
 
 }

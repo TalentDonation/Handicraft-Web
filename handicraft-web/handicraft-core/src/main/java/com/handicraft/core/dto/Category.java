@@ -28,12 +28,10 @@ public class Category implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "t_id")
-    private int t_id;
+    private long tid;
 
     private String type;
 
     private String registerAt;
 
-    @OneToMany
-    private List<FurnitureCategory> furnitureCategories;
 }

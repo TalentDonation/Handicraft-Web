@@ -1,10 +1,17 @@
 package com.handicraft.core.service;
 
+import com.handicraft.core.dto.Image;
+import com.handicraft.core.id.FurnitureCategoryId;
 import com.handicraft.core.repository.FurnitureRepository;
 import com.handicraft.core.dto.Furniture;
+import com.handicraft.core.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -16,26 +23,31 @@ public class FurnitureServiceImp implements FurnitureService{
     @Autowired
     FurnitureRepository furnitureRepository;
 
+    @Autowired
+    ImageRepository imageRepository;
+
     @Override
-    public Furniture getByFurniture(int f_id) {
+    public Page<Furniture> findFurniturePerPage(PageRequest pageRequest) {
+        return furnitureRepository.findAll(pageRequest);
+    }
+
+    @Override
+    public Furniture findFurnitureByFid(long f_id) {
         return furnitureRepository.findOne(f_id);
     }
 
     @Override
-    public List<Furniture> getByFurnitureAll() {
-        return furnitureRepository.findAll();
+    @Transactional
+    public void insertFurnitureByFid(Furniture furniture) {
+
+
+//        furniture.setFid(furnitureRepository.findTopByOrderByFidDesc().getFid() + 1);
+
+        furnitureRepository.save(furniture);
     }
 
     @Override
-    public Furniture insertToFurniture(Furniture furniture) {
-
-        if(furnitureRepository.exists(furniture.getFid()))  furniture.setFid(furnitureRepository.findTopByOrderByFidDesc().getFid() + 1);
-
-        return furnitureRepository.save(furniture);
-    }
-
-    @Override
-    public Furniture updateToFurniture(Furniture furniture) {
+    public Furniture updateFurnitureByFid(Furniture furniture) {
 
         if(!furnitureRepository.exists(furniture.getFid())) return null;
 
@@ -43,11 +55,37 @@ public class FurnitureServiceImp implements FurnitureService{
     }
 
     @Override
-    public Boolean deleteToFurniture(int f_id) {
+    public Boolean deleteFurnitureByFid(long f_id) {
 
         if(!furnitureRepository.exists(f_id)) return false;
 
         furnitureRepository.delete(f_id);
         return true;
+    }
+
+    @Override
+    public List<Furniture> updateFurnitureList(List<Furniture> furnitureList) {
+
+        for(Furniture furniture : furnitureList)
+        {
+            if(!furnitureRepository.exists(furniture.getFid())) return null;
+        }
+
+        return furnitureRepository.save(furnitureList);
+    }
+
+    @Override
+    public void deleteFurnitureList() {
+
+        furnitureRepository.deleteAll();;
+    }
+
+    @Override
+    public void deleteImagesByFid(long fid) {
+
+        Furniture furniture = furnitureRepository.findOne(fid);
+
+//        imageRepository.delete(furniture.getImages());
+
     }
 }

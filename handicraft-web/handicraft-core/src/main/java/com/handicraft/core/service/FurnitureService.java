@@ -1,6 +1,8 @@
 package com.handicraft.core.service;
 
 import com.handicraft.core.dto.Furniture;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -10,13 +12,21 @@ import java.util.List;
 
 
 public interface FurnitureService {
-    Furniture getByFurniture(int f_id);
 
-    List<Furniture> getByFurnitureAll();
+    Page<Furniture> findFurniturePerPage(PageRequest pageRequest);
 
-    Furniture insertToFurniture(Furniture furniture);
+    Furniture findFurnitureByFid(long f_id);
 
-    Furniture updateToFurniture(Furniture furniture);
+    void insertFurnitureByFid(Furniture furniture);
 
-    Boolean deleteToFurniture(int f_id);
+    Furniture updateFurnitureByFid(Furniture furniture);
+
+    Boolean deleteFurnitureByFid(long f_id);
+
+    List<Furniture> updateFurnitureList(List<Furniture> furnitureList);
+
+    void deleteFurnitureList();
+
+    void deleteImagesByFid(long fid);
+
 }

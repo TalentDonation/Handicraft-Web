@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
  * Created by 고승빈 on 2017-07-06.
  */
 @Repository
-public interface MarketRepository extends JpaRepository<Market, Integer>  {
+public interface MarketRepository extends JpaRepository<Market, Long>  {
 }

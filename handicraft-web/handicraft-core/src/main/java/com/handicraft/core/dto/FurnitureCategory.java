@@ -1,11 +1,14 @@
 package com.handicraft.core.dto;
 
 import com.handicraft.core.id.FurnitureCategoryId;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.*;
+import org.hibernate.annotations.CascadeType;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * Created by 고승빈 on 2017-07-15.
@@ -13,31 +16,23 @@ import javax.persistence.*;
 
 @Entity(name = "FurnitureCategory")
 @Table(name = "furniture_category")
-@IdClass(FurnitureCategoryId.class)
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class FurnitureCategory{
+public class FurnitureCategory implements Serializable {
 
-
-    @Id
-    @Column(name="f_id" )
-    private Integer fid;
+    private static final long serialVersionUID = 6135259929286807612L;
 
     @Id
-    @Column(name="t_id")
-    private Integer tid;
-
-//    @Id
-//    @ManyToOne
-//    @JoinColumn(name="f_id")
-//    private Furniture furniture;
-//
-//    @Id
-//    @ManyToOne
-//    @JoinColumn(name="t_id")
-//    private Category category;
+    @GeneratedValue
+    @Column(name = "ft_id" , nullable = false)
+    private long ftid;
 
 
+    @Column(name = "t_id" , nullable = false)
+    private long tid;
+
+//    @EmbeddedId
+//    private FurnitureCategoryId furnitureCategoryId;
 
 }

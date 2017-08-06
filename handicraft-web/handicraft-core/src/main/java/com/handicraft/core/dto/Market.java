@@ -26,7 +26,7 @@ public class Market implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "m_id")
-    protected int mid;
+    protected long mid;
 
     protected boolean admin;
 
@@ -46,11 +46,11 @@ public class Market implements Serializable{
 
     protected String registerAt;
 
-    @Column(name = "u_id")
-    private int uid;
-
-    @Column(name = "f_id")
-    private int fid;
+//    @Column(name = "u_id")
+//    private int uid;
+//
+//    @Column(name = "f_id")
+//    private long fid;
 
 
 }
