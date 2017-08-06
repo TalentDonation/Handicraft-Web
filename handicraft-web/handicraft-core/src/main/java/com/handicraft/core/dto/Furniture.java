@@ -53,10 +53,12 @@ public class Furniture implements Serializable {
 
     private double lon;
 
-    @Column(nullable = false)
-    protected String periodOfUse;
+    private int periodOfUse;
 
-    protected String createAt;
+    private String createAt;
+
+    @Transient
+    private String url;
 
 //    @OneToMany( fetch = FetchType.LAZY  ,cascade= javax.persistence.CascadeType.ALL)
 //    @JoinColumn(name = "f_id" , nullable = false)
