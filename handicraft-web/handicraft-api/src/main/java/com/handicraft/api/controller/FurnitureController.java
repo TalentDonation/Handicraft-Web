@@ -100,21 +100,26 @@ public class FurnitureController {
         image.setGid(1);
         image.setExtension(originFile[1]);
         image.setRegisterAt(dateTime);
-        image.setUri("resources/images/"+image.getGid());
+        image.setUri("/resources/images/"+image.getGid());
 
         List<Image> imageList = new ArrayList<>();
         imageList.add(image);
         furnitureToImage.setImageList(imageList);
-       furnitureToImageService.insertFurnitureToImage(furnitureToImage);
 
 
-        file = new File(image.getUri());
+
+        file = new File("/$HOME/deploy/handicraft-web/handicraft-api/src/main"+image.getUri());
+
         try {
             multipartFile.transferTo(file);
         } catch (Exception e) {
             e.printStackTrace();
             new InternalServerErrorException();
         }
+
+
+
+        furnitureToImageService.insertFurnitureToImage(furnitureToImage);
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
