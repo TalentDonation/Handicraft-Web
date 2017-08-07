@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <meta name="_csrf" content="${_csrf.token}"/>
 <meta name="_csrf_header" content="${_csrf.headerName}"/>
 
@@ -25,11 +26,6 @@
 
                 <div class="panel-heading">
                     <h5 class="panel-title">Google url을 입력하세요<a class="heading-elements-toggle"></a></h5>
-                    <div class="heading-elements">
-                        <ul class="icons-list">
-                            <li><a id="btnAdd" class="glyphicon glyphicon-plus"></a></li>
-                        </ul>
-                    </div>
                 </div>
 
                 <div class="panel-body">
@@ -46,11 +42,35 @@
                                 <br>
                             </div>
                         </div>
+
+                        <div class="sheets-title">
+                            <c:if test="${list.size() >= 1}" var="bool">
+                                <c:forEach begin="0" end="${list.size() - 1}" step="1" var="i">
+                                    <c:forEach var="title" items="${list.get(i)}">
+                                        <button type="button" class="btn btn-default btn-title">${title}</button>
+                                    </c:forEach>
+                                </c:forEach>
+                            </c:if>
+                        </div>
+
+                        <div class="input-group content-group" id="register">
+                            <div class="has-feedback has-feedback-left">
+                                <input type="text" placeholder="google url" class="form-control input-xlg"/>
+                                <div class="form-control-feedback">
+                                    <i class="icon-search4 text-muted text-size-base"></i>
+                                </div>
+                            </div>
+                            <div class="input-group-btn">
+                                <button type="submit" class="btn btn-danger btn-xlg register">URL 등록</button>
+                                <br>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
-
             </div>
+
             <div class="panel panel-flat" id="panel">
                 <%--표 제목--%>
                 <div class="panel-heading">
@@ -93,6 +113,18 @@
 
         // TODO: url 바꾸기
         $(document).on("click", ".search", function () {
+            <%--var size = ${list.size()};--%>
+            <%--if(size >= 1) {--%>
+                <%--for(var i = 0; i < size - 1; i++) {--%>
+                    <%--<c:forEach var="title" items="${list.get(i)}">--%>
+                        <%--$('.sheets-title').append('<button type="button" class="btn btn-default btn-title">' + ${title} + '</button>');--%>
+                    <%--</c:forEach>--%>
+                <%--}--%>
+            <%--}--%>
+            <%--else{--%>
+                <%--alert("해당하는 url이 없습니다");--%>
+            <%--}--%>
+
             $.ajax({
                 type: 'GET',
                 url: 'http://localhost:8080/sheets',
@@ -106,6 +138,8 @@
                     var arr = data.split(',');
                     var cnt = 1;
                     $(".table-tbody").empty();
+
+
                     // TODO: 표에 나타나야할 개수에 따라 i 바꾸기
                     for (var i = 0; i < arr.length - 2; i += 3) {
                         $(".table-tbody").append('<tr><td>'+ cnt +'</td><td>' + arr[i] + '</td><td>' + arr[i + 1] + '</td><td>' + arr[i + 2] + '</td></tr>');
