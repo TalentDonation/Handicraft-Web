@@ -79,11 +79,13 @@ public class MemberController {
         return mv;
     }
 
+
     @RequestMapping(value = "/sheets", method = RequestMethod.GET)
     public ModelAndView getFile(@RequestParam(value = "google") String google) throws IOException {
 
         // 여기는 조회 누르면 밑에 sheet 제목 띄우는 함수
         ModelAndView results = new ModelAndView();
+
 
         String url[] = google.split("/");
 
@@ -99,7 +101,7 @@ public class MemberController {
             list.add(sheet.getProperties().getTitle());
             System.out.println(sheet.getProperties().getTitle());
         }
-        results.addObject("list",list);
+        results.addObject("list", list);
 
 //        return "redirect:/sheets/" + spreadsheetId + "/" + list.get(0);
         return results;
@@ -116,7 +118,8 @@ public class MemberController {
         Sheets service = getSheetsService();
         spreadsheetId = sheets_id;
         range = title + "!A1:U1000";
-        ValueRange response = service.spreadsheets().values().get(spreadsheetId,range).execute();
+
+        ValueRange response = service.spreadsheets().values().get(spreadsheetId, range).execute();
 
         List<List<Object>> values = response.getValues();
         results = getSpreadSheetsData(values);
@@ -124,22 +127,21 @@ public class MemberController {
         return results;
     }
 
-    public ResponseEntity<ArrayList<List<Object>>> getSpreadSheetsData(List<List<Object>> values){
+    public ResponseEntity<ArrayList<List<Object>>> getSpreadSheetsData(List<List<Object>> values) {
         ResponseEntity<ArrayList<List<Object>>> results = null;
-        if(values == null || values.size() == 0){
+        if (values == null || values.size() == 0) {
             System.out.println("No data found");
-        }
-        else{
+        } else {
             ArrayList<List<Object>> result = new ArrayList<>();
             System.out.println("members");
 
-            for(List<Object> row : values){
-                if(row.isEmpty()) continue;
+            for (List<Object> row : values) {
+                if (row.isEmpty()) continue;
 
-                if(row.contains("")){
-                    for(Iterator<Object> iterator = row.iterator(); iterator.hasNext();){
-                        String element = (String)iterator.next();
-                        if(element.equals("")){
+                if (row.contains("")) {
+                    for (Iterator<Object> iterator = row.iterator(); iterator.hasNext(); ) {
+                        String element = (String) iterator.next();
+                        if (element.equals("")) {
                             iterator.remove();
                         }
                     }
@@ -149,10 +151,10 @@ public class MemberController {
                 System.out.println(row.getClass());
                 result.add(row);
             }
-            results = new ResponseEntity<>(result,HttpStatus.ACCEPTED);
+
+            results = new ResponseEntity<>(result, HttpStatus.ACCEPTED);
         }
 
         return results;
     }
-
 }
