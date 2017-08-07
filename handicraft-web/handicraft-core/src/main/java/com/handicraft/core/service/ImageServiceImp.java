@@ -22,6 +22,12 @@ public class ImageServiceImp implements ImageService {
 //        return imageRepository.findByFid(fid);
 //    }
 
+
+    @Override
+    public Image findImageByLastIndex() {
+        return imageRepository.findTopByOrderByGidDesc();
+    }
+
     @Override
     public Image insertImages(Image image) {
 

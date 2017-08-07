@@ -47,4 +47,6 @@ public class FurnitureToImage extends  FurnitureAbs{
     @OneToMany( fetch = FetchType.EAGER ,cascade= javax.persistence.CascadeType.ALL)
     @JoinColumn(name = "f_id" , nullable = false)
     private List<Image> imageList;
+
+
 }

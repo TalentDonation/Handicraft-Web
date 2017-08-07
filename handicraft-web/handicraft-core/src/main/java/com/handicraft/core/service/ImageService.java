@@ -11,6 +11,8 @@ public interface ImageService {
 
 //    List<Image> findImagesByFid(long fid);
 
+    Image findImageByLastIndex();
+
     Image insertImages(Image image);
 
     List<Image> updateImages(List<Image> imageList);

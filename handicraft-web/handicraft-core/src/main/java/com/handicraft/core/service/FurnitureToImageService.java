@@ -1,5 +1,6 @@
 package com.handicraft.core.service;
 
+import com.handicraft.core.dto.Furniture;
 import com.handicraft.core.dto.FurnitureToImage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -9,7 +10,11 @@ import org.springframework.data.domain.PageRequest;
  */
 public interface FurnitureToImageService {
 
-    Page<FurnitureToImage> findFurniturePerPage(PageRequest pageRequest);
+    Page<FurnitureToImage> findFurniturToImagePerPage(PageRequest pageRequest);
 
-    FurnitureToImage insertFurnitureToImage(FurnitureToImage furnitureToImage);
+    FurnitureToImage insertFurnitureToImageByFid(FurnitureToImage furnitureToImage);
+
+    FurnitureToImage updateFurnitureToImageByFid(FurnitureToImage furnitureToImage);
+
+    Boolean deleteFurnitureToImageByFid(long f_id);
 }

@@ -1,5 +1,6 @@
 package com.handicraft.core.service;
 
+import com.handicraft.core.dto.Furniture;
 import com.handicraft.core.dto.FurnitureToImage;
 import com.handicraft.core.repository.FurnitureToImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,13 +18,29 @@ public class FurnitureToImageServiceImp implements FurnitureToImageService{
     FurnitureToImageRepository furnitureToImageRepository;
 
     @Override
-    public Page<FurnitureToImage> findFurniturePerPage(PageRequest pageRequest) {
+    public Page<FurnitureToImage> findFurniturToImagePerPage(PageRequest pageRequest) {
         return furnitureToImageRepository.findAll(pageRequest);
     }
 
     @Override
-    public FurnitureToImage insertFurnitureToImage(FurnitureToImage furnitureToImage)
+    public FurnitureToImage insertFurnitureToImageByFid(FurnitureToImage furnitureToImage)
     {
         return furnitureToImageRepository.save(furnitureToImage);
+    }
+
+    @Override
+    public FurnitureToImage updateFurnitureToImageByFid(FurnitureToImage furnitureToImage) {
+
+        if(!furnitureToImageRepository.exists(furnitureToImage.getFid())) return null;
+
+        return furnitureToImageRepository.save(furnitureToImage);
+    }
+
+    @Override
+    public Boolean deleteFurnitureToImageByFid(long f_id) {
+        if(!furnitureToImageRepository.exists(f_id)) return false;
+
+        furnitureToImageRepository.delete(f_id);
+        return true;
     }
 }

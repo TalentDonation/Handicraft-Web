@@ -11,7 +11,10 @@ import com.handicraft.core.service.FurnitureToImageService;
 import com.handicraft.core.service.ImageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -21,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,43 +57,45 @@ public class FurnitureController {
 
     @GetMapping("/furniture")
     @ApiOperation(value = "" , notes = "Show several furniture by page")
-    public List<Furniture> findByFurniturePerPage(@RequestParam("page") int page , @RequestParam("per_page") int page_page)
+    public List<Furniture> findByFurniturePerPage(@RequestParam(value = "page" , defaultValue = "0")int page , @RequestParam(value = "per_page",defaultValue = "10") int page_page)
     {
         PageRequest pageRequest  = new PageRequest(page , page_page , Sort.Direction.ASC , "fid");
 
-        Page<FurnitureToImage> furniturePage = furnitureToImageService.findFurniturePerPage(pageRequest);
+        Page<FurnitureToImage> furnitureToImagePage = furnitureToImageService.findFurniturToImagePerPage(pageRequest);
 
-        List<Furniture> furnitures  = new ArrayList<>();
+        List<Furniture> furnitureList  = new ArrayList<>();
 
-        for(FurnitureToImage furnitureToImage : furniturePage.getContent())
+        for(FurnitureToImage furnitureToImage : furnitureToImagePage)
         {
-
             Furniture furniture = new Furniture(furnitureToImage);
-
-            List<String> imageList = new ArrayList<>();
-
-            for(Image image : furnitureToImage.getImageList())
+            List<String> imageLists = null;
+            if(!furnitureToImage.getImageList().isEmpty())
             {
-                imageList.add(image.getUri());
+                imageLists = new ArrayList<>();
+
+                for(Image image : furnitureToImage.getImageList())
+                {
+                    imageLists.add(image.getUri()+image.getExtension());
+                }
             }
-            furniture.setImages(imageList);
-            furnitures.add(furniture);
+            furniture.setImages(imageLists);
+            furnitureList.add(furniture);
         }
 
-        return furnitures;
+
+        return furnitureList;
     }
 
     @PostMapping("/furniture")
     @ApiOperation(value = "" , notes = "Create a new furniture")
-    public ResponseEntity insertFurnitureByFid(@ModelAttribute Furniture furniture , MultipartFile multipartFile)
-    {
+    public ResponseEntity insertFurnitureByFid(@ModelAttribute Furniture furniture , MultipartFile multipartFile) throws IOException {
         FurnitureToImage furnitureToImage = new FurnitureToImage(furniture);
 
         File file;
-        Image image , savedImage;
+        Image image;
 
         // upload file
-
+        Resource resource = new ClassPathResource("static");
 
         String[] originFile = multipartFile.getOriginalFilename().split("\\.");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -97,18 +103,21 @@ public class FurnitureController {
         String dateTime = dateFormat.format(currentDateTime);
 
         image = new Image();
-        image.setGid(1);
+        image.setGid(imageService.findImageByLastIndex().getGid() + 1);
         image.setExtension(originFile[1]);
         image.setRegisterAt(dateTime);
-        image.setUri("/resources/images/"+image.getGid());
+        image.setUri(""+image.getGid());
 
         List<Image> imageList = new ArrayList<>();
         imageList.add(image);
         furnitureToImage.setImageList(imageList);
 
+        StringBuffer uri = new StringBuffer();
+                uri.append(resource.getFile())
+                .append("/").append(image.getUri())
+                .append(".").append(originFile[1]);
 
-
-        file = new File("/$HOME/deploy/handicraft-web/handicraft-api/src/main"+image.getUri());
+        file = new File(uri.toString());
 
         try {
             multipartFile.transferTo(file);
@@ -117,9 +126,7 @@ public class FurnitureController {
             new InternalServerErrorException();
         }
 
-
-
-        furnitureToImageService.insertFurnitureToImage(furnitureToImage);
+        furnitureToImageService.insertFurnitureToImageByFid(furnitureToImage);
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
@@ -138,7 +145,7 @@ public class FurnitureController {
 
     @DeleteMapping("/furniture")
     @ApiOperation(value = "" , notes = "Delete all furniture")
-    public ResponseEntity deleteFurnitureList(@RequestParam("fid") long fid)
+    public ResponseEntity deleteFurnitureList()
     {
         furnitureService.deleteFurnitureList();
 
@@ -176,7 +183,7 @@ public class FurnitureController {
     @ApiOperation(value = "" , notes = "Delete one furniture about furniture id")
     public ResponseEntity deleteFurnitureById(@PathVariable("fid") long fid )
     {
-        Boolean resultOfDelete = furnitureService.deleteFurnitureByFid(fid);
+        Boolean resultOfDelete = furnitureToImageService.deleteFurnitureToImageByFid(fid);
 
         if(!resultOfDelete)	throw new NotFoundException();
 
@@ -197,7 +204,7 @@ public class FurnitureController {
 
     @PostMapping("/furniture/{fid}/images")
     @ApiOperation(value = "" , notes = "Insert images by furniture id")
-    public ResponseEntity InsertImagesByFid(@PathVariable("fid") long fid , @RequestParam("images") MultipartFile multipartFile)
+    public ResponseEntity InsertImagesByFid(@PathVariable("fid") long fid , @RequestParam("src/main/static/images") MultipartFile multipartFile)
     {
         Furniture furniture = furnitureService.findFurnitureByFid(fid);
 
