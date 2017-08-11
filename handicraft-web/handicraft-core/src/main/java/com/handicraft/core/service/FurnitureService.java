@@ -30,4 +30,6 @@ public interface FurnitureService {
 
     void deleteImagesByFid(long fid);
 
+    Furniture findLastFurnitureByFid();
+
 }

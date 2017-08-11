@@ -1,10 +1,8 @@
 package com.handicraft.core.service;
 
-import com.handicraft.core.dto.FurnitureToImage;
-import com.handicraft.core.dto.Image;
-import com.handicraft.core.id.FurnitureCategoryId;
-import com.handicraft.core.repository.FurnitureRepository;
 import com.handicraft.core.dto.Furniture;
+import com.handicraft.core.dto.FurnitureToImage;
+import com.handicraft.core.repository.FurnitureRepository;
 import com.handicraft.core.repository.FurnitureToImageRepository;
 import com.handicraft.core.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +11,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -92,5 +89,10 @@ public class FurnitureServiceImp implements FurnitureService{
 
 //        imageRepository.delete(furniture.getImages());
 
+    }
+
+    @Override
+    public Furniture findLastFurnitureByFid() {
+        return furnitureRepository.findTopByOrderByFidDesc();
     }
 }

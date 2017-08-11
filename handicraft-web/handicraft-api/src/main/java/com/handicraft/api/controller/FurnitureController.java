@@ -5,13 +5,11 @@ import com.handicraft.api.exception.NotFoundException;
 import com.handicraft.core.dto.Furniture;
 import com.handicraft.core.dto.FurnitureToImage;
 import com.handicraft.core.dto.Image;
-import com.handicraft.core.service.FurnitureCategoryService;
 import com.handicraft.core.service.FurnitureService;
 import com.handicraft.core.service.FurnitureToImageService;
 import com.handicraft.core.service.ImageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.logging.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -49,9 +47,6 @@ public class FurnitureController {
     FurnitureToImageService furnitureToImageService;
 
     @Autowired
-    FurnitureCategoryService furnitureCategoryService;
-
-    @Autowired
     ImageService imageService;
 
 
@@ -75,7 +70,7 @@ public class FurnitureController {
 
                 for(Image image : furnitureToImage.getImageList())
                 {
-                    imageLists.add(image.getUri()+image.getExtension());
+                    imageLists.add(image.getUri()+"."+image.getExtension());
                 }
             }
             furniture.setImages(imageLists);
@@ -89,6 +84,9 @@ public class FurnitureController {
     @PostMapping("/furniture")
     @ApiOperation(value = "" , notes = "Create a new furniture")
     public ResponseEntity insertFurnitureByFid(@ModelAttribute Furniture furniture , MultipartFile multipartFile) throws IOException {
+
+        furniture.setFid(furnitureService.findLastFurnitureByFid().getFid() + 1 );
+
         FurnitureToImage furnitureToImage = new FurnitureToImage(furniture);
 
         File file;
@@ -161,11 +159,24 @@ public class FurnitureController {
     @ApiOperation(value = "" , notes = "Show a furniture about furniture id")
     public Furniture findByFurnitureByFid(@PathVariable("fid") long fid )
     {
-        Furniture furniture = furnitureService.findFurnitureByFid(fid);
 
-        if(furniture == null)   throw new NotFoundException();
 
-        return furniture ;
+       FurnitureToImage furnitureToImage = furnitureToImageService.findFurnitureToImageByFid(fid);
+
+       if(furnitureToImage == null)   throw new NotFoundException();
+
+       Furniture furniture = new Furniture(furnitureToImage);
+
+       List<String> imageList = new ArrayList<>();
+
+       for(Image image : furnitureToImage.getImageList())
+       {
+            imageList.add(image.getUri()+image.getExtension());
+       }
+
+       furniture.setImages(imageList);
+
+        return  furniture;
     }
 
     @PutMapping("/furniture/{fid}")
@@ -195,45 +206,53 @@ public class FurnitureController {
     * f_id 에 대한 전체 images
     * */
 
-    @GetMapping("/furniture/{fid}/images")
-    @ApiOperation(value = "" , notes = "Get images by furniture id")
-    public Furniture findImagesByFid(@PathVariable("fid") long fid)
-    {
-        return furnitureService.findFurnitureByFid(fid);
-    }
-
     @PostMapping("/furniture/{fid}/images")
     @ApiOperation(value = "" , notes = "Insert images by furniture id")
-    public ResponseEntity InsertImagesByFid(@PathVariable("fid") long fid , @RequestParam("src/main/static/images") MultipartFile multipartFile)
+    public ResponseEntity InsertImagesByFid(@PathVariable("fid") long fid , @RequestParam("images") MultipartFile multipartFile)
     {
-        Furniture furniture = furnitureService.findFurnitureByFid(fid);
 
-//        List<Image> imageList = furniture.getImages();
-//        imageList.add(new Image(furniture.getFid(),"test",".jfd", furniture.getCreateAt()));
+        FurnitureToImage furnitureToImage = furnitureToImageService.findFurnitureToImageByFid(fid);
 
-        furnitureService.updateFurnitureByFid(furniture);
+        List<Image> images = furnitureToImage.getImageList();
+
+        File file;
+        // upload file
+        Resource resource = new ClassPathResource("static");
+
+        String[] originFile = multipartFile.getOriginalFilename().split("\\.");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date currentDateTime = new Date();
+        String dateTime = dateFormat.format(currentDateTime);
+
+        Image image = new Image();
+        image.setGid(imageService.findImageByLastIndex().getGid() +  1);
+        image.setRegisterAt(dateTime);
+        image.setExtension(originFile[1]);
+        image.setUri(""+image.getGid());
+
+        images.add(image);
+        furnitureToImage.setImageList(images);
+
+        StringBuffer uri = new StringBuffer();
+        try {
+            uri.append(resource.getFile())
+                    .append("/").append(image.getUri())
+                    .append(".").append(originFile[1]);
+
+            file = new File(uri.toString());
+
+            multipartFile.transferTo(file);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            new InternalServerErrorException();
+        }
+
+        furnitureToImageService.updateFurnitureToImageByFid(furnitureToImage);
+
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @PutMapping("/furniture/{fid}/images")
-    @ApiOperation(value = "" , notes = "Update images by furniture id")
-    public ResponseEntity UpdateImagesByFid(@PathVariable("fid") long fid , @ModelAttribute List<Image> imageList)
-    {
-        Furniture furniture = furnitureService.findFurnitureByFid(fid);
-
-//        furniture.setImages(imageList);
-
-        furnitureService.updateFurnitureByFid(furniture);
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
-    @DeleteMapping("/furniture/{fid}/images")
-    @ApiOperation(value = "" , notes = "Delete images by furniture id")
-    public ResponseEntity DeleteImagesByFid(@PathVariable("fid") long fid)
-    {
-        furnitureService.deleteImagesByFid(fid);
-        return new ResponseEntity(HttpStatus.OK);
-    }
 
     /*
     *
@@ -242,26 +261,65 @@ public class FurnitureController {
 
     @GetMapping("/furniture/{fid}/images/{gid}")
     @ApiOperation(value = "" , notes = "Get images by furniture id")
-    public List<Image> findImagesByFidAndGid(@PathVariable("fid") long fid , @PathVariable("gid") long gid)
+    public String findImagesByFidAndGid(@PathVariable("fid") long fid , @PathVariable("gid") long gid)
     {
-        return null;
+        Image image = imageService.findImageByGid(gid);
+
+        return image.getUri()+"."+image.getExtension();
     }
 
 
     @PutMapping("/furniture/{fid}/images/{gid}")
     @ApiOperation(value = "" , notes = "Update images by furniture id")
-    public ResponseEntity UpdateImagesByFidAndGid(@RequestParam("fid") long fid)
+    public ResponseEntity UpdateImagesByFidAndGid(@RequestParam("fid") long fid , @RequestParam("gid") long gid , MultipartFile multipartFile)
     {
+        Resource resource = new ClassPathResource("static");
 
+        String[] originFile = multipartFile.getOriginalFilename().split("\\.");
 
-        return new ResponseEntity(HttpStatus.NOT_FOUND);
+        Image image = imageService.findImageByGid(gid);
+        image.setExtension(originFile[1]);
+
+        StringBuffer stringBuffer = new StringBuffer();
+        File file;
+        try {
+            stringBuffer.append(resource.getFile())
+                        .append("/").append(gid)
+                        .append(".").append(originFile[1]);
+            file = new File(stringBuffer.toString());
+            multipartFile.transferTo(file);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+        imageService.updateImagesByGid(image);
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     @DeleteMapping("/furniture/{fid}/images/{gid}")
     @ApiOperation(value = "" , notes = "Delete images by furniture id")
-    public ResponseEntity DeleteImagesByFidAndGid()
+    public ResponseEntity DeleteImagesByFidAndGid(@RequestParam("fid") long fid , @RequestParam("gid") long gid)
     {
-        return new ResponseEntity(HttpStatus.NOT_FOUND);
+        Resource resource = new ClassPathResource("static");
+
+        Image image = imageService.findImageByGid(gid);
+
+        StringBuffer stringBuffer = new StringBuffer();
+        File file;
+        try {
+            stringBuffer.append(resource.getFile())
+                    .append("/").append(image.getGid())
+                    .append(".").append(image.getExtension());
+            file = new File(stringBuffer.toString());
+            file.delete();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 

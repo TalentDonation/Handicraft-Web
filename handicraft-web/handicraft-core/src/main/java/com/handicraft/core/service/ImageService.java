@@ -9,7 +9,8 @@ import java.util.List;
  */
 public interface ImageService {
 
-//    List<Image> findImagesByFid(long fid);
+
+    Image findImageByGid(long gid);
 
     Image findImageByLastIndex();
 
@@ -17,5 +18,6 @@ public interface ImageService {
 
     List<Image> updateImages(List<Image> imageList);
 
-//    List<Image> deleteImages(long fid);
+    Image updateImagesByGid(Image image);
+
 }
