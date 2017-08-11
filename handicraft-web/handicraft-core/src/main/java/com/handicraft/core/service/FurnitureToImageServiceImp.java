@@ -1,6 +1,5 @@
 package com.handicraft.core.service;
 
-import com.handicraft.core.dto.Furniture;
 import com.handicraft.core.dto.FurnitureToImage;
 import com.handicraft.core.repository.FurnitureToImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,5 +41,10 @@ public class FurnitureToImageServiceImp implements FurnitureToImageService{
 
         furnitureToImageRepository.delete(f_id);
         return true;
+    }
+
+    @Override
+    public FurnitureToImage findFurnitureToImageByFid(long f_id) {
+        return furnitureToImageRepository.findOne(f_id);
     }
 }

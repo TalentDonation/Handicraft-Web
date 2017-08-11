@@ -4,7 +4,6 @@ import com.handicraft.core.dto.Image;
 import com.handicraft.core.repository.ImageRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -17,11 +16,11 @@ public class ImageServiceImp implements ImageService {
     @Autowired
     ImageRepository imageRepository;
 
-//    @Override
-//    public List<Image> findImagesByFid(long fid) {
-//        return imageRepository.findByFid(fid);
-//    }
 
+    @Override
+    public Image findImageByGid(long gid) {
+        return imageRepository.findOne(gid);
+    }
 
     @Override
     public Image findImageByLastIndex() {
@@ -43,9 +42,8 @@ public class ImageServiceImp implements ImageService {
         return imageRepository.save(imageList);
     }
 
-//    @Override
-//    @Transactional
-//    public List<Image> deleteImages(long fid) {
-//        return imageRepository.deleteByFid(fid);
-//    }
+    @Override
+    public Image updateImagesByGid(Image image) {
+        return imageRepository.save(image);
+    }
 }
