@@ -15,13 +15,12 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.handicraft.core.service.FurnitureService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
@@ -42,6 +41,9 @@ public class MemberController {
     private static final List<String> SCOPES = Arrays.asList(SheetsScopes.SPREADSHEETS_READONLY);
     private static String spreadsheetId;
     private static String range;
+
+    @Autowired
+    FurnitureService furnitureService;
 
     static {
         try {
@@ -73,20 +75,14 @@ public class MemberController {
 
     // 여기는 들어가자마자 보이는것들 ,db연동
     @RequestMapping(value = "/member")
-    public ModelAndView getMember() {
+    public ModelAndView getMember() throws IOException{
         ModelAndView mv = new ModelAndView();
         mv.setViewName("member");
-        return mv;
-    }
 
+//        Furniture furniture = furnitureService.findFurnitureByFid(1);
+//        mv.addObject("furniture" , furniture);
 
-    @RequestMapping(value = "/sheets", method = RequestMethod.GET)
-    public ModelAndView getFile(@RequestParam(value = "google") String google) throws IOException {
-
-        // 여기는 조회 누르면 밑에 sheet 제목 띄우는 함수
-        ModelAndView results = new ModelAndView();
-
-
+        String google = "https://docs.google.com/spreadsheets/d/15JuidiRH-K_Z0bjkag70Fdrjt5KR0HaSR7dbcdwquXY/edit#gid=0";
         String url[] = google.split("/");
 
         Sheets service = getSheetsService();
@@ -101,14 +97,43 @@ public class MemberController {
             list.add(sheet.getProperties().getTitle());
             System.out.println(sheet.getProperties().getTitle());
         }
-        results.addObject("list", list);
+        mv.addObject("title",list);
+        mv.addObject("url",google);
 
-//        return "redirect:/sheets/" + spreadsheetId + "/" + list.get(0);
-        return results;
+        return mv;
     }
 
 
-    // data 출력하는 함수
+//    @RequestMapping(value = "/sheets", method = RequestMethod.GET)
+//    public ModelAndView getFile(@RequestParam(value = "google") String google) throws IOException {
+//
+//        // 여기는 조회 누르면 밑에 sheet 제목 띄우는 함수 -> 곧 /member로 통합될 예정
+//        ModelAndView results = new ModelAndView();
+//        System.out.println("ㅇㅇ 들어왔네");
+//
+//
+//        String url[] = google.split("/");
+//
+//        Sheets service = getSheetsService();
+//        spreadsheetId = url[5];
+//
+//        Spreadsheet spreadsheet = service.spreadsheets().get("/").setSpreadsheetId(spreadsheetId).setIncludeGridData(true)
+//                .set("fields", "sheets.properties").execute();
+//
+//        List<String> list = new ArrayList<>();
+//
+//        for (Sheet sheet : spreadsheet.getSheets()) {
+//            list.add(sheet.getProperties().getTitle());
+//            System.out.println(sheet.getProperties().getTitle());
+//            System.out.println(sheet.getProperties());
+//        }
+//        results.addObject("list", list);
+//
+////        return "redirect:/sheets/" + spreadsheetId + "/" + list.get(0);
+//        return results;
+//    }
+
+    // data 출력하는 함수, ajax url을 넣어줄때 이런 형식으로 넣어준다
     @RequestMapping(value = "/sheets/{sheets_id}/{title}", method = RequestMethod.GET)
     public ResponseEntity getFileBySheetsId(@PathVariable(value = "sheets_id") String sheets_id, @PathVariable(value = "title") String title) throws IOException {
 
