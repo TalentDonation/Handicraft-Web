@@ -95,7 +95,6 @@
                     <table class="table">
                         <thead>
                         <tr class="bg-blue" id="table-content">
-                            <th>No.</th>
                         </tr>
                         </thead>
                         <tbody class="table-tbody">
@@ -113,9 +112,7 @@
 
 <script>
     $(document).ready(
-//        $('#panel').hide(),
-//        $('#table-title').hide(),
-//        $('#table-content').hide(),
+        $('#panel').hide(),
 
 //        $('#btnAdd').click(function () {
 //            var clone = $('#clone').clone().find('.form-control').val('').end();
@@ -134,9 +131,7 @@
                 data: {},
                 dataType: 'json',
                 success: function (response) {
-//                    $('#panel').show();
-//                    $('#table-title').show();
-//                    $('#table-content').show();
+                    $('#panel').show();
                     var data = response.toString();
                     var arr = data.split(',');
                     var cnt = 1;
@@ -146,15 +141,12 @@
                     // TODO: 표에 나타나야할 개수에 따라 i 바꾸기
 
                     for (var i = 0; i < arr.length - 2; i += 3) {
-                        console.log("오 들어왔다!");
                         if(i === 0){
-                            $('#table-content').append('<th>' + arr[i] + '</th>' + '<th>' + arr[i + 1] + '</th>' + '<th>' + arr[i + 2] + '</th>');
-                            console.log("테이블 제목 불러오기 성공!");
+                            $('#table-content').append('<th>No.</th><th>' + arr[i] + '</th>' + '<th>' + arr[i + 1] + '</th>' + '<th>' + arr[i + 2] + '</th>');
                         }
                         else{
                             $(".table-tbody").append('<tr><td>'+ cnt +'</td><td>' + arr[i] + '</td><td>' + arr[i + 1] + '</td><td>' + arr[i + 2] + '</td></tr>');
                             cnt += 1;
-                            console.log("데이터 불러오기 성공!");
                         }
                     }
                 },
@@ -163,6 +155,7 @@
                     alert(xhr.message);
                 }
             });
+            return false;
         })
     );
 </script>

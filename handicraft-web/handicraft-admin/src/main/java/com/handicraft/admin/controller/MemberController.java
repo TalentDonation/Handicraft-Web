@@ -42,6 +42,7 @@ public class MemberController {
     private static String spreadsheetId;
     private static String range;
 
+
     @Autowired
     FurnitureService furnitureService;
 
@@ -99,6 +100,8 @@ public class MemberController {
         }
         mv.addObject("title",list);
         mv.addObject("url",google);
+
+
 
         return mv;
     }
