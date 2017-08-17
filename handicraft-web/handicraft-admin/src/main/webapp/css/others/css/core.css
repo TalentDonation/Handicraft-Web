@@ -446,19 +446,19 @@ a.bg-danger:focus {
   -webkit-box-shadow: 0 1px 0 #fff;
   box-shadow: 0 1px 0 #fff;
 }
-.page-header-inverse.has-cover {
-  background: url(../images/login_cover.jpg);
-  background-size: cover;
-}
+/*.page-header-inverse.has-cover {*/
+  /*background: url(../images/login_cover.jpg);*/
+  /*background-size: cover;*/
+/*}*/
 .page-header-default {
   background-color: #fff;
   margin-bottom: 20px;
   -webkit-box-shadow: 0 1px 0 0 #ddd;
   box-shadow: 0 1px 0 0 #ddd;
 }
-.page-header-default.has-cover {
-  background: url(../images/backgrounds/seamless.png);
-}
+/*.page-header-default.has-cover {*/
+  /*background: url(../images/backgrounds/seamless.png);*/
+/*}*/
 .page-title {
   padding: 32px 36px 32px 0;
   display: block;
@@ -6155,9 +6155,9 @@ a.list-group-item-danger:focus {
   max-width: 100%;
   overflow-x: auto;
 }
-.panel.has-bg-image {
-  background-image: url(../images/backgrounds/panel_bg.png);
-}
+/*.panel.has-bg-image {*/
+  /*background-image: url(../images/backgrounds/panel_bg.png);*/
+/*}*/
 .panel-flat > .panel-heading + .table,
 .panel-flat > .panel-heading + .table-responsive {
   border-top: 1px solid #ddd;

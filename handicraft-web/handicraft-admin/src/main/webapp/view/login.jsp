@@ -1,10 +1,3 @@
-<%--
-  Created by IntelliJ IDEA.
-  User: 고승빈
-  Date: 2017-06-28
-  Time: 오후 8:05
-  To change this template use File | Settings | File Templates.
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <html>
@@ -15,20 +8,22 @@
     <title>Administrator Login</title>
 
 
-    <%--<link href="./css/login/login.css" rel="stylesheet"/>--%>
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">
-    <link href="./css/login/styles.css" rel="stylesheet" type="text/css">
-    <link href="./css/login/bootstrap.css" rel="stylesheet" type="text/css">
-    <link href="./css/login/core.css" rel="stylesheet" type="text/css">
-    <link href="./css/login/components.css" rel="stylesheet" type="text/css">
-    <link href="./css/login/colors.css" rel="stylesheet" type="text/css">
+    <link href="./css/others/css/icons/icomoon/styles.css" rel="stylesheet" type="text/css">
+    <link href="./css/others/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="./css/others/css/core.css" rel="stylesheet" type="text/css">
+    <link href="./css/others/css/components.css" rel="stylesheet" type="text/css">
+    <link href="./css/others/css/colors.css" rel="stylesheet" type="text/css">
 
 
 </head>
+
+<body class="navbar-bottom login-container">
+
 <%--nav bar--%>
 <div class="navbar navbar-inverse">
     <div class="navbar-collapse collapse" id="navbar-mobile">
-        <ul class="nav navbar-nav navbar-right">
+        <ul class="nav navbar-nav navbar-left">
             <li>
                 <a href="#" style="font-size: 16px">
                     반쪽이공방
@@ -37,8 +32,6 @@
         </ul>
     </div>
 </div>
-
-<body class="login-container">
 
 <!-- Page container -->
 <div class="page-container">
@@ -77,14 +70,14 @@
                         <div class="form-group has-feedback has-feedback-left">
                             <input type="text" class="form-control input-lg" placeholder="Username" name="username">
                             <div class="form-control-feedback">
-                                <i class="icon-user text-muted"></i>
+                                <%--<i class="glyphicon glyphicon-user text-muted"></i>--%>
                             </div>
                         </div>
 
                         <div class="form-group has-feedback has-feedback-left">
                             <input type="password" class="form-control input-lg" placeholder="Password" name="password">
                             <div class="form-control-feedback">
-                                <i class="icon-lock2 text-muted"></i>
+                                <%--<i class="glyphicon glyphicon-lock2 text-muted"></i>--%>
                             </div>
                         </div>
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
@@ -93,7 +86,7 @@
                         <div class="form-group">
                             <button type="submit" class="btn bg-blue btn-block btn-lg">Login <i class="icon-arrow-right14 position-right"></i></button>
                         </div>
-                    </div>
+                    <%--</div>--%>
                 </form>
                 <!-- /advanced login -->
 
