@@ -16,12 +16,14 @@ import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.handicraft.core.service.FurnitureService;
+import com.handicraft.core.service.SheetsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,7 +46,7 @@ public class MemberController {
 
 
     @Autowired
-    FurnitureService furnitureService;
+    SheetsService sheetsService;
 
     static {
         try {
@@ -75,66 +77,64 @@ public class MemberController {
     }
 
     // 여기는 들어가자마자 보이는것들 ,db연동
-    @RequestMapping(value = "/member")
+    @RequestMapping(value = "/member", method = RequestMethod.GET)
     public ModelAndView getMember() throws IOException{
         ModelAndView mv = new ModelAndView();
         mv.setViewName("member");
 
-//        Furniture furniture = furnitureService.findFurnitureByFid(1);
-//        mv.addObject("furniture" , furniture);
 
-        String google = "https://docs.google.com/spreadsheets/d/15JuidiRH-K_Z0bjkag70Fdrjt5KR0HaSR7dbcdwquXY/edit#gid=0";
-        String url[] = google.split("/");
+        List<com.handicraft.core.dto.Sheets> sheetsList = sheetsService.findSheets();
+        List<String> google = new ArrayList<>();
+        List<List<String>> list = new ArrayList<>();
 
-        Sheets service = getSheetsService();
-        spreadsheetId = url[5];
+        for(com.handicraft.core.dto.Sheets sheets : sheetsList){
+            google.add(sheets.getUrl());
+            String url[] = sheets.getUrl().split("/");
 
-        Spreadsheet spreadsheet = service.spreadsheets().get("/").setSpreadsheetId(spreadsheetId).setIncludeGridData(true)
-                .set("fields", "sheets.properties").execute();
+            Sheets service = getSheetsService();
+            spreadsheetId = url[5];
 
-        List<String> list = new ArrayList<>();
+            Spreadsheet spreadsheet = service.spreadsheets().get("/").setSpreadsheetId(spreadsheetId).setIncludeGridData(true)
+                    .set("fields", "sheets.properties").execute();
 
-        for (Sheet sheet : spreadsheet.getSheets()) {
-            list.add(sheet.getProperties().getTitle());
-            System.out.println(sheet.getProperties().getTitle());
+            List<String> subList = new ArrayList<>();
+
+            for (Sheet sheet : spreadsheet.getSheets()) {
+                subList.add(sheet.getProperties().getTitle());
+                System.out.println(sheet.getProperties().getTitle());
+            }
+            list.add(subList);
         }
+        System.out.println(list);
+        System.out.println(google);
+
         mv.addObject("title",list);
         mv.addObject("url",google);
 
 
-
         return mv;
     }
+    @RequestMapping(value = "/member", method = RequestMethod.POST)
+    public RedirectView insertUrl(@RequestParam("url") String url){
 
+        com.handicraft.core.dto.Sheets sheets = new  com.handicraft.core.dto.Sheets();
+        com.handicraft.core.dto.Sheets lastSheets = sheetsService.findLastSheetsBySid();
+        if(lastSheets == null)
+        {
+            sheets.setSid(1);
+        }
+        else
+        {
+            sheets.setSid(lastSheets.getSid()+1);
+        }
 
-//    @RequestMapping(value = "/sheets", method = RequestMethod.GET)
-//    public ModelAndView getFile(@RequestParam(value = "google") String google) throws IOException {
-//
-//        // 여기는 조회 누르면 밑에 sheet 제목 띄우는 함수 -> 곧 /member로 통합될 예정
-//        ModelAndView results = new ModelAndView();
-//        System.out.println("ㅇㅇ 들어왔네");
-//
-//
-//        String url[] = google.split("/");
-//
-//        Sheets service = getSheetsService();
-//        spreadsheetId = url[5];
-//
-//        Spreadsheet spreadsheet = service.spreadsheets().get("/").setSpreadsheetId(spreadsheetId).setIncludeGridData(true)
-//                .set("fields", "sheets.properties").execute();
-//
-//        List<String> list = new ArrayList<>();
-//
-//        for (Sheet sheet : spreadsheet.getSheets()) {
-//            list.add(sheet.getProperties().getTitle());
-//            System.out.println(sheet.getProperties().getTitle());
-//            System.out.println(sheet.getProperties());
-//        }
-//        results.addObject("list", list);
-//
-////        return "redirect:/sheets/" + spreadsheetId + "/" + list.get(0);
-//        return results;
-//    }
+        sheets.setUrl(url);
+
+        sheetsService.insertSheets(sheets);
+
+        return new RedirectView("/member");
+    }
+
 
     // data 출력하는 함수, ajax url을 넣어줄때 이런 형식으로 넣어준다
     @RequestMapping(value = "/sheets/{sheets_id}/{title}", method = RequestMethod.GET)
@@ -185,4 +185,5 @@ public class MemberController {
 
         return results;
     }
+
 }

@@ -48,4 +48,9 @@ public class SheetsServiceImp implements SheetsService{
     public void deleteSheetsBySid(long sid) {
         sheetsRepository.delete(sid);
     }
+
+    @Override
+    public Sheets findLastSheetsBySid() {
+        return sheetsRepository.findTopByOrderBySidDesc();
+    }
 }
