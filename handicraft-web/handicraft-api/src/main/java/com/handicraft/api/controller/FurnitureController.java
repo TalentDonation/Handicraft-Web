@@ -8,11 +8,13 @@ import com.handicraft.core.dto.Image;
 import com.handicraft.core.service.FurnitureService;
 import com.handicraft.core.service.FurnitureToImageService;
 import com.handicraft.core.service.ImageService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -21,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletContext;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -35,6 +38,8 @@ import java.util.List;
 @RestController
 @Api(value = "furniture" , description = "Furniture API")
 public class FurnitureController {
+
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /*
    * DI
@@ -70,7 +75,7 @@ public class FurnitureController {
 
                 for(Image image : furnitureToImage.getImageList())
                 {
-                    imageLists.add(image.getUri()+"."+image.getExtension());
+                    imageLists.add(image.getUri()+"/"+image.getGid()+"."+image.getExtension());
                 }
             }
             furniture.setImages(imageLists);
@@ -83,6 +88,7 @@ public class FurnitureController {
 
     @PostMapping("/furniture")
     @ApiOperation(value = "" , notes = "Create a new furniture")
+    @ApiImplicitParam(name = "token", value="token", dataType = "string", paramType = "header")
     public ResponseEntity insertFurnitureByFid(@ModelAttribute Furniture furniture , MultipartFile multipartFile) throws IOException {
 
         furniture.setFid(furnitureService.findLastFurnitureByFid().getFid() + 1 );
@@ -104,7 +110,8 @@ public class FurnitureController {
         image.setGid(imageService.findImageByLastIndex().getGid() + 1);
         image.setExtension(originFile[1]);
         image.setRegisterAt(dateTime);
-        image.setUri(""+image.getGid());
+        image.setUri(multipartFile.getName());
+
 
         List<Image> imageList = new ArrayList<>();
         imageList.add(image);
@@ -112,10 +119,11 @@ public class FurnitureController {
 
         StringBuffer uri = new StringBuffer();
                 uri.append(resource.getFile())
-                .append("/").append(image.getUri())
+                .append("/").append(image.getGid())
                 .append(".").append(originFile[1]);
 
         file = new File(uri.toString());
+
 
         try {
             multipartFile.transferTo(file);

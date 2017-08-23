@@ -4,7 +4,12 @@ import com.handicraft.core.repository.UserRepository;
 import com.handicraft.core.dto.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.PersistenceContext;
 import java.util.List;
 
 
@@ -14,23 +19,23 @@ public class UserServiceImp implements UserService {
 	@Autowired
 	UserRepository userDao;
 
+
+
 	@Override
-	public User getByUser(int u_id) {
+	@Transactional
+	public User findByUser(int u_id) {
+
 		return userDao.findOne(u_id);
 	}
 
 	@Override
-	public List<User> getByUserAll() {
+	public List<User> findByUserAll() {
 		return userDao.findAll();
 	}
 
 	@Override
 	public User insertToUser(User user) {
 
-		if(userDao.exists(user.getUid()))
-		{
-			user.setUid(userDao.findTopByOrderByUidDesc().getUid() + 1);
-		}
 
 		return userDao.save(user);
 	}
@@ -54,6 +59,8 @@ public class UserServiceImp implements UserService {
 	}
 
 
-
-
+	@Override
+	public User findLastUser() {
+		return userDao.findTopByOrderByUidDesc();
+	}
 }

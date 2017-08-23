@@ -1,5 +1,6 @@
 package com.handicraft.core.service;
 
+import com.handicraft.core.dto.Market;
 import com.handicraft.core.repository.MarketRepository;
 import com.handicraft.core.repository.FurnitureToMarketRepository;
 import com.handicraft.core.repository.UserToMarketRepository;
@@ -16,11 +17,8 @@ public class MarketServiceImp implements MarketService{
     @Autowired
     MarketRepository marketDao;
 
-    @Autowired
-    UserToMarketRepository marketToUserDao;
-
-    @Autowired
-    FurnitureToMarketRepository marketToFurnitureDao;
-
-
+    @Override
+    public Market findMarketByMid(long mid) {
+        return marketDao.findOne(mid);
+    }
 }

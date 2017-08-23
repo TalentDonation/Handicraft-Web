@@ -25,7 +25,8 @@ public class User implements  Serializable{
 	@Column(name = "u_id")
 	private int uid;
 
-	private String token;
+	@Column(name = "naver_id")
+	private String naverId;
 
 	@Column(name = "naver_token")
 	private String naverToken;
