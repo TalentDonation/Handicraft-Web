@@ -8,6 +8,7 @@ import lombok.NonNull;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by 고승빈 on 2017-07-06.
@@ -26,31 +27,33 @@ public class Market implements Serializable{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "m_id")
-    protected long mid;
+    private long mid;
 
-    protected boolean admin;
+    private boolean admin;
 
-    protected boolean share;
+    private boolean share;
 
-    protected boolean sold;
+    private boolean sold;
 
-    protected int price;
+    private int price;
 
-    protected String info;
+    private String info;
 
-    protected String location;
+    private String location;
 
-    protected String lat;
+    private String lat;
 
-    protected String lon;
+    private String lon;
 
-    protected String registerAt;
+    private String registerAt;
 
-//    @Column(name = "u_id")
-//    private int uid;
-//
-//    @Column(name = "f_id")
-//    private long fid;
+    @ManyToOne
+    @JoinColumn(name = "u_id")
+    private User user;
+
+    @OneToOne
+    @JoinColumn(name = "f_id")
+    private Furniture furniture;
 
 
 }
