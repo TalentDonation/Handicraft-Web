@@ -12,6 +12,7 @@ import io.swagger.annotations.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -22,10 +23,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -55,8 +59,11 @@ public class FurnitureController {
     ImageService imageService;
 
 
+
+
     @GetMapping("/furniture")
     @ApiOperation(value = "" , notes = "Show several furniture by page")
+    @ApiImplicitParam(name = "token", value="token", dataType = "string", paramType = "header")
     public List<Furniture> findByFurniturePerPage(@RequestParam(value = "page" , defaultValue = "0")int page , @RequestParam(value = "per_page",defaultValue = "10") int page_page)
     {
         PageRequest pageRequest  = new PageRequest(page , page_page , Sort.Direction.ASC , "fid");
@@ -89,7 +96,7 @@ public class FurnitureController {
     @PostMapping("/furniture")
     @ApiOperation(value = "" , notes = "Create a new furniture")
     @ApiImplicitParam(name = "token", value="token", dataType = "string", paramType = "header")
-    public ResponseEntity insertFurnitureByFid(@ModelAttribute Furniture furniture , MultipartFile multipartFile) throws IOException {
+    public ResponseEntity insertFurnitureByFid(@ModelAttribute Furniture furniture , MultipartFile multipartFile , HttpServletRequest httpServletRequest) throws IOException {
 
         furniture.setFid(furnitureService.findLastFurnitureByFid().getFid() + 1 );
 
@@ -110,7 +117,10 @@ public class FurnitureController {
         image.setGid(imageService.findImageByLastIndex().getGid() + 1);
         image.setExtension(originFile[1]);
         image.setRegisterAt(dateTime);
-        image.setUri(multipartFile.getName());
+        URL url = new URL(httpServletRequest.getRequestURL().toString());
+        image.setUri(url.getHost() + ":" + url.getPort());
+
+        logger.info(url.getPath());
 
 
         List<Image> imageList = new ArrayList<>();
