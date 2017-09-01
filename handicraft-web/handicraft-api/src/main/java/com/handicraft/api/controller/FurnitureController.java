@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -63,7 +64,7 @@ public class FurnitureController {
 
     @GetMapping("/furniture")
     @ApiOperation(value = "" , notes = "Show several furniture by page")
-    @ApiImplicitParam(name = "token", value="token", dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public List<Furniture> findByFurniturePerPage(@RequestParam(value = "page" , defaultValue = "0")int page , @RequestParam(value = "per_page",defaultValue = "10") int page_page)
     {
         PageRequest pageRequest  = new PageRequest(page , page_page , Sort.Direction.ASC , "fid");
@@ -82,7 +83,7 @@ public class FurnitureController {
 
                 for(Image image : furnitureToImage.getImageList())
                 {
-                    imageLists.add(image.getUri()+"/"+image.getGid()+"."+image.getExtension());
+                    imageLists.add(image.getName()+"/"+image.getGid()+"."+image.getExtension());
                 }
             }
             furniture.setImages(imageLists);
@@ -95,13 +96,14 @@ public class FurnitureController {
 
     @PostMapping("/furniture")
     @ApiOperation(value = "" , notes = "Create a new furniture")
-    @ApiImplicitParam(name = "token", value="token", dataType = "string", paramType = "header")
+    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public ResponseEntity insertFurnitureByFid(@ModelAttribute Furniture furniture , MultipartFile multipartFile , HttpServletRequest httpServletRequest) throws IOException {
 
         furniture.setFid(furnitureService.findLastFurnitureByFid().getFid() + 1 );
 
         FurnitureToImage furnitureToImage = new FurnitureToImage(furniture);
 
+        furnitureToImage.setUid(furniture.getUid());
         File file;
         Image image;
 
@@ -110,15 +112,16 @@ public class FurnitureController {
 
         String[] originFile = multipartFile.getOriginalFilename().split("\\.");
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date currentDateTime = new Date();
-        String dateTime = dateFormat.format(currentDateTime);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+//        String dateTime = dateFormat.format(currentDateTime);
 
         image = new Image();
         image.setGid(imageService.findImageByLastIndex().getGid() + 1);
         image.setExtension(originFile[1]);
-        image.setRegisterAt(dateTime);
+        image.setCreateAt(currentDateTime);
+        image.setUpdateAt(currentDateTime);
         URL url = new URL(httpServletRequest.getRequestURL().toString());
-        image.setUri(url.getHost() + ":" + url.getPort());
+        image.setName(url.getHost() + ":" + url.getPort());
 
         logger.info(url.getPath());
 
@@ -189,7 +192,7 @@ public class FurnitureController {
 
        for(Image image : furnitureToImage.getImageList())
        {
-            imageList.add(image.getUri()+image.getExtension());
+            imageList.add(image.getName()+image.getExtension());
        }
 
        furniture.setImages(imageList);
@@ -238,15 +241,15 @@ public class FurnitureController {
         Resource resource = new ClassPathResource("static");
 
         String[] originFile = multipartFile.getOriginalFilename().split("\\.");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date currentDateTime = new Date();
-        String dateTime = dateFormat.format(currentDateTime);
+        LocalDateTime currentDateTime = LocalDateTime.now();
+//        String dateTime = dateFormat.format(currentDateTime);
 
         Image image = new Image();
         image.setGid(imageService.findImageByLastIndex().getGid() +  1);
-        image.setRegisterAt(dateTime);
+        image.setCreateAt(currentDateTime);
+        image.setUpdateAt(currentDateTime);
         image.setExtension(originFile[1]);
-        image.setUri(""+image.getGid());
+        image.setName(""+image.getGid());
 
         images.add(image);
         furnitureToImage.setImageList(images);
@@ -254,7 +257,7 @@ public class FurnitureController {
         StringBuffer uri = new StringBuffer();
         try {
             uri.append(resource.getFile())
-                    .append("/").append(image.getUri())
+                    .append("/").append(image.getName())
                     .append(".").append(originFile[1]);
 
             file = new File(uri.toString());
@@ -283,7 +286,7 @@ public class FurnitureController {
     {
         Image image = imageService.findImageByGid(gid);
 
-        return image.getUri()+"."+image.getExtension();
+        return image.getName()+"."+image.getExtension();
     }
 
 

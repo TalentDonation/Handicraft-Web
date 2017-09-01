@@ -31,11 +31,13 @@ public class SecurityFilter extends AbstractAuthenticationProcessingFilter {
     * */
     @Override
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException, IOException, ServletException {
-        String token = httpServletRequest.getHeader("token");
+        String token = httpServletRequest.getHeader("authorization");
 
         if(!StringUtils.isEmpty(token)) {
 
-            logger.info("Token : " + token);
+            token = token.substring(6);
+
+            logger.info("authorization : " + token);
 
             SecurityAuthentication securityAuthentication = new SecurityAuthentication(token);
 

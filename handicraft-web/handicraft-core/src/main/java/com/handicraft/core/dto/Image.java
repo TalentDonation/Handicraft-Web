@@ -1,14 +1,16 @@
 package com.handicraft.core.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * Created by 고승빈 on 2017-07-26.
@@ -31,13 +33,19 @@ public class Image implements Serializable {
     private long gid;
 
 
-    @Column(name="uri" , nullable = false)
-    private String uri;
+    @Column(name="name" , nullable = false)
+    private String name;
 
     private String extension;
 
-    @Column(name="registerAt" , nullable = false)
-    private String registerAt;
+
+    @LastModifiedDate
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    private LocalDateTime updateAt;
+
+    @CreatedDate
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    private LocalDateTime createAt;
 
 
 
