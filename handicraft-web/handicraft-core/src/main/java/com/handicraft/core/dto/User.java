@@ -1,13 +1,17 @@
 package com.handicraft.core.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.handicraft.core.utils.enums.Gender;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Entity(name = "User")
 @Table(name = "user")
@@ -21,19 +25,14 @@ public class User implements  Serializable{
 	private static final long serialVersionUID = -6625860888600498405L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "u_id")
 	private int uid;
 
-	@Column(name = "naver_id")
-	private String naverId;
-
-	@Column(name = "naver_token")
-	private String naverToken;
-
 	private String name;
 
-	private boolean gender;
+	@Enumerated(EnumType.STRING)
+	private Gender gender;
 
 	private String phone;
 
@@ -41,6 +40,12 @@ public class User implements  Serializable{
 
 	private String feature;
 
-	private String joinAt;
+	@LastModifiedDate
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+	private LocalDateTime updateAt;
+
+	@CreatedDate
+	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+	private LocalDateTime joinAt;
 
 }

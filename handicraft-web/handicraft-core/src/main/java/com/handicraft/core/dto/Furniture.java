@@ -39,21 +39,20 @@ public class Furniture extends FurnitureAbs implements Serializable {
         this.brand = furnitureToImage.getBrand();
         this.grade = furnitureToImage.getGrade();
         this.state = furnitureToImage.getState();
-        this.type = furnitureToImage.getType();
+        this.location = furnitureToImage.getLocation();
         this.lat = furnitureToImage.getLat();
         this.lon = furnitureToImage.getLon();
+        this.type = furnitureToImage.getType();
+        this.sold = furnitureToImage.isSold();
+        this.price = furnitureToImage.getPrice();
+        this.info = furnitureToImage.getInfo();
         this.periodOfUse = furnitureToImage.getPeriodOfUse();
+        this.purchaseAt = furnitureToImage.getPurchaseAt();
+        this.updateAt = furnitureToImage.getUpdateAt();
         this.createAt = furnitureToImage.getCreateAt();
 
     }
 
-    //    @OneToMany( fetch = FetchType.LAZY  ,cascade= javax.persistence.CascadeType.ALL)
-//    @JoinColumn(name = "f_id" , nullable = false)
-//    private List<FurnitureCategory> furnitureCategories;
-
-//    @OneToMany( fetch = FetchType.EAGER ,cascade= javax.persistence.CascadeType.ALL)
-//    @JoinColumn(name = "f_id" , nullable = false)
-//    private List<Image> images;
 
 
 }
