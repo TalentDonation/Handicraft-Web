@@ -15,6 +15,6 @@ public class SecurityAuthenticationFailure implements AuthenticationFailureHandl
     public void onAuthenticationFailure(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, AuthenticationException e) throws IOException, ServletException {
 
 
-        httpServletResponse.setStatus(HttpServletResponse.SC_NOT_ACCEPTABLE);
+        httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     }
 }

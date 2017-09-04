@@ -1,6 +1,7 @@
 package com.handicraft.api.controller;
 
 
+import com.handicraft.api.exception.UnAuthorizedException;
 import com.handicraft.api.utils.EncrypttionUtil;
 import com.handicraft.core.dto.User;
 import com.handicraft.core.service.UserService;
@@ -30,9 +31,6 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,36 +47,24 @@ public class AuthController {
     public  ResponseEntity signin(@RequestParam("access_token") String access_token)
     {
 
-
         ResponseEntity naverAuthentication = authenticateNaver(access_token);
 
         JsonParser jsonParser = JsonParserFactory.getJsonParser();
         Map<String , Object> result = jsonParser.parseMap(naverAuthentication.getBody().toString());
+
+        logger.info(naverAuthentication.getBody().toString());
 
         Map<String , Object> responseMap = (HashMap<String,Object>) result.get("response");
 
         User user = userService.findByUser(Integer.parseInt(responseMap.get("id").toString()));
 
 
-        if(user == null)
-        {
-//            SimpleDateFormat simpleFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime currentDate = LocalDateTime.now();
-            user = new User();
-            user.setUid(Integer.parseInt(responseMap.get("id").toString()));
-            user.setGender(responseMap.get("gender").toString().equals("M") ? Gender.MALE : Gender.FEMALE);
-            user.setName(responseMap.get("name").toString());
-            user.setUpdateAt(currentDate);
-            user.setJoinAt(currentDate);
+        if(user == null) throw new UnAuthorizedException();
 
-            logger.info("test");
-
-            User userForInfo = userService.insertToUser(user);
-
-            logger.info("User Temp Insert : " + userForInfo);
-        }
 
         MultiValueMap<String ,String> headers = new HttpHeaders();
+
+
         try {
             headers.add("Authorization" , "craft " + EncrypttionUtil.AES_Encrypt(user));
         } catch (UnsupportedEncodingException e) {
@@ -97,15 +83,51 @@ public class AuthController {
             e.printStackTrace();
         }
 
+
         return new ResponseEntity(headers, HttpStatus.OK );
     }
 
 
     @PostMapping("/auth/signup")
-    @ApiImplicitParam(name = "access_token", value="access_token", dataType = "string", paramType = "header")
-    public ResponseEntity signup(HttpServletRequest httpServletRequest , @ModelAttribute User user)
+    @Transactional
+    public ResponseEntity signup(@RequestParam("access_token") String access_token , @ModelAttribute User user)
     {
-        return new ResponseEntity(HttpStatus.OK);
+        ResponseEntity naverAuthentication = authenticateNaver(access_token);
+
+        JsonParser jsonParser = JsonParserFactory.getJsonParser();
+        Map<String , Object> result = jsonParser.parseMap(naverAuthentication.getBody().toString());
+
+        logger.info(naverAuthentication.getBody().toString());
+
+        Map<String , Object> responseMap = (HashMap<String,Object>) result.get("response");
+
+        user.setUid(Integer.parseInt(responseMap.get("id").toString()));
+        User userForInfo = userService.insertToUser(user);
+
+
+        MultiValueMap<String ,String> headers = new HttpHeaders();
+
+        try {
+
+            headers.add("Authorization" , "craft " + EncrypttionUtil.AES_Encrypt(user));
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (InvalidAlgorithmParameterException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+
+        return new ResponseEntity(headers, HttpStatus.OK );
     }
 
 

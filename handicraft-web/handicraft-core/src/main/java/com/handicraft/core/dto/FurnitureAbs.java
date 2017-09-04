@@ -1,6 +1,7 @@
 package com.handicraft.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.handicraft.core.utils.converter.LocalDateTimeAttributeConverter;
 import com.handicraft.core.utils.enums.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -60,16 +61,16 @@ public abstract class FurnitureAbs {
     protected int periodOfUse;
 
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
     protected LocalDateTime purchaseAt;
 
     @LastModifiedDate
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
     protected LocalDateTime updateAt;
 
     @CreatedDate
     @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
     protected LocalDateTime createAt;
-
-    @Column(name = "u_id")
-    protected int uid;
 }

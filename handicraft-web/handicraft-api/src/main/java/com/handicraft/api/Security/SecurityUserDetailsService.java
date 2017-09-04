@@ -1,6 +1,7 @@
 package com.handicraft.api.Security;
 
 import com.handicraft.api.exception.NotFoundException;
+import com.handicraft.api.exception.UnAuthorizedException;
 import com.handicraft.core.dto.User;
 import com.handicraft.core.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class SecurityUserDetailsService implements UserDetailsService{
 
         User user = userRepository.findOne(Integer.parseInt(fid));
 
-        if(user == null)    throw new NotFoundException();
+        if(user == null)    throw new UnAuthorizedException();
 
         return new SecurityUserDetails(user , AuthorityUtils.createAuthorityList());
     }

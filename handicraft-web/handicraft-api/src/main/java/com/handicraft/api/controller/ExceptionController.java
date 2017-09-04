@@ -1,15 +1,20 @@
 package com.handicraft.api.controller;
 
-import com.handicraft.api.exception.BadRequestException;
-import com.handicraft.api.exception.InternalServerErrorException;
-import com.handicraft.api.exception.NotAcceptableException;
-import com.handicraft.api.exception.NotFoundException;
+import com.handicraft.api.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.client.HttpClientErrorException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Created by 고승빈 on 2017-07-26.
@@ -18,7 +23,7 @@ import org.springframework.web.client.HttpClientErrorException;
 @RestControllerAdvice
 public class ExceptionController {
 
-    @ExceptionHandler(value = {BadRequestException.class , HttpClientErrorException.class})
+    @ExceptionHandler(value = {BadRequestException.class })
     @ResponseBody
     public ResponseEntity<?> badRequestHandler()
     {
@@ -46,4 +51,17 @@ public class ExceptionController {
         return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
     }
 
+    @ExceptionHandler(value = {UnAuthorizedException.class , HttpClientErrorException.class})
+    @ResponseBody
+    public ResponseEntity<?> unAuthorizedHandler()
+    {
+        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(value = {EncryptionException.class , UnsupportedEncodingException.class , NoSuchPaddingException.class , NoSuchAlgorithmException.class , InvalidAlgorithmParameterException.class, InvalidKeyException.class ,BadPaddingException.class , IllegalBlockSizeException.class})
+    @ResponseBody
+    public ResponseEntity<?> encryptionException()
+    {
+        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+    }
 }
