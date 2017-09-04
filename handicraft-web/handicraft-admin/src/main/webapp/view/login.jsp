@@ -49,7 +49,7 @@
                 <form action="/login" accept-charset="utf-8" method="post" class="form-signin">
                     <div class="login-form">
                         <div class="text-center">
-                            <div class="icon-object border-warning-400 text-warning-400"><i class="icon-people"></i></div>
+                            <div class="icon-object border-indigo-400 text-indigo-400"><i class="icon-people"></i></div>
                             <h5 class="content-group-lg">Login to your account <small class="display-block">Enter your credentials</small></h5>
                         </div>
 
@@ -70,21 +70,21 @@
                         <div class="form-group has-feedback has-feedback-left">
                             <input type="text" class="form-control input-lg" placeholder="Username" name="username">
                             <div class="form-control-feedback">
-                                <%--<i class="glyphicon glyphicon-user text-muted"></i>--%>
+                                <%--<i class="icon-user text-muted"></i>--%>
                             </div>
                         </div>
 
                         <div class="form-group has-feedback has-feedback-left">
                             <input type="password" class="form-control input-lg" placeholder="Password" name="password">
                             <div class="form-control-feedback">
-                                <%--<i class="glyphicon glyphicon-lock2 text-muted"></i>--%>
+                                <%--<i class="icon-lock2 text-muted"></i>--%>
                             </div>
                         </div>
                         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
 
 
                         <div class="form-group">
-                            <button type="submit" class="btn bg-blue btn-block btn-lg">Login <i class="icon-arrow-right14 position-right"></i></button>
+                            <button type="submit" class="btn bg-pink btn-block btn-lg">Login <i class="icon-arrow-right14 position-right"></i></button>
                         </div>
                     <%--</div>--%>
                 </form>
