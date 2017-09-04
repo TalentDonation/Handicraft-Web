@@ -22,10 +22,13 @@ public class FurnitureToImage extends  FurnitureAbs{
 
 
 
-
+    @OneToMany( fetch = FetchType.EAGER ,cascade= javax.persistence.CascadeType.ALL)
+    @JoinColumn(name = "f_id" , nullable = false)
+    private List<Image> imageList;
 
 
     public FurnitureToImage(Furniture furniture) {
+
         this.fid = furniture.getFid();
         this.width = furniture.getWidth();
         this.length = furniture.getLength();
@@ -47,10 +50,4 @@ public class FurnitureToImage extends  FurnitureAbs{
         this.updateAt = furniture.getUpdateAt();
         this.createAt = furniture.getCreateAt();
     }
-
-    @OneToMany( fetch = FetchType.EAGER ,cascade= javax.persistence.CascadeType.ALL)
-    @JoinColumn(name = "f_id" , nullable = false)
-    private List<Image> imageList;
-
-
 }

@@ -80,20 +80,10 @@ public class SecurityProvider implements AuthenticationProvider{
 
             String[] tokenizer = StringUtils.split(tokenDecryption, "/");
 
-
-//            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//            Date date = null;
             LocalDateTime localDateTime = LocalDateTime.parse(tokenizer[1]);
 
-
-
-
-
-//            Date currentDate = new Date();
-
-
             logger.info(localDateTime.getSecond() + "");
-//        logger.info(date.getTime()+"");
+
             if (Math.abs(LocalDateTime.now().getSecond() - localDateTime.getSecond()) / 60000 > 3000)
                 throw new AuthenticationServiceException("Exprired Exception");
 

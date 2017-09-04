@@ -3,6 +3,7 @@ package com.handicraft.api.controller;
 import com.handicraft.api.exception.InternalServerErrorException;
 import com.handicraft.api.exception.NotFoundException;
 import com.handicraft.core.dto.Furniture;
+import com.handicraft.core.dto.FurnitureAbs;
 import com.handicraft.core.dto.FurnitureToImage;
 import com.handicraft.core.dto.Image;
 import com.handicraft.core.service.FurnitureService;
@@ -76,6 +77,7 @@ public class FurnitureController {
         for(FurnitureToImage furnitureToImage : furnitureToImagePage)
         {
             Furniture furniture = new Furniture(furnitureToImage);
+
             List<String> imageLists = null;
             if(!furnitureToImage.getImageList().isEmpty())
             {
@@ -103,7 +105,6 @@ public class FurnitureController {
 
         FurnitureToImage furnitureToImage = new FurnitureToImage(furniture);
 
-        furnitureToImage.setUid(furniture.getUid());
         File file;
         Image image;
 
@@ -111,9 +112,8 @@ public class FurnitureController {
         Resource resource = new ClassPathResource("static");
 
         String[] originFile = multipartFile.getOriginalFilename().split("\\.");
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         LocalDateTime currentDateTime = LocalDateTime.now();
-//        String dateTime = dateFormat.format(currentDateTime);
 
         image = new Image();
         image.setGid(imageService.findImageByLastIndex().getGid() + 1);
@@ -186,7 +186,7 @@ public class FurnitureController {
 
        if(furnitureToImage == null)   throw new NotFoundException();
 
-       Furniture furniture = new Furniture(furnitureToImage);
+       Furniture furniture = new Furniture (furnitureToImage);
 
        List<String> imageList = new ArrayList<>();
 
