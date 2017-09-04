@@ -1,6 +1,8 @@
 package com.handicraft.admin.controller;
 
 
+import com.handicraft.core.dto.Image;
+import com.handicraft.core.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
@@ -19,8 +21,7 @@ import java.nio.file.Paths;
 public class ModelController {
 
 	@Autowired
-	Environment env;
-//	ApplicationContext context;
+	ImageService imageService;
 
 	@RequestMapping("/model")
 	public ModelAndView getModel() throws UnsupportedEncodingException {
@@ -52,14 +53,11 @@ public class ModelController {
 		}
 	}
 
+	// TODO: db에 등록날짜, 이름, 확장자 저장
 	@PostMapping("/model/upload")
 	public String uploadModelFile(@RequestParam("submitFile") MultipartFile file)
 	{
 		FileOutputStream fos;
-//		Calendar calendar = Calendar.getInstance();
-//		Date date = calendar.getTime();
-//		String fileName = new SimpleDateFormat("yyyy/MM/dd_HH:mm:ss").format(date) + ".html";
-
 
 		printFile(new File("../webapps/ROOT/static"), 0);
 		System.out.println(System.getProperty("user.dir"));
@@ -67,17 +65,6 @@ public class ModelController {
 //		System.out.println(ModelController.class.getResource("").getPath());
 //		printFile(new File(ServletInitializer.class.getResource("").getPath()+"../../../../../../"),0);
 
-
-
-//		try {
-//			byte fileData[] = file.getBytes();
-//			fos = new FileOutputStream("../webapps/ROOT/static/");
-//			fos.write(fileData);
-//			fos.close();
-//		}
-//		catch(IOException ex){
-//			ex.printStackTrace();
-//		}
 
 		File newFile = new File("../webapps/ROOT/static/"+file.getOriginalFilename());
 
@@ -88,10 +75,11 @@ public class ModelController {
 		catch(IOException ex){
 			ex.printStackTrace();
 		}
+
 		if(newFile.exists()) {
 			try {
 				byte fileData[] = file.getBytes();
-				fos = new FileOutputStream("../webapps/ROOT/static/"+file.getOriginalFilename());
+				fos = new FileOutputStream("../webapps/ROOT/static/" + file.getOriginalFilename());
 				fos.write(fileData);
 				fos.close();
 			} catch (IOException ex) {
@@ -102,18 +90,10 @@ public class ModelController {
 		System.out.println(file.getOriginalFilename());
 		System.out.println(newFile.getName());
 
-//		File convFile = new File();
+		Image image = new Image();
+		image.setExtension(file.getOriginalFilename().split(".")[1]);
 
-//		try {
-//			Path convFile = Files.createFile(Paths.get("../webapps/ROOT/static"));
-//			Path target = Paths.get("../webapps/ROOT/static");
-//			Files.move(convFile,target.resolve(convFile.getFileName()));
-//		}
-//		catch(IOException ex){
-//			ex.printStackTrace();
-//			System.out.println("error occurred!");
-//		}
-
+		imageService.insertImages(image);
 
 
 
