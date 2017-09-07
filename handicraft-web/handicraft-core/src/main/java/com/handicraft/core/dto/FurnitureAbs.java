@@ -1,11 +1,16 @@
 package com.handicraft.core.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.handicraft.core.utils.converter.LocalDateTimeAttributeConverter;
+import com.handicraft.core.utils.enums.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
-import java.util.List;
+import java.time.LocalDateTime;
 
 /**
  * Created by 고승빈 on 2017-08-03.
@@ -15,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
-public class FurnitureAbs {
+public abstract class FurnitureAbs {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,14 +45,32 @@ public class FurnitureAbs {
 
     protected String location;
 
-    protected String type;
-
     protected double lat;
 
     protected double lon;
 
+    @Enumerated(EnumType.STRING)
+    protected Type type;
+
+    protected boolean sold;
+
+    protected int price;
+
+    protected String info;
+
     protected int periodOfUse;
 
-    protected String createAt;
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
+    protected LocalDateTime purchaseAt;
 
+    @LastModifiedDate
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
+    protected LocalDateTime updateAt;
+
+    @CreatedDate
+    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    @Convert(converter = LocalDateTimeAttributeConverter.class)
+    protected LocalDateTime createAt;
 }

@@ -11,8 +11,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
 import java.util.List;
 
 @RestController
@@ -24,12 +28,11 @@ public class UserController {
 	@Autowired
 	UserService userService;
 
-
 	@GetMapping("/users")
 	@ApiOperation(value = "" , notes = "Show users")
 	public List<User> findByUsers()
 	{
-		return	userService.getByUserAll() ;
+		return	userService.findByUserAll() ;
 	}
 
 	@PostMapping("/users")
@@ -68,9 +71,10 @@ public class UserController {
 
 	@GetMapping("/users/{uid}")
 	@ApiOperation(value = "" , notes = "Show one user about user id")
+	@Transactional
 	public User findUserById(@PathVariable("uid") int uid)
 	{
-		User user = userService.getByUser(uid);
+		User user = userService.findByUser(uid);
 
 		logger.info("Loading {}" , user);
 
@@ -109,7 +113,7 @@ public class UserController {
 	@ApiOperation(value = "" , notes = "Show one user about user id")
 	public User findUserAndMarketById(@PathVariable("uid") int uid)
 	{
-		User user = userService.getByUser(uid);
+		User user = userService.findByUser(uid);
 
 		logger.info("Loading {}" , user);
 
@@ -148,7 +152,7 @@ public class UserController {
 	@ApiOperation(value = "" , notes = "Show one user about user id")
 	public User findUserAndMarketByIdAndMid(@PathVariable("uid") int uid)
 	{
-		User user = userService.getByUser(uid);
+		User user = userService.findByUser(uid);
 
 		logger.info("Loading {}" , user);
 

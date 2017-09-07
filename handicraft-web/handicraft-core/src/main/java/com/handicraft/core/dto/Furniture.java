@@ -25,6 +25,9 @@ public class Furniture extends FurnitureAbs implements Serializable {
     private static final long serialVersionUID = -3750423939072711694L;
 
 
+    @Column(name = "u_id")
+    protected int uid;
+
     @Transient
     private List<String> images;
 
@@ -46,14 +49,5 @@ public class Furniture extends FurnitureAbs implements Serializable {
         this.createAt = furnitureToImage.getCreateAt();
 
     }
-
-    //    @OneToMany( fetch = FetchType.LAZY  ,cascade= javax.persistence.CascadeType.ALL)
-//    @JoinColumn(name = "f_id" , nullable = false)
-//    private List<FurnitureCategory> furnitureCategories;
-
-//    @OneToMany( fetch = FetchType.EAGER ,cascade= javax.persistence.CascadeType.ALL)
-//    @JoinColumn(name = "f_id" , nullable = false)
-//    private List<Image> images;
-
 
 }
