@@ -1,0 +1,12 @@
+spring:
+  profiles:
+    include: development-core
+
+  jackson:
+    serialization:
+      fail_on_empty_beans:  false
+
+server:
+  port: 9090
+
+Authentication: MASTERHANDICRAFT

@@ -1,11 +1,12 @@
 #!/bin/bash
 
+#  arguments for profile
 function run()
 {
 	cd /app/handicraft-web/handicraft-core
-	sh mvnw install
-	#cd ../handicraft-api
-	#sh mvnw spring-boot:run
+	sh mvnw -Dspring.profiles.active="$1-core" install
+
+
 }
 
-run
+run $1

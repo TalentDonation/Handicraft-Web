@@ -1,0 +1,19 @@
+
+
+spring:
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://52.78.80.115/dev_handicraft?autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=true
+    username: ellim
+    password: Tmd20203!!!!
+
+    dbcp2:
+      initital-size: 3
+      max-total: 10
+      max-idle: 8
+      min-idle: 3
+      max-wait-millis: 10000
+      validation-query: SELECT 1
+      validation-query-timeout: 1
+      test-on-create: true
+

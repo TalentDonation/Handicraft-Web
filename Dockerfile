@@ -1,7 +1,13 @@
+
+# arguments : development or production for profiles
+
+ARG arg
+
 FROM centos:latest
 MAINTAINER  koseungbin  <kosb1563@gmail.com>
 
-
+ARG profile 
+ENV PROFILE $profile
 RUN yum install -y java-1.8.0-openjdk-devel.x86_64
 
 ENV JAVA_HOME /usr/lib/jvm/java-1.8.0
@@ -13,12 +19,13 @@ COPY . ${HOME}/app
 RUN ls -al /app/
 RUN ls -al /app/handicraft-web/
 
-RUN  sh /app/run.sh
-
-ENTRYPOINT sh /app/deploy.sh
+# arg : arguments for profile
+RUN  sh /app/run.sh ${PROFILE}
+ENTRYPOINT sh /app/deploy.sh ${PROFILE}
 
 WORKDIR /${HOME}/
 
 EXPOSE 80
 EXPOSE 443
 EXPOSE 8080
+EXPOSE 9090
