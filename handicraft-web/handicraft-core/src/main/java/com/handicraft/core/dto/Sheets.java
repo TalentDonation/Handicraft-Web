@@ -18,7 +18,7 @@ public class Sheets {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "s_id")
+    @Column(name = "sid")
     long sid;
 
     String url;

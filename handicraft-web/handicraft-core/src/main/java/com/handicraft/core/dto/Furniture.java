@@ -25,7 +25,7 @@ public class Furniture extends FurnitureAbs implements Serializable {
     private static final long serialVersionUID = -3750423939072711694L;
 
 
-    @Column(name = "u_id")
+    @Column
     protected int uid;
 
     @Transient
@@ -43,8 +43,6 @@ public class Furniture extends FurnitureAbs implements Serializable {
         this.grade = furnitureToImage.getGrade();
         this.state = furnitureToImage.getState();
         this.type = furnitureToImage.getType();
-        this.lat = furnitureToImage.getLat();
-        this.lon = furnitureToImage.getLon();
         this.periodOfUse = furnitureToImage.getPeriodOfUse();
         this.createAt = furnitureToImage.getCreateAt();
 

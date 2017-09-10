@@ -20,7 +20,7 @@ public class SecurityUserDetailsService implements UserDetailsService{
     @Override
     public SecurityUserDetails loadUserByUsername(String fid) throws UsernameNotFoundException {
 
-        User user = userRepository.findOne(Integer.parseInt(fid));
+        User user = userRepository.findOne(Long.parseLong(fid));
 
         if(user == null)    throw new UnAuthorizedException();
 

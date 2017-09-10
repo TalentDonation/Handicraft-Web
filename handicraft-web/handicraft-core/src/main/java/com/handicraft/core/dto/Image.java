@@ -30,7 +30,7 @@ public class Image implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "g_id" , nullable = false)
+    @Column(name = "gid" , nullable = false)
     private long gid;
 
 

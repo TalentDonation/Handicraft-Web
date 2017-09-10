@@ -9,10 +9,13 @@ spring:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
         show-sql: true
         database: mysql
+        ddl-auto: update
+
   data:
     jpa:
       repositories:
         enable: true
+
   jackson:
     serialization:
       write-dates-as-timestamps:  false

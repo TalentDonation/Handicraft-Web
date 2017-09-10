@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface UserService {
 
-    User findByUser(int u_id);
+    User findByUser(long u_id);
 
     List<User> findByUserAll();
 
@@ -14,7 +14,7 @@ public interface UserService {
 
     User updateToUser(User user);
 
-    Boolean deleteToUser(int u_id);
+    Boolean deleteToUser(long u_id);
 
     User findLastUser();
 
