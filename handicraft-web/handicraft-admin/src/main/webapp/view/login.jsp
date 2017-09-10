@@ -9,11 +9,11 @@
 
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900" rel="stylesheet" type="text/css">
-    <link href="./css/others/css/icons/icomoon/styles.css" rel="stylesheet" type="text/css">
-    <link href="./css/others/css/bootstrap.css" rel="stylesheet" type="text/css">
-    <link href="./css/others/css/core.css" rel="stylesheet" type="text/css">
-    <link href="./css/others/css/components.css" rel="stylesheet" type="text/css">
-    <link href="./css/others/css/colors.css" rel="stylesheet" type="text/css">
+    <link href="../css/others/css/icons/icomoon/styles.css" rel="stylesheet" type="text/css">
+    <link href="../css/others/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="../css/others/css/core.css" rel="stylesheet" type="text/css">
+    <link href="../css/others/css/components.css" rel="stylesheet" type="text/css">
+    <link href="../css/others/css/colors.css" rel="stylesheet" type="text/css">
 
 
 </head>

@@ -25,30 +25,9 @@ public class LoginController {
         ModelAndView mv = new ModelAndView();
         mv.setViewName("login");
 
-        printFile(new File("/templates/"),0);
 
         return mv;
     }
 
-    private void printFile(File file, int depth) {
-        if (depth > 10) {
-            return;
-        }
-
-        if (file.isDirectory()) {
-            for (int i = 0; i < depth; i++)
-                System.out.print("  ");
-            System.out.println(file.getName() + "/");
-            File[] subFiles = file.listFiles();
-            for (File subFile: subFiles) {
-                printFile(subFile, depth + 1);
-            }
-        }
-        else {
-            for (int i = 0; i < depth; i++)
-                System.out.print("  ");
-            System.out.println(file.getName());
-        }
-    }
 }
 
