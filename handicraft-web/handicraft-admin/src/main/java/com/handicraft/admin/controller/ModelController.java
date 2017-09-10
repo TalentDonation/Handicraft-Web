@@ -1,10 +1,19 @@
 package com.handicraft.admin.controller;
 
 
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.handicraft.core.dto.Image;
 import com.handicraft.core.service.ImageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,20 +22,38 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Controller
+@Slf4j
 public class ModelController {
+
+	@Value("${bucketName}")
+	private String bucketName;
+	@Value("${accessKey}")
+	private String accessKey;
+	@Value("${secretKey}")
+	private String secretKey;
 
 	@Autowired
 	ImageService imageService;
 
 	@RequestMapping("/model")
-	public ModelAndView getModel() throws UnsupportedEncodingException {
+	public ModelAndView getModel() throws UnsupportedEncodingException, IOException {
 
 		ModelAndView mav = new ModelAndView();
+
+		AWSCredentials crd = new BasicAWSCredentials(accessKey, secretKey);
+		AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.AP_NORTHEAST_2).withCredentials(new AWSStaticCredentialsProvider(crd)).build();
+
+		ObjectListing objects = s3.listObjects(bucketName,"");
+		do {
+			for(S3ObjectSummary objectSummary : objects.getObjectSummaries()){
+				log.info(objectSummary.toString());
+				System.out.println(s3.getUrl(bucketName,objectSummary.getKey()));
+			}
+
+		}while(objects.isTruncated());
+
 
 		mav.setViewName("model");
 		return mav;
@@ -90,10 +117,12 @@ public class ModelController {
 		System.out.println(file.getOriginalFilename());
 		System.out.println(newFile.getName());
 
-		Image image = new Image();
-		image.setExtension(file.getOriginalFilename().split(".")[1]);
+//		Image image = new Image();
+//		image.setExtension(file.getOriginalFilename().split(".")[1]);
+//
+//		imageService.insertImages(image);
 
-		imageService.insertImages(image);
+
 
 
 
