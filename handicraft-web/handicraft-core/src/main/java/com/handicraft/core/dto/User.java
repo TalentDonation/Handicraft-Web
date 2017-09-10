@@ -9,10 +9,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity(name = "User")
 @Table(name = "user")
@@ -26,29 +28,28 @@ public class User implements  Serializable{
 	private static final long serialVersionUID = -6625860888600498405L;
 
 	@Id
-//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "u_id")
-	private int uid;
+	private long uid;
 
 	private String name;
 
-	@Enumerated(EnumType.STRING)
-	private Gender gender;
+	private String nickname;
 
 	private String phone;
 
 	private String address;
 
-	private String feature;
+	private String birthday;
 
-	@LastModifiedDate
-	@Convert(converter = LocalDateTimeAttributeConverter.class)
-	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-	private LocalDateTime updateAt;
+	@Transient
+	private String avatar;
+
+//	@Convert(converter = LocalDateTimeAttributeConverter.class)
+//	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+//	private LocalDateTime joinAt;
 
 	@CreatedDate
-	@Convert(converter = LocalDateTimeAttributeConverter.class)
-	@JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-	private LocalDateTime joinAt;
+	@DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+	private Date joinAt;
+
 
 }

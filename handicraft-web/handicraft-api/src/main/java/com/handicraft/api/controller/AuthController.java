@@ -7,6 +7,7 @@ import com.handicraft.core.dto.User;
 import com.handicraft.core.service.UserService;
 import com.handicraft.core.utils.enums.Gender;
 import io.swagger.annotations.ApiImplicitParam;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,7 @@ import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.crypto.BadPaddingException;
@@ -35,9 +33,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@Slf4j
 public class AuthController {
 
-    Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     UserService userService;
@@ -52,7 +50,7 @@ public class AuthController {
         JsonParser jsonParser = JsonParserFactory.getJsonParser();
         Map<String , Object> result = jsonParser.parseMap(naverAuthentication.getBody().toString());
 
-        logger.info(naverAuthentication.getBody().toString());
+        log.info(naverAuthentication.getBody().toString());
 
         Map<String , Object> responseMap = (HashMap<String,Object>) result.get("response");
 
@@ -97,13 +95,14 @@ public class AuthController {
         JsonParser jsonParser = JsonParserFactory.getJsonParser();
         Map<String , Object> result = jsonParser.parseMap(naverAuthentication.getBody().toString());
 
-        logger.info(naverAuthentication.getBody().toString());
+        log.info(naverAuthentication.getBody().toString());
 
         Map<String , Object> responseMap = (HashMap<String,Object>) result.get("response");
 
         user.setUid(Integer.parseInt(responseMap.get("id").toString()));
         User userForInfo = userService.insertToUser(user);
 
+        log.info(userForInfo.toString());
 
         MultiValueMap<String ,String> headers = new HttpHeaders();
 

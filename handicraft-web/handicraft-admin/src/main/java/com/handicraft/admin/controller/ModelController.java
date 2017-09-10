@@ -41,6 +41,7 @@ public class ModelController {
 	public ModelAndView getModel() throws UnsupportedEncodingException, IOException {
 
 		ModelAndView mav = new ModelAndView();
+		Image image = new Image();
 
 		AWSCredentials crd = new BasicAWSCredentials(accessKey, secretKey);
 		AmazonS3 s3 = AmazonS3ClientBuilder.standard().withRegion(Regions.AP_NORTHEAST_2).withCredentials(new AWSStaticCredentialsProvider(crd)).build();
@@ -50,6 +51,10 @@ public class ModelController {
 			for(S3ObjectSummary objectSummary : objects.getObjectSummaries()){
 				log.info(objectSummary.toString());
 				System.out.println(s3.getUrl(bucketName,objectSummary.getKey()));
+				image.setExtension(objectSummary.getKey().split(".")[1]);
+				image.setName(s3.getUrl(bucketName,objectSummary.getKey()).toString());
+
+				imageService.insertImages(image);
 			}
 
 		}while(objects.isTruncated());

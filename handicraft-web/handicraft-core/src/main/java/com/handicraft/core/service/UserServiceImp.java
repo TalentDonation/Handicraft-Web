@@ -23,7 +23,7 @@ public class UserServiceImp implements UserService {
 
 	@Override
 	@Transactional
-	public User findByUser(int u_id) {
+	public User findByUser(long u_id) {
 
 		return userDao.findOne(u_id);
 	}
@@ -49,7 +49,7 @@ public class UserServiceImp implements UserService {
 	}
 
 	@Override
-	public Boolean deleteToUser(int u_id) {
+	public Boolean deleteToUser(long u_id) {
 
 		if(!userDao.exists(u_id))	return false;
 

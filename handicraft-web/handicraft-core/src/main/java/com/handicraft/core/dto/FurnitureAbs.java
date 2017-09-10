@@ -8,9 +8,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Created by 고승빈 on 2017-08-03.
@@ -24,8 +26,16 @@ public abstract class FurnitureAbs {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "f_id" , nullable = false)
+    @Column(nullable = false)
     protected long fid;
+
+    protected String title;
+
+    protected String state;
+
+    protected String grade;
+
+    protected String description;
 
     protected double width;
 
@@ -33,44 +43,39 @@ public abstract class FurnitureAbs {
 
     protected double height;
 
-    protected String title;
-
-    protected String description;
-
-    protected String brand;
-
-    protected String grade;
-
-    protected String state;
-
     protected String location;
 
-    protected double lat;
-
-    protected double lon;
-
-    @Enumerated(EnumType.STRING)
-    protected Type type;
-
-    protected boolean sold;
+    protected String type;
 
     protected int price;
 
     protected String info;
 
-    protected int periodOfUse;
+    protected String periodOfUse;
 
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
-    protected LocalDateTime purchaseAt;
+    protected String brand;
+
+    protected boolean closed;
+
+//    @LastModifiedDate
+//    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+//    @Convert(converter = LocalDateTimeAttributeConverter.class)
+//    protected LocalDateTime updateAt;
+//
+//    @CreatedDate
+//    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+//    @Convert(converter = LocalDateTimeAttributeConverter.class)
+//    protected LocalDateTime createAt;
+
 
     @LastModifiedDate
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
-    protected LocalDateTime updateAt;
+    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    protected Date updateAt;
 
     @CreatedDate
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
-    protected LocalDateTime createAt;
+    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
+    protected Date createAt;
+
+
+
 }
