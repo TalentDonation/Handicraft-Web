@@ -18,7 +18,7 @@ public class MainController {
 
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("main");
-		mv.addObject("user",userService.getByUserAll());
+		mv.addObject("user",userService.findByUserAll());
 		return mv;
 	}
 }
