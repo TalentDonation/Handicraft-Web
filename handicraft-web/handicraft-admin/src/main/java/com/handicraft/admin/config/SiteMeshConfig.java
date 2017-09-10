@@ -13,7 +13,7 @@ public class SiteMeshConfig extends ConfigurableSiteMeshFilter{
 		// TODO Auto-generated method stub
 		super.applyCustomConfiguration(builder);
 		
-		builder.addDecoratorPath("/*", "/templates/decoreators/decorator.html")
+		builder.addDecoratorPath("/*", "/decoreators/decorator.html")
 				.addExcludedPath("/login");
 
 		
