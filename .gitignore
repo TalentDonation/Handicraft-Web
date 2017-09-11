@@ -216,4 +216,7 @@ $RECYCLE.BIN/
 # Google client_secret
 client_secret.json
 
+# AWS client_secret
+application.yml
+
 # End of https://www.gitignore.io/api/java,maven,macos,eclipse,windows,jetbrains
