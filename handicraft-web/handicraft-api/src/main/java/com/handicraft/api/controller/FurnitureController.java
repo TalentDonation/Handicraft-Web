@@ -60,6 +60,9 @@ public class FurnitureController {
     @Autowired
     ImageService imageService;
 
+    @Value("${static-path}")
+    String imagePath;
+
 
 
 
@@ -121,7 +124,7 @@ public class FurnitureController {
         image.setCreateAt(currentDateTime);
         image.setUpdateAt(currentDateTime);
         URL url = new URL(httpServletRequest.getRequestURL().toString());
-        image.setName(url.getHost() + ":" + url.getPort());
+        image.setName(url.getHost() + imagePath + ":" + url.getPort());
 
         logger.info(url.getPath());
 

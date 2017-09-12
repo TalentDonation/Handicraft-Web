@@ -5,8 +5,13 @@ spring:
   jackson:
     serialization:
       fail_on_empty_beans:  false
+  mvc:
+    static-path-pattern: /images/**
 
 server:
   port: 9090
 
+
 Authentication: MASTERHANDICRAFT
+
+static-path: /images/

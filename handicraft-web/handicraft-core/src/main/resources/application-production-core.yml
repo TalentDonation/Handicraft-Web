@@ -7,9 +7,9 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
-        show-sql: true
-        database: mysql
-        ddl-auto: update
+      show-sql: true
+      database: mysql
+      ddl-auto: update
 
   data:
     jpa:
