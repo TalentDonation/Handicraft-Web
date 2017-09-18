@@ -1,17 +1,15 @@
 package com.handicraft.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.handicraft.core.utils.converter.LocalDateTimeAttributeConverter;
-import com.handicraft.core.utils.enums.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -22,6 +20,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
+@EntityListeners(value = { AuditingEntityListener.class })
 public abstract class FurnitureAbs {
 
     @Id
@@ -57,24 +56,13 @@ public abstract class FurnitureAbs {
 
     protected boolean closed;
 
-//    @LastModifiedDate
-//    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-//    @Convert(converter = LocalDateTimeAttributeConverter.class)
-//    protected LocalDateTime updateAt;
-//
-//    @CreatedDate
-//    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-//    @Convert(converter = LocalDateTimeAttributeConverter.class)
-//    protected LocalDateTime createAt;
-
-
     @LastModifiedDate
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     protected Date updateAt;
 
     @CreatedDate
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
     protected Date createAt;
+
+
 
 
 

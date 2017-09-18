@@ -4,11 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.ReadOnlyProperty;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,26 +25,28 @@ public class Furniture extends FurnitureAbs implements Serializable {
     private static final long serialVersionUID = -3750423939072711694L;
 
 
-    @Column
-    protected int uid;
-
     @Transient
     private List<String> images;
 
     public Furniture(FurnitureToImage furnitureToImage) {
 
         this.fid = furnitureToImage.getFid();
-        this.width = furnitureToImage.getWidth();
-        this.length = furnitureToImage.getLength();
-        this.height = furnitureToImage.getHeight();
-        this.title = furnitureToImage.getTitle();
-        this.description = furnitureToImage.getDescription();
         this.brand = furnitureToImage.getBrand();
-        this.grade = furnitureToImage.getGrade();
-        this.state = furnitureToImage.getState();
-        this.type = furnitureToImage.getType();
-        this.periodOfUse = furnitureToImage.getPeriodOfUse();
+        this.closed = furnitureToImage.isClosed();
         this.createAt = furnitureToImage.getCreateAt();
+        this.description = furnitureToImage.getDescription();
+        this.grade = furnitureToImage.getGrade();
+        this.height = furnitureToImage.getHeight();
+        this.info = furnitureToImage.getInfo();
+        this.length = furnitureToImage.getLength();
+        this.location = furnitureToImage.getLocation();
+        this.periodOfUse = furnitureToImage.getPeriodOfUse();
+        this.price = furnitureToImage.getPrice();
+        this.state = furnitureToImage.getState();
+        this.title = furnitureToImage.getTitle();
+        this.type = furnitureToImage.getType();
+        this.updateAt = furnitureToImage.getUpdateAt();
+        this.width = furnitureToImage.getWidth();
 
     }
 

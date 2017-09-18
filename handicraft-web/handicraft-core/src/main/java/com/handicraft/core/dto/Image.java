@@ -2,16 +2,16 @@ package com.handicraft.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.handicraft.core.utils.converter.LocalDateTimeAttributeConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * Created by 고승빈 on 2017-07-26.
@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+@EntityListeners(value = { AuditingEntityListener.class })
 public class Image implements Serializable {
 
 
@@ -41,14 +42,10 @@ public class Image implements Serializable {
 
 
     @LastModifiedDate
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private LocalDateTime updateAt;
+    private Date updateAt;
 
     @CreatedDate
-    @Convert(converter = LocalDateTimeAttributeConverter.class)
-    @JsonFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    private LocalDateTime createAt;
+    private Date createAt;
 
 
 

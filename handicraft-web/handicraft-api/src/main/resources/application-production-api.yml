@@ -6,7 +6,10 @@ spring:
     serialization:
       fail_on_empty_beans:  false
 
+
 server:
   port: 8080
 
 Authentication: MASTERHANDICRAFT
+
+images-path: www.half-handicraft.com:8080/images/

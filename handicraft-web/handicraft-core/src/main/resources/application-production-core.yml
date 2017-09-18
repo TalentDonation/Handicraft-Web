@@ -3,23 +3,28 @@ spring:
     include: productiondb
 
   jpa:
+    show-sql: true
+    database: mysql
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
-      show-sql: true
-      database: mysql
-      ddl-auto: update
+      ddl-auto: create
+
 
   data:
     jpa:
       repositories:
-        enable: true
+        enabled: true
 
   jackson:
-    serialization:
-      write-dates-as-timestamps:  false
+    date-format: yyyy-MM-dd HH:mm:ss
+
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
+
 
 logging:
   level:
     com.handicraft.*: debug
+

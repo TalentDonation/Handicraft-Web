@@ -26,6 +26,8 @@ import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 
@@ -80,28 +82,14 @@ public class SecurityProvider implements AuthenticationProvider{
 
             String[] tokenizer = StringUtils.split(tokenDecryption, "/");
 
-//            LocalDateTime localDateTime = LocalDateTime.parse(tokenizer[1]);
-//
-//            logger.info(localDateTime.getSecond() + "");
-//
-//            if (Math.abs(LocalDateTime.now().getSecond() - localDateTime.getSecond()) / 60000 > 3000)
-//                throw new AuthenticationServiceException("Exprired Exception");
+            LocalDateTime tokenDate = LocalDateTime.parse(tokenizer[1].replace(' ','T'));
 
 
-
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-            Date tokenDate = null;
-            try {
-                tokenDate = simpleDateFormat.parse(tokenizer[1]);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            logger.info(""+Math.abs(LocalDateTime.now().getSecond() - tokenDate.getSeconds()));
+            logger.info(""+Math.abs(LocalDateTime.now().getSecond() - tokenDate.getSecond()));
             logger.info(""+LocalDateTime.now().getSecond());
-            logger.info(""+tokenDate.getSeconds());
+            logger.info(""+tokenDate.getSecond());
 
-            if (Math.abs(LocalDateTime.now().getSecond() - tokenDate.getSeconds()) / 60000 > 3000)
+            if (Math.abs(LocalDateTime.now().getSecond() - tokenDate.getSecond()) / 60000 > 3000)
                 throw new AuthenticationServiceException("Exprired Exception");
 
             SecurityUserDetails user = userDetailService.loadUserByUsername(tokenizer[0]);

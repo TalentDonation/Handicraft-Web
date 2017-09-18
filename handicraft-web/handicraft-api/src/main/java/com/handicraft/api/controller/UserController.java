@@ -5,6 +5,7 @@ import com.handicraft.api.exception.NotFoundException;
 import com.handicraft.core.dto.User;
 import com.handicraft.core.service.UserService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public class UserController {
 
 	@GetMapping("/users")
 	@ApiOperation(value = "" , notes = "Show users")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public List<User> findByUsers()
 	{
 		return	userService.findByUserAll() ;
@@ -37,6 +39,7 @@ public class UserController {
 
 	@PostMapping("/users")
 	@ApiOperation(value = "" , notes = "Create one user")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public ResponseEntity insertToUser(@ModelAttribute User userParams)
 	{
 		userService.insertToUser(userParams);
@@ -46,6 +49,7 @@ public class UserController {
 
 	@PutMapping("/users")
 	@ApiOperation(value = "" , notes = "Update users")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public ResponseEntity updateToUsers(@ModelAttribute User userParams)
 	{
 //		User user = userService.updateToUser(userParams);
@@ -58,6 +62,7 @@ public class UserController {
 
 	@DeleteMapping("/users")
 	@ApiOperation(value = "" , notes = "Delete users")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public ResponseEntity deleteToUsers(@RequestParam("uid") int uid)
 	{
 //		Boolean resultByDelete = userService.deleteToUser(uid);
@@ -71,6 +76,7 @@ public class UserController {
 
 	@GetMapping("/users/{uid}")
 	@ApiOperation(value = "" , notes = "Show one user about user id")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	@Transactional
 	public User findUserById(@PathVariable("uid") int uid)
 	{
@@ -85,6 +91,7 @@ public class UserController {
 
 	@PutMapping("/users/{uid}")
 	@ApiOperation(value="" , notes = "Update one user about user id")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public ResponseEntity updateToUserById(@ModelAttribute User userParams)
 	{
 		User user = userService.updateToUser(userParams);
@@ -96,6 +103,7 @@ public class UserController {
 
 	@DeleteMapping("/users/{uid}")
 	@ApiOperation(value = "" , notes = "Delete one user about user id")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public ResponseEntity deleteToUserById(@RequestParam("uid") int uid)
 	{
 		Boolean resultByDelete = userService.deleteToUser(uid);
@@ -111,6 +119,7 @@ public class UserController {
 
 	@GetMapping("/users/{uid}/markets")
 	@ApiOperation(value = "" , notes = "Show one user about user id")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public User findUserAndMarketById(@PathVariable("uid") int uid)
 	{
 		User user = userService.findByUser(uid);
@@ -124,6 +133,7 @@ public class UserController {
 
 	@PutMapping("/users/{uid}/markets")
 	@ApiOperation(value="" , notes = "Update one user about user id")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public ResponseEntity updateToUserAndMarketById(@ModelAttribute User userParams)
 	{
 		User user = userService.updateToUser(userParams);
@@ -135,6 +145,7 @@ public class UserController {
 
 	@DeleteMapping("/users/{uid}/markets")
 	@ApiOperation(value = "" , notes = "Delete one user about user id")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public ResponseEntity deleteToUserAndMarketById(@RequestParam("uid") int uid)
 	{
 		Boolean resultByDelete = userService.deleteToUser(uid);
@@ -150,6 +161,7 @@ public class UserController {
 
 	@GetMapping("/users/{uid}/markets/{mid}")
 	@ApiOperation(value = "" , notes = "Show one user about user id")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public User findUserAndMarketByIdAndMid(@PathVariable("uid") int uid)
 	{
 		User user = userService.findByUser(uid);
@@ -163,6 +175,7 @@ public class UserController {
 
 	@PutMapping("/users/{uid}/markets/{mid}")
 	@ApiOperation(value="" , notes = "Update one user about user id")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public ResponseEntity updateToUserAndMarketByIdAndMid(@ModelAttribute User userParams)
 	{
 		User user = userService.updateToUser(userParams);
@@ -174,6 +187,7 @@ public class UserController {
 
 	@DeleteMapping("/users/{uid}/markets/{mid}")
 	@ApiOperation(value = "" , notes = "Delete one user about user id")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public ResponseEntity deleteToUserAndMarketByIdAndMid(@RequestParam("uid") int uid)
 	{
 		Boolean resultByDelete = userService.deleteToUser(uid);

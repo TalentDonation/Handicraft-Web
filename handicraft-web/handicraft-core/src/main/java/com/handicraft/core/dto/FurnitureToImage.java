@@ -22,28 +22,29 @@ public class FurnitureToImage extends  FurnitureAbs{
 
 
 
-    @OneToMany( fetch = FetchType.EAGER ,cascade= javax.persistence.CascadeType.ALL)
-    @JoinColumn(name = "fid" , nullable = false)
+    @OneToMany( fetch = FetchType.EAGER ,cascade= CascadeType.ALL)
+    @JoinColumn(name = "fid" )
     private List<Image> imageList;
 
 
     public FurnitureToImage(Furniture furniture) {
 
         this.fid = furniture.getFid();
-        this.width = furniture.getWidth();
-        this.length = furniture.getLength();
-        this.height = furniture.getHeight();
-        this.title = furniture.getTitle();
-        this.description = furniture.getDescription();
         this.brand = furniture.getBrand();
-        this.grade = furniture.getGrade();
-        this.state = furniture.getState();
-        this.location = furniture.getLocation();
-        this.type = furniture.getType();
-        this.price = furniture.getPrice();
-        this.info = furniture.getInfo();
-        this.periodOfUse = furniture.getPeriodOfUse();
-        this.updateAt = furniture.getUpdateAt();
+        this.closed = furniture.isClosed();
         this.createAt = furniture.getCreateAt();
+        this.description = furniture.getDescription();
+        this.grade = furniture.getGrade();
+        this.height = furniture.getHeight();
+        this.info = furniture.getInfo();
+        this.length = furniture.getLength();
+        this.location = furniture.getLocation();
+        this.periodOfUse = furniture.getPeriodOfUse();
+        this.price = furniture.getPrice();
+        this.state = furniture.getState();
+        this.title = furniture.getTitle();
+        this.type = furniture.getType();
+        this.updateAt = furniture.getUpdateAt();
+        this.width = furniture.getWidth();
     }
 }

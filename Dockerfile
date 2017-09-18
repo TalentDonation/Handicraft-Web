@@ -20,8 +20,8 @@ RUN ls -al /app/
 RUN ls -al /app/handicraft-web/
 
 # arg : arguments for profile
-RUN  sh /app/run.sh ${PROFILE}
-ENTRYPOINT sh /app/deploy.sh ${PROFILE}
+RUN  sh /app/shellscript/run.sh ${PROFILE}
+ENTRYPOINT sh /app/shellscript/deploy.sh ${PROFILE}
 
 WORKDIR /${HOME}/
 

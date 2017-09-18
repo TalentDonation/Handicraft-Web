@@ -42,10 +42,7 @@ public class FurnitureServiceImp implements FurnitureService{
     @Transactional
     public void insertFurnitureByFid(Furniture furniture) {
 
-
-//        furniture.setFid(furnitureRepository.findTopByOrderByFidDesc().getFid() + 1);
-
-        furnitureRepository.save(furniture);
+        furnitureRepository.saveAndFlush(furniture);
     }
 
     @Override

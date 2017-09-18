@@ -60,10 +60,9 @@ public class FurnitureController {
     @Autowired
     ImageService imageService;
 
-    @Value("${static-path}")
-    String imagePath;
 
-
+    @Value("${images-path}")
+    String imagesPath;
 
 
     @GetMapping("/furniture")
@@ -88,7 +87,7 @@ public class FurnitureController {
 
                 for(Image image : furnitureToImage.getImageList())
                 {
-                    imageLists.add(image.getName()+"/"+image.getGid()+"."+image.getExtension());
+                    imageLists.add(image.getName()+image.getGid()+"."+image.getExtension());
                 }
             }
             furniture.setImages(imageLists);
@@ -102,40 +101,45 @@ public class FurnitureController {
     @PostMapping("/furniture")
     @ApiOperation(value = "" , notes = "Create a new furniture")
     @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity insertFurnitureByFid(@ModelAttribute Furniture furniture , MultipartFile multipartFile , HttpServletRequest httpServletRequest) throws IOException {
+    public ResponseEntity insertFurnitureByFid(@ModelAttribute("furniture") Furniture furniture , MultipartFile multipartFile) throws IOException {
 
-        furniture.setFid(furnitureService.findLastFurnitureByFid().getFid() + 1 );
+        logger.info(furniture.getCreateAt().toString());
 
+        furniture.setFid(0);
         FurnitureToImage furnitureToImage = new FurnitureToImage(furniture);
 
         File file;
         Image image;
 
         // upload file
-        Resource resource = new ClassPathResource("static");
+        Resource resource = new ClassPathResource("static/images");
 
         String[] originFile = multipartFile.getOriginalFilename().split("\\.");
 
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        Date currentDateTime = new Date();
+
+
 
         image = new Image();
-        image.setGid(imageService.findImageByLastIndex().getGid() + 1);
+        image.setGid(0);
         image.setExtension(originFile[1]);
         image.setCreateAt(currentDateTime);
         image.setUpdateAt(currentDateTime);
-        URL url = new URL(httpServletRequest.getRequestURL().toString());
-        image.setName(url.getHost() + imagePath + ":" + url.getPort());
+        image.setName(imagesPath);
 
-        logger.info(url.getPath());
+        logger.info(imagesPath);
 
 
         List<Image> imageList = new ArrayList<>();
         imageList.add(image);
         furnitureToImage.setImageList(imageList);
 
+        FurnitureToImage result = furnitureToImageService.insertFurnitureToImageByFid(furnitureToImage);
+
+
         StringBuffer uri = new StringBuffer();
                 uri.append(resource.getFile())
-                .append("/").append(image.getGid())
+                .append("/").append(result.getImageList().get(0).getGid())
                 .append(".").append(originFile[1]);
 
         file = new File(uri.toString());
@@ -148,13 +152,13 @@ public class FurnitureController {
             new InternalServerErrorException();
         }
 
-        furnitureToImageService.insertFurnitureToImageByFid(furnitureToImage);
 
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
     @PutMapping("/furniture")
     @ApiOperation(value = "" , notes = "Update multiple furniture")
+    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public ResponseEntity updateFurnitureList(@ModelAttribute List<Furniture> furnitureList)
     {
         List<Furniture> furnitureListResult = furnitureService.updateFurnitureList(furnitureList);
@@ -167,6 +171,7 @@ public class FurnitureController {
 
     @DeleteMapping("/furniture")
     @ApiOperation(value = "" , notes = "Delete all furniture")
+    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public ResponseEntity deleteFurnitureList()
     {
         furnitureService.deleteFurnitureList();
@@ -181,6 +186,7 @@ public class FurnitureController {
 
     @GetMapping("/furniture/{fid}")
     @ApiOperation(value = "" , notes = "Show a furniture about furniture id")
+    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public Furniture findByFurnitureByFid(@PathVariable("fid") long fid )
     {
 
@@ -205,6 +211,7 @@ public class FurnitureController {
 
     @PutMapping("/furniture/{fid}")
     @ApiOperation(value = "" , notes = "Update one furniture about furniture id")
+    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public ResponseEntity updateFurnitureById(@ModelAttribute Furniture furniture)
     {
         Furniture furnitureResult = furnitureService.updateFurnitureByFid(furniture);
@@ -216,6 +223,7 @@ public class FurnitureController {
 
     @DeleteMapping("/furniture/{fid}")
     @ApiOperation(value = "" , notes = "Delete one furniture about furniture id")
+    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public ResponseEntity deleteFurnitureById(@PathVariable("fid") long fid )
     {
         Boolean resultOfDelete = furnitureToImageService.deleteFurnitureToImageByFid(fid);
@@ -232,6 +240,7 @@ public class FurnitureController {
 
     @PostMapping("/furniture/{fid}/images")
     @ApiOperation(value = "" , notes = "Insert images by furniture id")
+    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public ResponseEntity InsertImagesByFid(@PathVariable("fid") long fid , @RequestParam("images") MultipartFile multipartFile)
     {
 
@@ -241,14 +250,14 @@ public class FurnitureController {
 
         File file;
         // upload file
-        Resource resource = new ClassPathResource("static");
+        Resource resource = new ClassPathResource("static/images");
 
         String[] originFile = multipartFile.getOriginalFilename().split("\\.");
-        LocalDateTime currentDateTime = LocalDateTime.now();
+        Date currentDateTime = new Date();
 //        String dateTime = dateFormat.format(currentDateTime);
 
         Image image = new Image();
-        image.setGid(imageService.findImageByLastIndex().getGid() +  1);
+        image.setGid(0);
         image.setCreateAt(currentDateTime);
         image.setUpdateAt(currentDateTime);
         image.setExtension(originFile[1]);
@@ -285,6 +294,7 @@ public class FurnitureController {
 
     @GetMapping("/furniture/{fid}/images/{gid}")
     @ApiOperation(value = "" , notes = "Get images by furniture id")
+    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public String findImagesByFidAndGid(@PathVariable("fid") long fid , @PathVariable("gid") long gid)
     {
         Image image = imageService.findImageByGid(gid);
@@ -295,6 +305,7 @@ public class FurnitureController {
 
     @PutMapping("/furniture/{fid}/images/{gid}")
     @ApiOperation(value = "" , notes = "Update images by furniture id")
+    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public ResponseEntity UpdateImagesByFidAndGid(@RequestParam("fid") long fid , @RequestParam("gid") long gid , MultipartFile multipartFile)
     {
         Resource resource = new ClassPathResource("static");
@@ -324,6 +335,7 @@ public class FurnitureController {
 
     @DeleteMapping("/furniture/{fid}/images/{gid}")
     @ApiOperation(value = "" , notes = "Delete images by furniture id")
+    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public ResponseEntity DeleteImagesByFidAndGid(@RequestParam("fid") long fid , @RequestParam("gid") long gid)
     {
         Resource resource = new ClassPathResource("static");
