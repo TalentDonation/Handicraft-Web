@@ -55,8 +55,8 @@ public class SecurityFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
 
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context. setAuthentication(authResult);
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(authResult);
         SecurityContextHolder.setContext(context);
 
         logger.info("Authentication Success : " + authResult);

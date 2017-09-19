@@ -9,5 +9,8 @@ public interface UserToImageService {
 
     UserToImage insertToUserToImage(UserToImage userToImage);
 
+    UserToImage findToUserToImage(long uid);
+
+    UserToImage deleteUserToImage(long uid);
 
 }

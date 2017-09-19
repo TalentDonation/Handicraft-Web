@@ -8,11 +8,7 @@ import com.handicraft.core.dto.User;
 import com.handicraft.core.dto.UserToImage;
 import com.handicraft.core.service.UserService;
 import com.handicraft.core.service.UserToImageService;
-import com.handicraft.core.utils.enums.Gender;
-import io.swagger.annotations.ApiImplicitParam;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JsonParser;
@@ -22,6 +18,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -37,8 +34,6 @@ import java.net.URI;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,8 +53,7 @@ public class AuthController {
 
     @PostMapping("/auth/signin")
     @Transactional
-    public  ResponseEntity signin(@RequestParam("access_token") String access_token)
-    {
+    public  ResponseEntity signin(@RequestParam("access_token") String access_token) throws NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 
         ResponseEntity naverAuthentication = authenticateNaver(access_token);
 
@@ -79,23 +73,9 @@ public class AuthController {
         MultiValueMap<String ,String> headers = new HttpHeaders();
 
 
-        try {
-            headers.add("Authorization" , "craft " + EncrypttionUtil.AES_Encrypt(user));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        }
+
+        headers.add("Authorization" , "craft " + EncrypttionUtil.AES_Encrypt(user));
+
 
 
         return new ResponseEntity(headers, HttpStatus.OK );
@@ -104,8 +84,7 @@ public class AuthController {
 
     @PostMapping("/auth/signup")
     @Transactional
-    public ResponseEntity signup(@RequestParam("access_token") String access_token , @ModelAttribute("user") User user , MultipartFile multipartFile)
-    {
+    public ResponseEntity signup(@RequestParam("access_token") String access_token , @ModelAttribute("user") User user , MultipartFile multipartFile) throws NoSuchPaddingException, InvalidKeyException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         ResponseEntity naverAuthentication = authenticateNaver(access_token);
 
         JsonParser jsonParser = JsonParserFactory.getJsonParser();
@@ -118,55 +97,46 @@ public class AuthController {
         UserToImage userToImage = new UserToImage(user);
         userToImage.setUid(Integer.parseInt(responseMap.get("id").toString()));
 
-        Image image = new Image();
-        image.setGid(0);
-        image.setName(imagesPath);
-        image.setExtension(multipartFile.getOriginalFilename().split("\\.")[1]);
+        UserToImage insertResult;
 
-        userToImage.setImage(image);
+        if(multipartFile != null)
+        {
+            Image image = new Image();
+            image.setGid(0);
+            image.setName(imagesPath);
+            image.setExtension(StringUtils.getFilenameExtension(multipartFile.getOriginalFilename()));
 
-        log.info(userToImage.toString());
-        log.info(userToImage.getImage().toString());
+            userToImage.setImage(image);
 
-        UserToImage insertResult = userToImageService.insertToUserToImage(userToImage);
+            log.info(userToImage.toString());
+            log.info(userToImage.getImage().toString());
 
-        Resource resource = new ClassPathResource("static/images");
-        File file ;
-        StringBuffer uri = new StringBuffer();
+            insertResult = userToImageService.insertToUserToImage(userToImage);
 
-        try {
 
-            uri.append(resource.getFile().toString())
+            File file;
+            StringBuffer uri = new StringBuffer();
+
+
+            uri.append(ResourceUtils.getFile("classpath:static/images").getPath())
                     .append("/").append(insertResult.getImage().getGid())
                     .append(".").append(insertResult.getImage().getExtension());
             file = new File(uri.toString());
             multipartFile.transferTo(file);
 
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        }
+        else
+        {
+            insertResult = userToImageService.insertToUserToImage(userToImage);
         }
 
         MultiValueMap<String ,String> headers = new HttpHeaders();
 
-        try {
 
-            headers.add("Authorization" , "craft " + EncrypttionUtil.AES_Encrypt(insertResult));
 
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        } catch (NoSuchPaddingException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        } catch (InvalidAlgorithmParameterException e) {
-            e.printStackTrace();
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-        } catch (BadPaddingException e) {
-            e.printStackTrace();
-        } catch (IllegalBlockSizeException e) {
-            e.printStackTrace();
-        }
+        headers.add("Authorization" , "craft " + EncrypttionUtil.AES_Encrypt(insertResult));
+
 
         return new ResponseEntity(headers, HttpStatus.OK );
     }

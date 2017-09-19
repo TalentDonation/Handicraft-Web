@@ -1,31 +1,29 @@
 package com.handicraft.core.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.handicraft.core.service.UserToImageService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
-@Entity(name = "UserToImage")
+@Entity(name = "UserToFurniture")
 @Table(name = "user")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class UserToImage extends UserAbs implements Serializable {
+public class UserToFurniture extends UserAbs implements Serializable{
 
+    private static final long serialVersionUID = -4625860888600498425L;
 
-    private static final long serialVersionUID = -6625860888600498425L;
+    @OneToMany(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
+    @JoinColumn(name = "uid")
+    private List<Furniture> furnitureList;
 
-    @OneToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
-    @JoinColumn(name = "gid" )
-    private Image image;
-
-
-    public UserToImage(User user)
+    public UserToFurniture(User user)
     {
         this.uid = user.getUid();
         this.address = user.getAddress();

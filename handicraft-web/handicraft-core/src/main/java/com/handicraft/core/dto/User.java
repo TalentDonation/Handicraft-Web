@@ -28,5 +28,14 @@ public class User extends UserAbs implements  Serializable{
 	@Transient
 	private String avatar;
 
-
+	public User(UserToImage userToImage)
+	{
+		this.uid = userToImage.getUid();
+		this.address = userToImage.getAddress();
+		this.birthday = userToImage.getBirthday();
+		this.joinAt = userToImage.getJoinAt();
+		this.name = userToImage.getName();
+		this.nickname = userToImage.getNickname();
+		this.phone = userToImage.getPhone();
+	}
 }

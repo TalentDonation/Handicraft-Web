@@ -16,4 +16,19 @@ public class UserToImageServiceImp implements UserToImageService{
     public UserToImage insertToUserToImage(UserToImage userToImage) {
         return userToImageRepository.save(userToImage);
     }
+
+    @Override
+    public UserToImage findToUserToImage(long uid) {
+        return userToImageRepository.findOne(uid);
+    }
+
+    @Override
+    public UserToImage deleteUserToImage(long uid) {
+
+        UserToImage userToImage = findToUserToImage(uid);
+
+        userToImageRepository.delete(uid);
+
+        return userToImage;
+    }
 }

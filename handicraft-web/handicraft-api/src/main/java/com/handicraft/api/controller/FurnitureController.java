@@ -22,6 +22,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -112,9 +114,6 @@ public class FurnitureController {
         Image image;
 
         // upload file
-        Resource resource = new ClassPathResource("static/images");
-
-        String[] originFile = multipartFile.getOriginalFilename().split("\\.");
 
         Date currentDateTime = new Date();
 
@@ -122,7 +121,7 @@ public class FurnitureController {
 
         image = new Image();
         image.setGid(0);
-        image.setExtension(originFile[1]);
+        image.setExtension(StringUtils.getFilenameExtension(multipartFile.getOriginalFilename()));
         image.setCreateAt(currentDateTime);
         image.setUpdateAt(currentDateTime);
         image.setName(imagesPath);
@@ -138,9 +137,9 @@ public class FurnitureController {
 
 
         StringBuffer uri = new StringBuffer();
-                uri.append(resource.getFile())
+                uri.append(ResourceUtils.getFile("classpath:static/images").getPath())
                 .append("/").append(result.getImageList().get(0).getGid())
-                .append(".").append(originFile[1]);
+                .append(".").append(result.getImageList().get(0).getExtension());
 
         file = new File(uri.toString());
 
@@ -250,7 +249,6 @@ public class FurnitureController {
 
         File file;
         // upload file
-        Resource resource = new ClassPathResource("static/images");
 
         String[] originFile = multipartFile.getOriginalFilename().split("\\.");
         Date currentDateTime = new Date();
@@ -268,7 +266,7 @@ public class FurnitureController {
 
         StringBuffer uri = new StringBuffer();
         try {
-            uri.append(resource.getFile())
+            uri.append(ResourceUtils.getFile("classpath:static/images").getPath())
                     .append("/").append(image.getName())
                     .append(".").append(originFile[1]);
 
@@ -308,7 +306,6 @@ public class FurnitureController {
     @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public ResponseEntity UpdateImagesByFidAndGid(@RequestParam("fid") long fid , @RequestParam("gid") long gid , MultipartFile multipartFile)
     {
-        Resource resource = new ClassPathResource("static");
 
         String[] originFile = multipartFile.getOriginalFilename().split("\\.");
 
@@ -318,7 +315,7 @@ public class FurnitureController {
         StringBuffer stringBuffer = new StringBuffer();
         File file;
         try {
-            stringBuffer.append(resource.getFile())
+            stringBuffer.append(ResourceUtils.getFile("classpath:static/images").getPath())
                         .append("/").append(gid)
                         .append(".").append(originFile[1]);
             file = new File(stringBuffer.toString());
@@ -338,14 +335,13 @@ public class FurnitureController {
     @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public ResponseEntity DeleteImagesByFidAndGid(@RequestParam("fid") long fid , @RequestParam("gid") long gid)
     {
-        Resource resource = new ClassPathResource("static");
 
         Image image = imageService.findImageByGid(gid);
 
         StringBuffer stringBuffer = new StringBuffer();
         File file;
         try {
-            stringBuffer.append(resource.getFile())
+            stringBuffer.append(ResourceUtils.getFile("classpath:static/images").getPath())
                     .append("/").append(image.getGid())
                     .append(".").append(image.getExtension());
             file = new File(stringBuffer.toString());

@@ -18,6 +18,7 @@ import java.util.Date;
 public abstract class UserAbs {
 
     @Id
+    @Column(nullable = false)
     protected long uid;
 
     protected String name;
