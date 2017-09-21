@@ -3,11 +3,13 @@ package com.handicraft.api.Security;
 import com.handicraft.api.exception.NotAcceptableException;
 import com.handicraft.api.utils.DecryptionUtil;
 import com.handicraft.core.dto.User;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.NoAspectBoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
@@ -23,19 +25,20 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 
 @Component
+@Slf4j
 public class SecurityProvider implements AuthenticationProvider{
-
-    Logger logger = LoggerFactory.getLogger(this.getClass());
-
 
     @Value("${Authentication}")
     private String MASTER_KEY;
@@ -54,7 +57,7 @@ public class SecurityProvider implements AuthenticationProvider{
         // pk 존재 유무
         // expired time 확인(30분 단위)
 
-        logger.info(token);
+        log.info(token);
 
         if(!token.equals(MASTER_KEY)) {
 
@@ -78,19 +81,34 @@ public class SecurityProvider implements AuthenticationProvider{
                 e.printStackTrace();
             }
 
-            logger.info(tokenDecryption);
+            log.info(tokenDecryption);
 
             String[] tokenizer = StringUtils.split(tokenDecryption, "/");
 
-            LocalDateTime tokenDate = LocalDateTime.parse(tokenizer[1].replace(' ','T'));
+//            LocalDateTime tokenDate = LocalDateTime.parse(tokenizer[1].replace(' ','T'));
+//
+//            log.info("seconds comp : "+ ChronoUnit.MINUTES.between(LocalDateTime.now() ,  tokenDate));
+//            log.info("seconds now :"+LocalDateTime.now().getSecond());
+//            log.info("seconds token :"+tokenDate.getSecond());
+//
+//            if (Math.abs(LocalDateTime.now().getSecond() - tokenDate.getSecond()) / 60000 > 3000)
+//                throw new AuthenticationServiceException("Exprired Exception");
 
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-            logger.info(""+Math.abs(LocalDateTime.now().getSecond() - tokenDate.getSecond()));
-            logger.info(""+LocalDateTime.now().getSecond());
-            logger.info(""+tokenDate.getSecond());
+            try {
+                Date tokenDate = dateFormat.parse(tokenizer[1]);
+                Date curDate = new Date();
 
-            if (Math.abs(LocalDateTime.now().getSecond() - tokenDate.getSecond()) / 60000 > 3000)
-                throw new AuthenticationServiceException("Exprired Exception");
+                log.info("authentication seconds : "+ (curDate.getTime() - tokenDate.getTime()));
+                log.info("authentication now time :"+curDate.getTime());
+                log.info("authentication token time :"+tokenDate.getTime());
+
+                if (Math.abs(curDate.getTime() - tokenDate.getTime()) > 1800000)    throw new AuthenticationServiceException("Exprired Exception");
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             SecurityUserDetails user = userDetailService.loadUserByUsername(tokenizer[0]);
 
