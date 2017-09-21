@@ -217,6 +217,6 @@ $RECYCLE.BIN/
 client_secret.json
 
 # AWS client_secret
-application.yml
+application-S3Config.yml
 
 # End of https://www.gitignore.io/api/java,maven,macos,eclipse,windows,jetbrains
