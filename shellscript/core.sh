@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #  arguments for profile
-function run()
+function coreInstall()
 {
 	cd /app/handicraft-web/handicraft-core
 	sh mvnw -Dspring.profiles.active="$1-core" install
@@ -9,4 +9,4 @@ function run()
 
 }
 
-run $1
+coreInstall $1
