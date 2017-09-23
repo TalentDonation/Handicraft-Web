@@ -11,7 +11,7 @@ spring:
 server:
   session:
     timeout:  600
-  port: 8080
+  port: 80
 
 
 naver:

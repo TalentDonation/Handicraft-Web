@@ -50,7 +50,6 @@ public class ModelController {
         return s3client;
     }
 
-    // TODO: file upload 시 경로지정, 상위 디렉토리로 이동, 업로드 할때 슬래시 제거
     @RequestMapping(value = "/model", method = RequestMethod.GET)
     public ModelAndView getModel() throws IOException {
 
@@ -83,6 +82,7 @@ public class ModelController {
     @PostMapping("/model/upload")
     public String uploadModelFile(@RequestParam("submitFile") MultipartFile file) throws IOException {
         String subDir;
+        String uploadDir;
 
         if(!path.equals("")) {
             subDir = path.substring(0, path.lastIndexOf("/"));
@@ -91,7 +91,14 @@ public class ModelController {
             subDir = path;
         }
 
-        String uploadDir = bucketName.concat("/").concat(subDir);
+        if(path.equals("")) {
+            uploadDir = bucketName;
+        }
+
+        else {
+            uploadDir = bucketName.concat("/").concat(subDir);
+        }
+
         AmazonS3 s3Client = authorize();
         s3Client.putObject(new PutObjectRequest(uploadDir, file.getOriginalFilename(), file.getInputStream(), new ObjectMetadata()));
         // 서브디렉토리에 넣어줄때 디렉토리를 더해준다, 뒤에 / 붙이면 하위에 폴더 하나 만든다음에 올린다. 앞에 / 붙여야한다
@@ -108,7 +115,6 @@ public class ModelController {
         return "redirect:/model";
     }
 
-    // TODO: make public
     @RequestMapping(value = "/delete", method = RequestMethod.GET)
     public ResponseEntity deleteObject(@RequestParam(value = "path") String dir)
     {
