@@ -2,34 +2,85 @@ package com.handicraft.core.service;
 
 import com.handicraft.core.dto.Furniture;
 import com.handicraft.core.dto.FurnitureToImage;
+import com.handicraft.core.repository.FurnitureRepository;
+import com.handicraft.core.repository.FurnitureToImageRepository;
+import com.handicraft.core.repository.ImageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 /**
  * Created by 고승빈 on 2017-07-06.
  */
+@Service
+public class FurnitureService {
 
+    @Autowired
+    FurnitureRepository furnitureRepository;
 
-public interface FurnitureService {
+    @Autowired
+    FurnitureToImageRepository furnitureToImageRepository;
 
-    Page<FurnitureToImage> findFurniturePerPage(PageRequest pageRequest);
+    @Autowired
+    ImageRepository imageRepository;
 
-    Furniture findFurnitureByFid(long f_id);
+    public Page<FurnitureToImage> findFurniturePerPage(PageRequest pageRequest) {
+        return furnitureToImageRepository.findAll(pageRequest);
+    }
 
-    void insertFurnitureByFid(Furniture furniture);
+    public Furniture findFurnitureByFid(long f_id) {
+        return furnitureRepository.findOne(f_id);
+    }
 
-    Furniture updateFurnitureByFid(Furniture furniture);
+    @Transactional
+    public void insertFurnitureByFid(Furniture furniture) {
 
-    Boolean deleteFurnitureByFid(long f_id);
+        furnitureRepository.saveAndFlush(furniture);
+    }
 
-    List<Furniture> updateFurnitureList(List<Furniture> furnitureList);
+    public Furniture updateFurnitureByFid(Furniture furniture) {
 
-    void deleteFurnitureList();
+        if(!furnitureRepository.exists(furniture.getFid())) return null;
 
-    void deleteImagesByFid(long fid);
+        return furnitureRepository.save(furniture);
+    }
 
-    Furniture findLastFurnitureByFid();
+    public Boolean deleteFurnitureByFid(long f_id) {
 
+        if(!furnitureRepository.exists(f_id)) return false;
+
+        furnitureRepository.delete(f_id);
+        return true;
+    }
+
+    public List<Furniture> updateFurnitureList(List<Furniture> furnitureList) {
+
+        for(Furniture furniture : furnitureList)
+        {
+            if(!furnitureRepository.exists(furniture.getFid())) return null;
+        }
+
+        return furnitureRepository.save(furnitureList);
+    }
+
+    public void deleteFurnitureList() {
+
+        furnitureRepository.deleteAll();;
+    }
+
+    public void deleteImagesByFid(long fid) {
+
+        Furniture furniture = furnitureRepository.findOne(fid);
+
+//        imageRepository.delete(furniture.getImages());
+
+    }
+
+    public Furniture findLastFurnitureByFid() {
+        return furnitureRepository.findTopByOrderByFidDesc();
+    }
 }

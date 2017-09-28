@@ -1,6 +1,7 @@
 package com.handicraft.api.Security;
 
 import com.handicraft.core.dto.User;
+import com.handicraft.core.dto.UserToAuthority;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -9,7 +10,7 @@ import java.util.Collection;
 
 public class SecurityAuthentication extends AbstractAuthenticationToken {
 
-    private User user;
+    private UserToAuthority userToAuthority;
     private String token;
 
     /*
@@ -24,10 +25,10 @@ public class SecurityAuthentication extends AbstractAuthenticationToken {
     /*
     * 인증 후
     * */
-    public SecurityAuthentication(User user, Collection<? extends GrantedAuthority> authorities) {
-        super(authorities);
-        super.setAuthenticated(true);
-        this.user = user;
+    public SecurityAuthentication(UserToAuthority userToAuthority) {
+        super(userToAuthority.getAuthorities());
+        super.setAuthenticated(userToAuthority.isEnabled());
+        this.userToAuthority = userToAuthority;
         this.eraseCredentials();
     }
 
@@ -40,7 +41,7 @@ public class SecurityAuthentication extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return user.getUid();
+        return userToAuthority.getUid();
     }
 
     @Override
@@ -66,13 +67,13 @@ public class SecurityAuthentication extends AbstractAuthenticationToken {
     }
 
     @Override
-    public User getDetails() {
-        return user;
+    public UserToAuthority getDetails() {
+        return userToAuthority;
     }
 
     @Override
     public void setDetails(Object details) {
         super.setDetails(details);
-        this.user = (User)details;
+        this.userToAuthority = (UserToAuthority) details;
     }
 }

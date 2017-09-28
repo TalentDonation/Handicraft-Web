@@ -3,14 +3,33 @@ package com.handicraft.core.service;
 
 import com.handicraft.core.dto.UserToImage;
 import com.handicraft.core.repository.UserToImageRepository;
+import org.hibernate.annotations.SQLInsert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
-public interface UserToImageService {
+import javax.persistence.PostRemove;
 
-    UserToImage insertToUserToImage(UserToImage userToImage);
+@Service
+public class UserToImageService {
 
-    UserToImage findToUserToImage(long uid);
+    @Autowired
+    UserToImageRepository userToImageRepository;
 
-    UserToImage deleteUserToImage(long uid);
+    public UserToImage insertToUserToImage(UserToImage userToImage) {
+        return userToImageRepository.saveAndFlush(userToImage);
+    }
 
+    public UserToImage findToUserToImage(long uid) {
+        return userToImageRepository.findOne(uid);
+    }
+
+    public UserToImage deleteUserToImage(long uid) {
+
+        UserToImage userToImage = findToUserToImage(uid);
+
+        userToImageRepository.delete(uid);
+
+        return userToImage;
+    }
 }

@@ -1,8 +1,13 @@
 package com.handicraft.api.Security;
 
 import com.handicraft.api.exception.NotAcceptableException;
+import com.handicraft.api.exception.UnAuthorizedException;
 import com.handicraft.api.utils.DecryptionUtil;
+import com.handicraft.core.dto.Authority;
 import com.handicraft.core.dto.User;
+import com.handicraft.core.dto.UserToAuthority;
+import com.handicraft.core.service.UserToAuthorityService;
+import com.handicraft.core.utils.enums.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.NoAspectBoundException;
 import org.slf4j.Logger;
@@ -43,21 +48,24 @@ public class SecurityProvider implements AuthenticationProvider{
     @Value("${Authentication}")
     private String MASTER_KEY;
 
+//    @Autowired
+//    private SecurityUserDetailsService userDetailService;
+
     @Autowired
-    private SecurityUserDetailsService userDetailService;
+    private UserToAuthorityService userToAuthorityService;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-
-
 
         String token = (String) authentication.getCredentials();
 
         // token decryption
         // pk 존재 유무
         // expired time 확인(30분 단위)
-
         log.info(token);
+
+        UserToAuthority userToAuthority;
+        Authority authority;
 
         if(!token.equals(MASTER_KEY)) {
 
@@ -85,14 +93,12 @@ public class SecurityProvider implements AuthenticationProvider{
 
             String[] tokenizer = StringUtils.split(tokenDecryption, "/");
 
-//            LocalDateTime tokenDate = LocalDateTime.parse(tokenizer[1].replace(' ','T'));
-//
-//            log.info("seconds comp : "+ ChronoUnit.MINUTES.between(LocalDateTime.now() ,  tokenDate));
-//            log.info("seconds now :"+LocalDateTime.now().getSecond());
-//            log.info("seconds token :"+tokenDate.getSecond());
-//
-//            if (Math.abs(LocalDateTime.now().getSecond() - tokenDate.getSecond()) / 60000 > 3000)
-//                throw new AuthenticationServiceException("Exprired Exception");
+
+            userToAuthority = userToAuthorityService.loadUserByUsername(tokenizer[0]);
+
+            if(userToAuthority == null) throw new UnAuthorizedException();
+
+            log.info("UserToAuthority : " + userToAuthority.toString());
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -104,19 +110,37 @@ public class SecurityProvider implements AuthenticationProvider{
                 log.info("authentication now time :"+curDate.getTime());
                 log.info("authentication token time :"+tokenDate.getTime());
 
-                if (Math.abs(curDate.getTime() - tokenDate.getTime()) > 1800000)    throw new AuthenticationServiceException("Exprired Exception");
+                if (Math.abs(curDate.getTime() - tokenDate.getTime()) > 1800000)
+                {
+                    authority = userToAuthority.getAuthority();
+                    authority.setCredentialsExpired(true);
+                    authority.setEnabled(false);
+                    userToAuthority.setAuthority(authority);
+
+                    userToAuthorityService.update(userToAuthority);
+
+                    throw new AuthenticationServiceException("Exprired Exception");
+                }
 
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-            SecurityUserDetails user = userDetailService.loadUserByUsername(tokenizer[0]);
+//            SecurityUserDetails user = userDetailService.loadUserByUsername(tokenizer[0]);
+//
+//            return new SecurityAuthentication(user.getUser(), user.getAuthorities());
 
-            return new SecurityAuthentication(user.getUser(), user.getAuthorities());
+
+            return new SecurityAuthentication(userToAuthority);
         }
         else
         {
-            return new SecurityAuthentication(new User(), AuthorityUtils.createAuthorityList());
+            authority = new Authority();
+            userToAuthority = new UserToAuthority();
+
+            authority.setRole(Role.MASTER);
+            userToAuthority.setAuthority(authority);
+            return new SecurityAuthentication(userToAuthority);
         }
     }
 

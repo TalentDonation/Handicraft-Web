@@ -14,7 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Sheets {
+public class Excel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

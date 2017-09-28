@@ -21,7 +21,6 @@ import java.util.Date;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User extends UserAbs implements  Serializable{
 
-	// ignore lombok
 	private static final long serialVersionUID = -6625860888600498405L;
 
 
