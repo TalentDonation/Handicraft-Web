@@ -15,8 +15,8 @@ import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import com.handicraft.core.service.FurnitureService;
-import com.handicraft.core.service.SheetsService;
+import com.handicraft.core.dto.Excel;
+import com.handicraft.core.service.ExcelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,7 +46,7 @@ public class MemberController {
 
 
     @Autowired
-    SheetsService sheetsService;
+    ExcelService sheetsService;
 
     static {
         try {
@@ -83,11 +83,11 @@ public class MemberController {
         mv.setViewName("member");
 
 
-        List<com.handicraft.core.dto.Sheets> sheetsList = sheetsService.findSheets();
+        List<Excel> sheetsList = sheetsService.findSheets();
         List<String> google = new ArrayList<>();
         List<List<String>> list = new ArrayList<>();
 
-        for(com.handicraft.core.dto.Sheets sheets : sheetsList){
+        for(Excel sheets : sheetsList){
             google.add(sheets.getUrl());
             String url[] = sheets.getUrl().split("/");
 
@@ -117,8 +117,8 @@ public class MemberController {
     @RequestMapping(value = "/member", method = RequestMethod.POST)
     public RedirectView insertUrl(@RequestParam("url") String url){
 
-        com.handicraft.core.dto.Sheets sheets = new  com.handicraft.core.dto.Sheets();
-        com.handicraft.core.dto.Sheets lastSheets = sheetsService.findLastSheetsBySid();
+        Excel sheets = new Excel();
+        Excel lastSheets = sheetsService.findLastSheetsBySid();
         if(lastSheets == null)
         {
             sheets.setSid(1);

@@ -1,21 +1,45 @@
 package com.handicraft.core.service;
 
 import com.handicraft.core.dto.FurnitureToImage;
+import com.handicraft.core.repository.FurnitureToImageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
 
 /**
  * Created by 고승빈 on 2017-08-06.
  */
-public interface FurnitureToImageService {
+@Service
+public class FurnitureToImageService {
 
-    Page<FurnitureToImage> findFurniturToImagePerPage(PageRequest pageRequest);
+    @Autowired
+    FurnitureToImageRepository furnitureToImageRepository;
 
-    FurnitureToImage insertFurnitureToImageByFid(FurnitureToImage furnitureToImage);
+    public Page<FurnitureToImage> findFurniturToImagePerPage(PageRequest pageRequest) {
+        return furnitureToImageRepository.findAll(pageRequest);
+    }
 
-    FurnitureToImage updateFurnitureToImageByFid(FurnitureToImage furnitureToImage);
+    public FurnitureToImage insertFurnitureToImageByFid(FurnitureToImage furnitureToImage)
+    {
+        return furnitureToImageRepository.save(furnitureToImage);
+    }
 
-    Boolean deleteFurnitureToImageByFid(long f_id);
+    public FurnitureToImage updateFurnitureToImageByFid(FurnitureToImage furnitureToImage) {
 
-    FurnitureToImage findFurnitureToImageByFid(long f_id);
+        if(!furnitureToImageRepository.exists(furnitureToImage.getFid())) return null;
+
+        return furnitureToImageRepository.save(furnitureToImage);
+    }
+
+    public Boolean deleteFurnitureToImageByFid(long f_id) {
+        if(!furnitureToImageRepository.exists(f_id)) return false;
+
+        furnitureToImageRepository.delete(f_id);
+        return true;
+    }
+
+    public FurnitureToImage findFurnitureToImageByFid(long f_id) {
+        return furnitureToImageRepository.findOne(f_id);
+    }
 }

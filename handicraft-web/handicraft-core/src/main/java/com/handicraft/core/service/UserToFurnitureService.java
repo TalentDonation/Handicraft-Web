@@ -1,4 +1,7 @@
 package com.handicraft.core.service;
 
-public interface UserToFurnitureService {
+import org.springframework.stereotype.Service;
+
+@Service
+public class UserToFurnitureService {
 }

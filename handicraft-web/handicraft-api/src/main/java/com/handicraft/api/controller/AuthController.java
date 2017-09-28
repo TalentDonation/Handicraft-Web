@@ -3,11 +3,11 @@ package com.handicraft.api.controller;
 
 import com.handicraft.api.exception.UnAuthorizedException;
 import com.handicraft.api.utils.EncrypttionUtil;
-import com.handicraft.core.dto.Image;
-import com.handicraft.core.dto.User;
-import com.handicraft.core.dto.UserToImage;
+import com.handicraft.core.dto.*;
 import com.handicraft.core.service.UserService;
+import com.handicraft.core.service.UserToAuthorityService;
 import com.handicraft.core.service.UserToImageService;
+import com.handicraft.core.utils.enums.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,6 +47,9 @@ public class AuthController {
 
     @Autowired
     UserToImageService userToImageService;
+
+    @Autowired
+    UserToAuthorityService userToAuthorityService;
 
     @Value("${images-path}")
     String imagesPath;
@@ -98,6 +101,8 @@ public class AuthController {
         userToImage.setUid(Integer.parseInt(responseMap.get("id").toString()));
 
         UserToImage insertResult;
+        UserToAuthority userToAuthority , updateResult;
+        Authority authority;
 
         if(multipartFile != null)
         {
@@ -111,7 +116,29 @@ public class AuthController {
             log.info(userToImage.toString());
             log.info(userToImage.getImage().toString());
 
+
             insertResult = userToImageService.insertToUserToImage(userToImage);
+
+            log.info("insert : " + insertResult.toString());
+
+            userToAuthority = new UserToAuthority(insertResult);
+            authority = new Authority();
+
+            authority.setAid(0);
+            authority.setRole(Role.USER);
+            authority.setAccountExpired(false);
+            authority.setAccountLocked(false);
+            authority.setCredentialsExpired(false);
+            authority.setCredentialsLocked(false);
+            authority.setPassword("NOTHING");
+            authority.setEnabled(true);
+
+            userToAuthority.setAuthority(authority);
+
+            log.info("update : " + userToAuthority.getUid());
+
+            updateResult = userToAuthorityService.update(userToAuthority);
+
 
 
             File file;
@@ -129,13 +156,26 @@ public class AuthController {
         else
         {
             insertResult = userToImageService.insertToUserToImage(userToImage);
+            userToAuthority = new UserToAuthority(insertResult);
+            authority = new Authority();
+
+            authority.setAid(0);
+            authority.setRole(Role.USER);
+            authority.setAccountExpired(false);
+            authority.setAccountLocked(false);
+            authority.setCredentialsExpired(false);
+            authority.setCredentialsLocked(false);
+            authority.setPassword("NOTHING");
+            authority.setEnabled(true);
+
+            userToAuthority.setAuthority(authority);
+            updateResult = userToAuthorityService.update(userToAuthority);
         }
 
         MultiValueMap<String ,String> headers = new HttpHeaders();
 
 
-
-        headers.add("Authorization" , "craft " + EncrypttionUtil.AES_Encrypt(insertResult));
+        headers.add("Authorization" , "craft " + EncrypttionUtil.AES_Encrypt(updateResult));
 
 
         return new ResponseEntity(headers, HttpStatus.OK );

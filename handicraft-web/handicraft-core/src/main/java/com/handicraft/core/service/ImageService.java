@@ -1,23 +1,44 @@
 package com.handicraft.core.service;
 
 import com.handicraft.core.dto.Image;
+import com.handicraft.core.repository.ImageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
  * Created by 고승빈 on 2017-07-26.
  */
-public interface ImageService {
+@Service
+public class ImageService {
+
+    @Autowired
+    ImageRepository imageRepository;
 
 
-    Image findImageByGid(long gid);
+    public Image findImageByGid(long gid) {
+        return imageRepository.findOne(gid);
+    }
 
-    Image findImageByLastIndex();
+    public Image findImageByLastIndex() {
+        return imageRepository.findTopByOrderByGidDesc();
+    }
 
-    Image insertImages(Image image);
+    public Image insertImages(Image image) {
 
-    List<Image> updateImages(List<Image> imageList);
+        if(imageRepository.exists(image.getGid()))
+        {
+            image.setGid(imageRepository.findTopByOrderByGidDesc().getGid() + 1);
+        }
+        return imageRepository.save(image);
+    }
 
-    Image updateImagesByGid(Image image);
+    public List<Image> updateImages(List<Image> imageList) {
+        return imageRepository.save(imageList);
+    }
 
+    public Image updateImagesByGid(Image image) {
+        return imageRepository.save(image);
+    }
 }

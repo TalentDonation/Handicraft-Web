@@ -2,10 +2,10 @@ package com.handicraft.api.controller;
 
 
 import com.handicraft.api.exception.NotFoundException;
-import com.handicraft.core.dto.Image;
-import com.handicraft.core.dto.User;
-import com.handicraft.core.dto.UserToImage;
+import com.handicraft.core.dto.*;
+import com.handicraft.core.service.AuthorityService;
 import com.handicraft.core.service.UserService;
+import com.handicraft.core.service.UserToAuthorityService;
 import com.handicraft.core.service.UserToImageService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -44,6 +44,9 @@ public class UserController {
 
 	@Autowired
 	UserToImageService userToImageService;
+
+	@Autowired
+	UserToAuthorityService userToAuthorityService;
 
 	@Value("${images-path}")
 	String imagePath;
@@ -119,8 +122,9 @@ public class UserController {
 	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public ResponseEntity deleteToUsers(@AuthenticationPrincipal Long uid)
 	{
-
 		UserToImage deleteUserToImage = userToImageService.deleteUserToImage(uid);
+
+
 		StringBuffer deleteImageFilePath = new StringBuffer("classpath:static/images/")
 				.append(Long.toString(deleteUserToImage.getImage().getGid()))
 				.append(".").append(deleteUserToImage.getImage().getExtension());

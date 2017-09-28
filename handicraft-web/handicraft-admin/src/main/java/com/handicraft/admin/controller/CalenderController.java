@@ -4,6 +4,10 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 
+import com.handicraft.core.dto.Event;
+import com.handicraft.core.dto.UserToEvent;
+import com.handicraft.core.service.UserToEventService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -19,10 +23,16 @@ import javax.servlet.http.HttpServletResponse;
 @Controller
 public class CalenderController {
 
+	@Autowired
+	UserToEventService userToEventService;
+
 	@RequestMapping("/calender")
 	public ModelAndView getCalender( ) {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("calender");
+
+
+		
 		return mv;
 	}
 
