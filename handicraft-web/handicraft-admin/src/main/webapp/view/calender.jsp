@@ -18,9 +18,11 @@
     <script src='./js/calender/moment.min.js'></script>
     <script src='./js/calender/jquery.min.js'></script>
     <script src='./js/calender/fullcalendar.min.js'></script>
-    <script src="./js/calendarMain.js"></script>
     <script src="./js/calender/picker_date.js"></script>
     <script src="./js/calender/daterangepicker.js"></script>
+    <script src="./js/calender/ko.js"></script>
+    <script src="./js/calendarMain.js"></script>
+
 
 </head>
 <body>

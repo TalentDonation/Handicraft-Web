@@ -7,34 +7,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
+import javax.persistence.Table;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 @Entity(name = "Event")
 @Table(name = "event")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+
 @EntityListeners(value = { AuditingEntityListener.class })
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class Event implements Serializable{
+public class Event extends EventAbs implements  Serializable{
 
+    private static final long serialVersionUID = 10314411440539315L;
 
-    private static final long serialVersionUID = 50324411440539315L;
+    public Event() {
+    }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    protected long eid;
-
-    protected String title;
-
-    protected Date start;
-
-    protected Date end;
-
-
-
+    public Event(long eid, String title, Date start, Date end) {
+        super(eid, title, start, end);
+    }
 }

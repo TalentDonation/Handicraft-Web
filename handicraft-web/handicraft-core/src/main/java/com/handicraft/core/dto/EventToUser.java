@@ -18,11 +18,9 @@ import java.util.List;
 @NoArgsConstructor
 @EntityListeners(value = { AuditingEntityListener.class })
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class EventToUser extends Event implements Serializable {
+public class EventToUser extends EventAbs  implements Serializable{
 
-
-    private static final long serialVersionUID = -5368073791152014177L;
-
+    private static final long serialVersionUID = 50314411440539315L;
 
     @ManyToMany(fetch = FetchType.LAZY , mappedBy = "eventList")
     private List<UserToEvent> userToEventList;
