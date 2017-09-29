@@ -22,9 +22,12 @@ $(document).ready(function() {
         navLinks: true, // can click day/week names to navigate views
         selectable: true,
         selectHelper: true,
+        // timeFormat: 'h:mm',
+        locale: 'ko',
         dayClick: function (date) {
             $('.event-title').val("");
-            var time = "0" + (date._d.getMonth() + 1) + "/" + date._d.getDate() + "/" + date._d.getFullYear();
+            var time = (date._d.getMonth() + 1) + "/" + date._d.getDate() + "/" + date._d.getFullYear();
+            // var time = date._d.getFullYear() + "-" + (date._d.getMonth() + 1) + "-" + date._d.getDate();
             $('.daterange-time').val(time);
         },
 
@@ -38,67 +41,15 @@ $(document).ready(function() {
 
         editable: false,     // 이거 false로 놓으면 drag 불가
         eventLimit: true, // allow "more" link when too many events
-        events: [       // TODO: url로 바꾼다 그 url에 mapping된 거에서 json으로 리턴
-            {
-                title: 'All Day Event',
-                start: '09/25/2017 12:00 am',
-                end: '09/25/2017 11:59 pm'
+        eventSources: [{
+            url: '/calender/event',
+            type: 'GET',
+            success: function (response) {
+                alert("success!");
             },
-            {
-                title: 'Long Event',
-                start: '2017-09-07',
-                end: '2017-09-10',
-                id: 1
-            },
-            {
-                id: 999,
-                title: 'Repeating Event',
-                start: '2017-09-09T16:00:00'
-            },
-            {
-                id: 266,
-                title: 'Repeating Event',
-                start: '2017-09-16T16:00:00'
-            },
-            {
-                id: 2,
-                title: 'Conference',
-                start: '2017-09-11',
-                end: '2017-09-13'
-            },
-            {
-                title: 'Meeting',
-                start: '2017-09-12T10:30:00',
-                end: '2017-09-12T12:30:00'
-            },
-            {
-                title: 'Lunch',
-                start: '2017-09-12T12:00:00'
-            },
-            {
-                title: 'Meeting',
-                start: '2017-09-12T14:30:00'
-            },
-            {
-                title: 'Happy Hour',
-                start: '2017-09-12T17:30:00'
-            },
-            {
-                title: 'Dinner',
-                start: '2017-09-12T20:00:00'
-            },
-            {
-                title: 'Birthday Party',
-                start: '09/24/2017 12:00 am',
-                end: '09/24/2017 02:00 pm',
-                id: 3
-            },
-            {
-                title: 'Click for Google',
-                url: 'http://google.com/',
-                start: '2017-09-28'
-            }
-        ]
+            error: function () {
+                alert('there was an error while fetching events!');
+            }}]
     });
 
     $(document).on('click', '.register', function () {
@@ -135,19 +86,23 @@ $(document).ready(function() {
 });
 
 function manageEvent(url, title, time) {
+    var start = time.split(" - ")[0].trim();
+    var end = time.split(" - ")[1].trim();
+
     $.ajax({
         type: 'GET',
         url: 'http://localhost/calender/' + url,
-        data: {'title': title, 'time': time},
+        data: {'title': title, 'start': start, 'end': end},
         dataType: 'json',
         success: function (response) {
             if (url === 'newevent')
             {
                 if (title) {
                     var eventData = {
-                        title: response[0],
-                        start: response[1],
-                        end: response[2]
+                        title: response.title,
+                        start: response.start,
+                        end: response.end,
+                        id: response.eid
                     };
                     $('#calendar').fullCalendar('renderEvent', eventData, true);
                 }
@@ -177,6 +132,14 @@ function manageEvent(url, title, time) {
 
 function convertTime(start, end) {
     return start + " - " + end;
+}
+
+function frontToBack(time) {       // TODO: MM/DD/YYYY h:mm a -> yyyy-MM-dd hh:mm:ss
+    var times = time.split(" ");
+}
+
+function backToFront(time) {
+
 }
 
 // start :Mon Sep 25 2017 00:00:00 GMT+0000 -> 09/25/2017 12:00 am

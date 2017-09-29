@@ -13,9 +13,9 @@ public class EventService {
     @Autowired
     EventRepository eventRepository;
 
-    public void insert(Event event)
+    public Event insert(Event event)
     {
-        eventRepository.save(event);
+        return eventRepository.save(event);
     }
 
     public Event update(Event event)
