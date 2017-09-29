@@ -92,7 +92,7 @@ function manageEvent(url, title, time) {
     $.ajax({
         type: 'GET',
         url: 'http://localhost/calender/' + url,
-        data: {'title': title, 'start': start, 'end': end},
+        data: {'title': title, 'start': frontToBack(start), 'end': frontToBack(end)},
         dataType: 'json',
         success: function (response) {
             if (url === 'newevent')
@@ -134,8 +134,15 @@ function convertTime(start, end) {
     return start + " - " + end;
 }
 
-function frontToBack(time) {       // TODO: MM/DD/YYYY h:mm a -> yyyy-MM-dd hh:mm:ss
-    var times = time.split(" ");
+function frontToBack(time) {    // TODO: MM/DD/YYYY h:mm a -> yyyy-MM-dd hh:mm:ss
+    var times = time.split(' ');
+    var front = times[0].split('/');
+    var month = front[0];
+    var day = front[1];
+    var year = front[2];
+
+    var result = year.concat('-', month, '-', day, ' ', times[1],':00');
+    return result;
 }
 
 function backToFront(time) {
