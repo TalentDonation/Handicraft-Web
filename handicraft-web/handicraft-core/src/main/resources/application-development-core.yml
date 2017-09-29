@@ -19,14 +19,11 @@ spring:
 
 
   mvc:
-    date-format: yyyy-MM-dd hh:mm:ss
+    date-format: yyyy-MM-dd HH:mm:ss
 
   jackson:
-    date-format: yyyy-MM-dd hh:mm:ss
-    deserialization:
-      adjust-dates-to-context-time-zone: false
-
-
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Seoul
 
 
 logging:

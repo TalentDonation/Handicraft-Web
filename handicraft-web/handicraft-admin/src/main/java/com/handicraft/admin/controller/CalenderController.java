@@ -55,6 +55,7 @@ public class CalenderController {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         log.info("I'm in newEvent!");
         log.info(title);
+        log.info("This is start: "+ start);
 
         Event event = new Event();
         event.setEid(0);
