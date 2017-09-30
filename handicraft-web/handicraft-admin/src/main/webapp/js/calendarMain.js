@@ -1,7 +1,5 @@
-// TODO: event들 다 db 저장, 이벤트 추가, 삭제, 누르면 상세정보, 들어왔을때 controller에서
-// TODO: js로 db에 있는것들 뿌려준다, 참여하는 사람정보, getJSON 으로 받아온다
 
-$(document).ready(function() {
+$(document).ready(function () {
 
     $('#calendar').fullCalendar({
         header: {
@@ -9,25 +7,14 @@ $(document).ready(function() {
             center: 'title',
             right: 'month,agendaWeek,agendaDay,listMonth'
         },
-        // header: {
-        //     center: 'month,agendaFourDay' // buttons for switching between views
-        // },
-        // views: {
-        //     agendaFourDay: {
-        //         type: 'agenda',
-        //         duration: { days: 4 },
-        //         buttonText: '4 day'
-        //     }
-        // },
         navLinks: true, // can click day/week names to navigate views
         selectable: true,
         selectHelper: true,
-        // timeFormat: 'h:mm',
         locale: 'ko',
         dayClick: function (date) {
             $('.event-title').val("");
-            var time = (date._d.getMonth() + 1) + "/" + date._d.getDate() + "/" + date._d.getFullYear();
-            // var time = date._d.getFullYear() + "-" + (date._d.getMonth() + 1) + "-" + date._d.getDate();
+            // var time = (date._d.getMonth() + 1) + "/" + date._d.getDate() + "/" + date._d.getFullYear();
+            var time = date._d.getFullYear() + "-" + (date._d.getMonth() + 1) + "-" + date._d.getDate();
             $('.daterange-time').val(time);
         },
 
@@ -36,7 +23,8 @@ $(document).ready(function() {
             var start = event.start._i;
             var end = event.end._i;
             $('.daterange-time').val(convertTime(start, end));
-            $('.event-id').attr('data-id', event.id);
+            $('.event-id').attr('data-id', event._id);
+            $('.event-id').attr('data-eid', event.eid);
         },
 
         editable: false,     // 이거 false로 놓으면 drag 불가
@@ -44,12 +32,10 @@ $(document).ready(function() {
         eventSources: [{
             url: '/calender/event',
             type: 'GET',
-            success: function (response) {
-                alert("success!");
-            },
             error: function () {
                 alert('there was an error while fetching events!');
-            }}]
+            }
+        }]
     });
 
     $(document).on('click', '.register', function () {
@@ -65,15 +51,16 @@ $(document).ready(function() {
     });
 
     $(document).on('click', '.delete', function () {
+        var eid = $('.event-id').attr('data-eid');
         var id = $('.event-id').attr('data-id');
         $.ajax({
             type: 'GET',
             url: 'http://localhost/calender/deleteevent',
-            data: {'id': id},
+            data: {'id': eid},
             dataType: 'json',
-            success: function (response) {
+            success: function () {
                 $('#calendar').fullCalendar('removeEvents', id);
-                alert("삭제가 완료되었습니다");
+                alert('삭제가 완료되었습니다');
             },
             timeout: 10000,
             error: function (xhr, status, err) {
@@ -88,21 +75,20 @@ $(document).ready(function() {
 function manageEvent(url, title, time) {
     var start = time.split(" - ")[0].trim();
     var end = time.split(" - ")[1].trim();
-
+    var eid = $('.event-id').attr('data-eid');
     $.ajax({
         type: 'GET',
         url: 'http://localhost/calender/' + url,
-        data: {'title': title, 'start': frontToBack(start), 'end': frontToBack(end)},
+        data: {'title': title, 'start': frontToBack(start), 'end': frontToBack(end), 'eid': eid},
         dataType: 'json',
         success: function (response) {
-            if (url === 'newevent')
-            {
+            if (url === 'newevent') {
                 if (title) {
                     var eventData = {
                         title: response.title,
                         start: response.start,
                         end: response.end,
-                        id: response.eid
+                        eid: response.eid
                     };
                     $('#calendar').fullCalendar('renderEvent', eventData, true);
                 }
@@ -112,13 +98,13 @@ function manageEvent(url, title, time) {
             else {
                 var id = $('.event-id').attr('data-id');
                 var selectedEvent = $('#calendar').fullCalendar('clientEvents', id);
-                var times = time.split('-');
-                var start = times[0].trim();
-                var end = times[1].trim();
-                selectedEvent.start = start;
-                selectedEvent.end = end;
-                selectedEvent.title = title;
-                $('#calendar').fullCalendar('removeEvents',id);
+
+                selectedEvent.start = response.start;
+                selectedEvent.end = response.end;
+                selectedEvent.title = response.title;
+                selectedEvent.eid = response.eid;
+                selectedEvent._id = id;
+                $('#calendar').fullCalendar('removeEvents', id);
                 $('#calendar').fullCalendar('renderEvent', selectedEvent, true);
             }
         },
@@ -135,17 +121,15 @@ function convertTime(start, end) {
 }
 
 function frontToBack(time) {    // TODO: MM/DD/YYYY h:mm a -> yyyy-MM-dd hh:mm:ss
+
     var times = time.split(' ');
     var front = times[0].split('/');
     var month = front[0];
     var day = front[1];
     var year = front[2];
 
-    var result = year.concat('-', month, '-', day, ' ', times[1],':00');
+    var result = year.concat('-', month, '-', day, ' ', times[1], ':00');
     return result;
-}
-
-function backToFront(time) {
 
 }
 

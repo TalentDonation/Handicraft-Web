@@ -55,7 +55,7 @@
                                         <div class="input-group">
                                             <span class="input-group-addon"><i class="icon-calendar22"></i></span>
                                             <input type="text" class="form-control daterange-time" name="time">
-                                            <div class="hidden event-id" data-id=""></div>
+                                            <div class="hidden event-id" data-id="" data-eid=""></div>
                                         </div>
                                     </div>
 

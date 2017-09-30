@@ -75,26 +75,38 @@ public class CalenderController {
     }
 
     @RequestMapping(value = "/calender/modifyevent", method = RequestMethod.GET)
-    public ResponseEntity modifyEvent(@RequestParam("title") String title, @RequestParam("time") String time) {
+    public ResponseEntity modifyEvent(@RequestParam("title") String title, @RequestParam("start") String start,
+                                      @RequestParam("end") String end, @RequestParam("eid")String eid) throws ParseException
+    {
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         log.info("It's in the modify");
-        String times[] = time.split("-");
-        String start = times[0].trim();
-        String end = times[1].trim();
-        log.info("start: " + start);
-        log.info("end: " + end);
-        List<String> result = new ArrayList<>();
-        result.add(title);
-        result.add(start);
-        result.add(end);
+        log.info(title);
+        log.info("This is start in modify: " + start);
+        log.info("This is eid: " + eid);
+
+        Event event = new Event();
+
+        event.setStart(simpleDateFormat.parse(start));
+        event.setEnd(simpleDateFormat.parse(end));
+        event.setTitle(title);
+        event.setEid(Long.parseLong(eid));
+        Event result = eventService.update(event);
+
 
         return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
     }
 
     @RequestMapping(value = "/calender/deleteevent", method = RequestMethod.GET)
     public ResponseEntity deleteEvent(@RequestParam("id") String id) {
+        log.info("I'm in delete!");
         log.info("This is id: " + id);
+        List<String> result = new ArrayList<>();
 
-        return new ResponseEntity<>(HttpStatus.ACCEPTED);
+        eventToUserService.remove(Long.parseLong(id));
+        result.add(id);
+
+        return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
     }
 
 
