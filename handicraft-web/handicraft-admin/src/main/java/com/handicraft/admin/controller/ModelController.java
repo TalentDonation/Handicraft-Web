@@ -37,9 +37,6 @@ public class ModelController {
     @Value("${secretKey}")
     private String secretKey;
 
-    @Autowired
-    ImageService imageService;
-
     private List<AWSInfo> folderList = new ArrayList<>();
     private List<AWSInfo> fileList = new ArrayList<>();
     private String path = "";
@@ -262,26 +259,5 @@ public class ModelController {
             this.path = path;
         }
     }
-
-    private void printFile(File file, int depth) {
-        if (depth > 10) {
-            return;
-        }
-
-        if (file.isDirectory()) {
-            for (int i = 0; i < depth; i++)
-                System.out.print("  ");
-            System.out.println(file.getName() + "/");
-            File[] subFiles = file.listFiles();
-            for (File subFile : subFiles) {
-                printFile(subFile, depth + 1);
-            }
-        } else {
-            for (int i = 0; i < depth; i++)
-                System.out.print("  ");
-            System.out.println(file.getName());
-        }
-    }
-
 
 }

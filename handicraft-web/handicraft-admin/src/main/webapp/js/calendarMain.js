@@ -13,7 +13,6 @@ $(document).ready(function () {
         locale: 'ko',
         dayClick: function (date) {
             $('.event-title').val("");
-            // var time = (date._d.getMonth() + 1) + "/" + date._d.getDate() + "/" + date._d.getFullYear();
             var time = date._d.getFullYear() + "-" + (date._d.getMonth() + 1) + "-" + date._d.getDate();
             $('.daterange-time').val(time);
         },
@@ -120,7 +119,7 @@ function convertTime(start, end) {
     return start + " - " + end;
 }
 
-function frontToBack(time) {    // TODO: MM/DD/YYYY h:mm a -> yyyy-MM-dd hh:mm:ss
+function frontToBack(time) {    // MM/DD/YYYY h:mm a -> yyyy-MM-dd hh:mm:ss
 
     var times = time.split(' ');
     var front = times[0].split('/');
