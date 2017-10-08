@@ -122,6 +122,15 @@ function convertTime(start, end) {
 function frontToBack(time) {    // MM/DD/YYYY h:mm a -> yyyy-MM-dd hh:mm:ss
 
     var times = time.split(' ');
+    var AmPm = times[2];
+
+    if(AmPm === '오후') {
+        var h = times[1].split(':')[0];
+        h = parseInt(h);
+        h += 12;
+        times[1] = h + ':' + times[1].split(':')[1];
+    }
+
     var front = times[0].split('/');
     var month = front[0];
     var day = front[1];
