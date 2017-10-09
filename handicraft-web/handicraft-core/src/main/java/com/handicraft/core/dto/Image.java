@@ -34,6 +34,7 @@ public class Image implements Serializable {
     @Column(name = "gid" , nullable = false)
     private long gid;
 
+    private String path;
 
     @Column(name="name" , nullable = false)
     private String name;

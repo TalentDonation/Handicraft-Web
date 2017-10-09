@@ -53,15 +53,15 @@ public class UserController {
 
 
 	@GetMapping("/users")
+	@Transactional
 	@ApiOperation(value = "" , notes = "Show one user about user id")
 	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	@Transactional
 	public User findUser(@AuthenticationPrincipal Long uid)
 	{
 		UserToImage userToImage = userToImageService.findToUserToImage(uid);
 
 		StringBuffer avatar = new StringBuffer();
-		avatar.append(userToImage.getImage().getName())
+		avatar.append(imagePath)
 				.append(userToImage.getImage().getGid())
 				.append(".").append(userToImage.getImage().getExtension());
 
@@ -74,45 +74,15 @@ public class UserController {
 		return user;
 	}
 
-	@PostMapping("/users")
-	@ApiOperation(value = "" , notes = "Create one user")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity insertToUser(@ModelAttribute User userParams , MultipartFile multipartFile)
-	{
-		UserToImage userToImage = new UserToImage(userParams);
-
-		Image image = new Image();
-		image.setGid(0);
-		image.setName(imagePath);
-		image.setExtension(multipartFile.getOriginalFilename().split("\\.")[1]);
-
-		userToImage.setImage(image);
-
-		UserToImage insertResult = userToImageService.insertToUserToImage(userToImage);
-
-		StringBuffer uri = new StringBuffer();
-		try {
-			uri.append(ResourceUtils.getFile("classpath:static/images").getPath())
-                    .append("/").append(insertResult.getImage().getGid())
-					.append(".").append(insertResult.getImage().getExtension());
-
-			multipartFile.transferTo(new File(uri.toString()));
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-		return new ResponseEntity(HttpStatus.CREATED);
-	}
 
 	@PutMapping("/users")
 	@ApiOperation(value = "" , notes = "Update users")
 	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity updateToUsers(@AuthenticationPrincipal Long uid , @ModelAttribute User userParams , MultipartFile multipartFile)
+	public ResponseEntity updateToUsers(@AuthenticationPrincipal Long uid , @ModelAttribute User updateUser , MultipartFile multipartFile)
 	{
-		userParams.setUid(uid);
+		updateUser.setUid(uid);
 
-		userService.updateToUser(userParams);
+		userService.updateToUser(updateUser);
 
 		return new ResponseEntity(HttpStatus.OK);
 	}

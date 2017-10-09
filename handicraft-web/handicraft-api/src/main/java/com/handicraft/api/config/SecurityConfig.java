@@ -74,6 +74,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         requestMatchers.add(new AntPathRequestMatcher("/users/**"));
         requestMatchers.add(new AntPathRequestMatcher("/furniture/**"));
+        requestMatchers.add(new AntPathRequestMatcher("/recycle/**"));
+        requestMatchers.add(new AntPathRequestMatcher("/image/**"));
 
 
         return new OrRequestMatcher(requestMatchers);

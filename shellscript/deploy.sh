@@ -3,12 +3,11 @@
 # arguments for profile
 function deploy()
 {
-	cd /app/handicraft-web/handicraft-$2
-	
-	if [$2 -eq "api"];
-	then
+	if test "$2" = "api" ;then
+		cd /app/handicraft-web/handicraft-api
 		sh mvnw -Dspring.profiles.active="$1-api" spring-boot:run
 	else
+		cd /app/handicraft-web/handicraft-admin
 		sh mvnw spring-boot:run
 	fi
 }
