@@ -9,7 +9,7 @@ spring:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
-      ddl-auto: create
+      ddl-auto: update
 
 
   data:
@@ -19,9 +19,11 @@ spring:
 
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Seoul
 
   mvc:
     date-format: yyyy-MM-dd HH:mm:ss
+
 
 
 logging:

@@ -1,6 +1,7 @@
 package com.handicraft.api.controller;
 
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.handicraft.api.exception.UnAuthorizedException;
 import com.handicraft.api.utils.EncrypttionUtil;
 import com.handicraft.core.dto.*;
@@ -13,14 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,11 +55,13 @@ public class AuthController {
     @Value("${images-path}")
     String imagesPath;
 
-    @PostMapping("/auth/signin")
+    @PostMapping(value = "/auth/signin")
     @Transactional
-    public  ResponseEntity signin(@RequestParam("access_token") String access_token) throws NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    public  ResponseEntity signin(@RequestBody Map<String , Object> request) throws NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 
-        ResponseEntity naverAuthentication = authenticateNaver(access_token);
+        log.info(request.toString());
+
+        ResponseEntity naverAuthentication = authenticateNaver(request.get("access_token").toString());
 
         JsonParser jsonParser = JsonParserFactory.getJsonParser();
         Map<String , Object> result = jsonParser.parseMap(naverAuthentication.getBody().toString());
@@ -87,18 +90,28 @@ public class AuthController {
 
     @PostMapping("/auth/signup")
     @Transactional
-    public ResponseEntity signup(@RequestParam("access_token") String access_token , @ModelAttribute("user") User user , MultipartFile multipartFile) throws NoSuchPaddingException, InvalidKeyException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
-        ResponseEntity naverAuthentication = authenticateNaver(access_token);
+    public ResponseEntity signup(@RequestBody Map<String , Object> request , MultipartFile multipartFile) throws NoSuchPaddingException, InvalidKeyException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+
+        log.info(request.toString());
+
+        ResponseEntity naverAuthentication = authenticateNaver(request.get("access_token").toString());
 
         JsonParser jsonParser = JsonParserFactory.getJsonParser();
         Map<String , Object> result = jsonParser.parseMap(naverAuthentication.getBody().toString());
+
+        Map<String , Object> requestUser = (HashMap<String,Object>) request.get("user");
 
         log.info(naverAuthentication.getBody().toString());
 
         Map<String , Object> responseMap = (HashMap<String,Object>) result.get("response");
 
-        UserToImage userToImage = new UserToImage(user);
+        UserToImage userToImage = new UserToImage();
         userToImage.setUid(Integer.parseInt(responseMap.get("id").toString()));
+        userToImage.setAddress(requestUser.get("address").toString());
+        userToImage.setBirthday(requestUser.get("birthday").toString());
+        userToImage.setName(requestUser.get("name").toString());
+        userToImage.setNickname(requestUser.get("nickname").toString());
+        userToImage.setPhone(requestUser.get("phone").toString());
 
         UserToImage insertResult;
         UserToAuthority userToAuthority , updateResult;
