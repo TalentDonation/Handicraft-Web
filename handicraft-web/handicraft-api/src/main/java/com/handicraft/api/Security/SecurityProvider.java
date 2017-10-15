@@ -62,7 +62,8 @@ public class SecurityProvider implements AuthenticationProvider{
         // token decryption
         // pk 존재 유무
         // expired time 확인(30분 단위)
-        log.info(token);
+        log.info("token : "+ token);
+        log.info("master : "+ MASTER_KEY);
 
         UserToAuthority userToAuthority;
         Authority authority;
@@ -139,7 +140,9 @@ public class SecurityProvider implements AuthenticationProvider{
             userToAuthority = new UserToAuthority();
 
             authority.setRole(Role.MASTER);
+            authority.setEnabled(true);
             userToAuthority.setAuthority(authority);
+
             return new SecurityAuthentication(userToAuthority);
         }
     }

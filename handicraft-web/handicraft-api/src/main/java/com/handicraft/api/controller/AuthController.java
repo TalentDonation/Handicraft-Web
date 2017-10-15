@@ -19,9 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -57,11 +55,11 @@ public class AuthController {
 
     @PostMapping(value = "/auth/signin")
     @Transactional
-    public  ResponseEntity signin(@RequestBody Map<String , Object> request) throws NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    public  ResponseEntity signin(@RequestParam("access_token") String access_token) throws NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 
-        log.info(request.toString());
+        log.info(access_token);
 
-        ResponseEntity naverAuthentication = authenticateNaver(request.get("access_token").toString());
+        ResponseEntity naverAuthentication = authenticateNaver(access_token);
 
         JsonParser jsonParser = JsonParserFactory.getJsonParser();
         Map<String , Object> result = jsonParser.parseMap(naverAuthentication.getBody().toString());
@@ -90,29 +88,21 @@ public class AuthController {
 
     @PostMapping("/auth/signup")
     @Transactional
-    public ResponseEntity signup(@RequestBody Map<String , Object> request , MultipartFile multipartFile) throws NoSuchPaddingException, InvalidKeyException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    public ResponseEntity signup(@RequestParam("access_token") String access_token , @ModelAttribute User user, MultipartFile multipartFile) throws NoSuchPaddingException, InvalidKeyException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 
-        log.info(request.toString());
+        log.info(access_token);
 
-        ResponseEntity naverAuthentication = authenticateNaver(request.get("access_token").toString());
+        ResponseEntity naverAuthentication = authenticateNaver(access_token);
 
         JsonParser jsonParser = JsonParserFactory.getJsonParser();
         Map<String , Object> result = jsonParser.parseMap(naverAuthentication.getBody().toString());
-
-        Map<String , Object> requestUser = (HashMap<String,Object>) request.get("user");
 
         log.info(naverAuthentication.getBody().toString());
 
         Map<String , Object> responseMap = (HashMap<String,Object>) result.get("response");
 
-        UserToImage userToImage = new UserToImage();
+        UserToImage userToImage = new UserToImage(user);
         userToImage.setUid(Integer.parseInt(responseMap.get("id").toString()));
-        userToImage.setAddress(requestUser.get("address").toString());
-        userToImage.setBirthday(requestUser.get("birthday").toString());
-        userToImage.setName(requestUser.get("name").toString());
-        userToImage.setNickname(requestUser.get("nickname").toString());
-        userToImage.setPhone(requestUser.get("phone").toString());
-
         UserToImage insertResult;
         UserToAuthority userToAuthority , updateResult;
         Authority authority;
@@ -152,11 +142,8 @@ public class AuthController {
 
             updateResult = userToAuthorityService.update(userToAuthority);
 
-
-
             File file;
             StringBuffer uri = new StringBuffer();
-
 
             uri.append(ResourceUtils.getFile("classpath:static/images").getPath())
                     .append("/").append(insertResult.getImage().getGid())

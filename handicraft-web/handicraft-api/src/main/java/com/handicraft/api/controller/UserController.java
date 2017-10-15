@@ -61,13 +61,18 @@ public class UserController {
 		UserToImage userToImage = userToImageService.findToUserToImage(uid);
 
 		StringBuffer avatar = new StringBuffer();
-		avatar.append(imagePath)
-				.append(userToImage.getImage().getGid())
-				.append(".").append(userToImage.getImage().getExtension());
-
 		User user = new User(userToImage);
 
-		user.setAvatar(avatar.toString());
+		if(userToImage.getImage() != null)
+		{
+			avatar.append(imagePath)
+					.append(userToImage.getImage().getGid())
+					.append(".").append(userToImage.getImage().getExtension());
+			user.setAvatar(avatar.toString());
+		}
+		else
+			user.setAvatar(null);
+
 
 		log.info("Find User : " + user);
 
@@ -80,9 +85,21 @@ public class UserController {
 	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
 	public ResponseEntity updateToUsers(@AuthenticationPrincipal Long uid , @ModelAttribute User updateUser , MultipartFile multipartFile)
 	{
+		UserToImage userToImage = userToImageService.findToUserToImage(uid);
+
+
+
+		if(multipartFile == null)
+		{
+
+		}
+
+
 		updateUser.setUid(uid);
 
 		userService.updateToUser(updateUser);
+
+
 
 		return new ResponseEntity(HttpStatus.OK);
 	}
