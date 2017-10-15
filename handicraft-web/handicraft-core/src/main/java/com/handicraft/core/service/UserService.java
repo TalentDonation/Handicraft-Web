@@ -42,6 +42,7 @@ public class UserService {
 		return userDao.save(user);
 	}
 
+
 	public Boolean deleteToUser(long u_id) {
 
 		if(!userDao.exists(u_id))	return false;

@@ -73,12 +73,14 @@ public class AuthController {
 
         if(user == null) throw new UnAuthorizedException();
 
+        user.setJoinAt(null);
+        User LoginedUser = userService.updateToUser(user);
 
         MultiValueMap<String ,String> headers = new HttpHeaders();
 
 
 
-        headers.add("Authorization" , "craft " + EncrypttionUtil.AES_Encrypt(user));
+        headers.add("Authorization" , "craft " + EncrypttionUtil.AES_Encrypt(LoginedUser));
 
 
 

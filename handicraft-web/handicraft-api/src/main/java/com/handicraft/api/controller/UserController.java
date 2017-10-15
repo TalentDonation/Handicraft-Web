@@ -88,13 +88,6 @@ public class UserController {
 		UserToImage userToImage = userToImageService.findToUserToImage(uid);
 
 
-
-		if(multipartFile == null)
-		{
-
-		}
-
-
 		updateUser.setUid(uid);
 
 		userService.updateToUser(updateUser);
