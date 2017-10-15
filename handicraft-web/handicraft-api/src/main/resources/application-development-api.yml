@@ -12,5 +12,5 @@ server:
 
 Authentication: MASTERHANDICRAFT
 
-images-path: www.half-handicraft.com:9090/images/
+images-path: http://www.half-handicraft.com:9090/images/
 
