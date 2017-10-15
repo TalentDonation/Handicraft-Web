@@ -10,6 +10,7 @@ import com.handicraft.core.service.FurnitureService;
 import com.handicraft.core.service.FurnitureToImageService;
 import com.handicraft.core.service.ImageService;
 import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -44,10 +47,9 @@ import java.util.List;
  */
 
 @RestController
+@Slf4j
 @Api(value = "furniture" , description = "Furniture API")
 public class FurnitureController {
-
-    Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /*
    * DI
@@ -103,9 +105,7 @@ public class FurnitureController {
     @PostMapping("/furniture")
     @ApiOperation(value = "" , notes = "Create a new furniture")
     @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity insertFurnitureByFid(@ModelAttribute("furniture") Furniture furniture , MultipartFile multipartFile) throws IOException {
-
-        logger.info(furniture.getCreateAt().toString());
+    public ResponseEntity insertFurnitureByFid(@ModelAttribute("furniture") Furniture furniture , MultipartFile multipartFile , @AuthenticationPrincipal Long uid) throws IOException {
 
         furniture.setFid(0);
         FurnitureToImage furnitureToImage = new FurnitureToImage(furniture);
@@ -114,19 +114,14 @@ public class FurnitureController {
         Image image;
 
         // upload file
-
-        Date currentDateTime = new Date();
-
-
-
         image = new Image();
         image.setGid(0);
         image.setExtension(StringUtils.getFilenameExtension(multipartFile.getOriginalFilename()));
-        image.setCreateAt(currentDateTime);
-        image.setUpdateAt(currentDateTime);
+        image.setCreateAt(null);
+        image.setUpdateAt(null);
         image.setName(imagesPath);
 
-        logger.info(imagesPath);
+        log.info(imagesPath);
 
 
         List<Image> imageList = new ArrayList<>();

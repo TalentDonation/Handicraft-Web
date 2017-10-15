@@ -46,9 +46,11 @@ public abstract class FurnitureAbs {
 
     protected String type;
 
-    protected int price;
+    protected String sellerPhone;
 
-    protected String info;
+    protected String sellerKakao;
+
+    protected String price;
 
     protected String periodOfUse;
 

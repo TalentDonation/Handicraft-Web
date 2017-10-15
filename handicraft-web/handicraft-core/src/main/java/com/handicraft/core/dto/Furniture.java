@@ -37,7 +37,6 @@ public class Furniture extends FurnitureAbs implements Serializable {
         this.description = furnitureToImage.getDescription();
         this.grade = furnitureToImage.getGrade();
         this.height = furnitureToImage.getHeight();
-        this.info = furnitureToImage.getInfo();
         this.length = furnitureToImage.getLength();
         this.location = furnitureToImage.getLocation();
         this.periodOfUse = furnitureToImage.getPeriodOfUse();
@@ -47,6 +46,8 @@ public class Furniture extends FurnitureAbs implements Serializable {
         this.type = furnitureToImage.getType();
         this.updateAt = furnitureToImage.getUpdateAt();
         this.width = furnitureToImage.getWidth();
+        this.sellerPhone = furnitureToImage.getSellerPhone();
+        this.sellerKakao = furnitureToImage.getSellerKakao();
 
     }
 

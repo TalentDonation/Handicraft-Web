@@ -36,7 +36,6 @@ public class FurnitureToImage extends  FurnitureAbs{
         this.description = furniture.getDescription();
         this.grade = furniture.getGrade();
         this.height = furniture.getHeight();
-        this.info = furniture.getInfo();
         this.length = furniture.getLength();
         this.location = furniture.getLocation();
         this.periodOfUse = furniture.getPeriodOfUse();
@@ -46,5 +45,7 @@ public class FurnitureToImage extends  FurnitureAbs{
         this.type = furniture.getType();
         this.updateAt = furniture.getUpdateAt();
         this.width = furniture.getWidth();
+        this.sellerPhone = furniture.getSellerPhone();
+        this.sellerKakao = furniture.getSellerKakao();
     }
 }
