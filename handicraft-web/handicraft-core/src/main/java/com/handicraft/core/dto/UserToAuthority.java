@@ -46,6 +46,17 @@ public class UserToAuthority extends UserAbs implements Serializable, UserDetail
         this.phone = userToImage.getPhone();
     }
 
+    public UserToAuthority(User user)
+    {
+        this.uid = user.getUid();
+        this.address = user.getAddress();
+        this.birthday = user.getBirthday();
+        this.joinAt = user.getJoinAt();
+        this.name = user.getName();
+        this.nickname = user.getNickname();
+        this.phone = user.getPhone();
+    }
+
     /*
     * UserDetails of Security
     *

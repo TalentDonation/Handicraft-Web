@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserToAuthorityService implements UserDetailsService {
 
@@ -22,6 +24,10 @@ public class UserToAuthorityService implements UserDetailsService {
     public UserToAuthority loadUserByUsername(String uid) {
 
         return userToAuthorityRepository.findOne(Long.parseLong(uid));
+    }
+
+    public UserToAuthority find(long uid) {
+        return userToAuthorityRepository.findOne(uid);
     }
 
     @Modifying

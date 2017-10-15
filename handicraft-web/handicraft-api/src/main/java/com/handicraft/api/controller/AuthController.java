@@ -73,8 +73,12 @@ public class AuthController {
 
         if(user == null) throw new UnAuthorizedException();
 
-        user.setJoinAt(null);
-        User LoginedUser = userService.updateToUser(user);
+        UserToAuthority userToAuthority = userToAuthorityService.find(user.getUid());
+        userToAuthority.setJoinAt(null);
+        Authority authority = userToAuthority.getAuthority();
+        authority.setEnabled(true);
+        userToAuthority.setAuthority(authority);
+        UserToAuthority LoginedUser = userToAuthorityService.update(userToAuthority);
 
         MultiValueMap<String ,String> headers = new HttpHeaders();
 
