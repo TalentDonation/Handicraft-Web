@@ -2,5 +2,9 @@
 
 echo ${PROJECTS}
 echo ${PROFILES}
+echo ${IMAGE_NAME}
+echo ${SOURCE_BRANCH}
+echo ${COMMIT_MSG}
+echo ${DOCKER_REPO}
 
-docker build -t prod --build-arg profiles=${PROFILES} --build-arg projects=${PROJECTS} .
+docker build -t $IMAGE_NAME --build-arg profiles=${PROFILES} --build-arg projects=${PROJECTS} .
