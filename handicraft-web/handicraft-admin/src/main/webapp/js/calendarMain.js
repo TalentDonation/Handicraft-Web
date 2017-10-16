@@ -54,7 +54,7 @@ $(document).ready(function () {
         var id = $('.event-id').attr('data-id');
         $.ajax({
             type: 'GET',
-            url: 'http://localhost/calender/deleteevent',
+            url: 'http://www.half-handicraft.com/calender/deleteevent',
             data: {'id': eid},
             dataType: 'json',
             success: function () {
@@ -77,7 +77,7 @@ function manageEvent(url, title, time) {
     var eid = $('.event-id').attr('data-eid');
     $.ajax({
         type: 'GET',
-        url: 'http://localhost/calender/' + url,
+        url: 'http://www.half-handicraft.com/calender/' + url,
         data: {'title': title, 'start': frontToBack(start), 'end': frontToBack(end), 'eid': eid},
         dataType: 'json',
         success: function (response) {
