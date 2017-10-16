@@ -21,7 +21,7 @@ public class UserToFurniture extends UserAbs implements Serializable{
 
     @OneToMany(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
     @JoinColumn(name = "uid")
-    private List<Furniture> furnitureList;
+    private List<FurnitureToImage> furnitureToImageList;
 
     public UserToFurniture(User user)
     {

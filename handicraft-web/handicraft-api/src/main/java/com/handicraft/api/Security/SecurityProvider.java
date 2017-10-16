@@ -68,7 +68,7 @@ public class SecurityProvider implements AuthenticationProvider{
         UserToAuthority userToAuthority;
         Authority authority;
 
-        if(!token.equals(MASTER_KEY)) {
+        if(!MASTER_KEY.equals(token)) {
 
 
             String tokenDecryption = null;

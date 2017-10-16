@@ -28,6 +28,7 @@ public class Furniture extends FurnitureAbs implements Serializable {
     @Transient
     private List<String> images;
 
+
     public Furniture(FurnitureToImage furnitureToImage) {
 
         this.fid = furnitureToImage.getFid();

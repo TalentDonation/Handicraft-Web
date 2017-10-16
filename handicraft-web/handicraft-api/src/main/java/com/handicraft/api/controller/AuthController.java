@@ -96,7 +96,7 @@ public class AuthController {
     @Transactional
     public ResponseEntity signup(@RequestParam("access_token") String access_token , @ModelAttribute User user, MultipartFile multipartFile) throws NoSuchPaddingException, InvalidKeyException, IOException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
 
-        log.info(access_token);
+        log.info("user: " + user.getName());
 
         ResponseEntity naverAuthentication = authenticateNaver(access_token);
 

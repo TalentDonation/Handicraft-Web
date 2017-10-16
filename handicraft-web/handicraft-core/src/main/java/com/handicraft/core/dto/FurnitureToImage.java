@@ -26,7 +26,6 @@ public class FurnitureToImage extends  FurnitureAbs{
     @JoinColumn(name = "fid" )
     private List<Image> imageList;
 
-
     public FurnitureToImage(Furniture furniture) {
 
         this.fid = furniture.getFid();

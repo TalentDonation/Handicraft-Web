@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * Created by 고승빈 on 2017-08-06.
  */
@@ -32,14 +34,23 @@ public class FurnitureToImageService {
         return furnitureToImageRepository.save(furnitureToImage);
     }
 
-    public Boolean deleteFurnitureToImageByFid(long f_id) {
-        if(!furnitureToImageRepository.exists(f_id)) return false;
+    public Boolean deleteById(long fid) {
+        if(!furnitureToImageRepository.exists(fid)) return false;
 
-        furnitureToImageRepository.delete(f_id);
+        furnitureToImageRepository.delete(fid);
         return true;
     }
 
-    public FurnitureToImage findFurnitureToImageByFid(long f_id) {
-        return furnitureToImageRepository.findOne(f_id);
+    public FurnitureToImage findById(long fid) {
+        return furnitureToImageRepository.findOne(fid);
+    }
+
+    public List<FurnitureToImage> find() {
+        return furnitureToImageRepository.findAll();
+    }
+
+    public void delete()
+    {
+        furnitureToImageRepository.deleteAll();
     }
 }

@@ -3,7 +3,7 @@
 spring:
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://52.78.80.115/dev_handicraft?autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://52.78.80.115/dev_handicraft?autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Seoul
     username: ellim
     password: Tmd20203!!!!
 
@@ -16,4 +16,3 @@ spring:
       validation-query: SELECT 1
       validation-query-timeout: 1
       test-on-create: true
-

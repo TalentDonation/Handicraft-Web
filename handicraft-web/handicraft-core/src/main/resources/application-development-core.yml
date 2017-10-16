@@ -12,10 +12,12 @@ spring:
       ddl-auto: update
 
 
+
   data:
     jpa:
       repositories:
         enabled: true
+
 
 
   mvc:
@@ -26,6 +28,9 @@ spring:
     time-zone: Asia/Seoul
 
 
+
+
 logging:
   level:
     com.handicraft.*: debug
+
