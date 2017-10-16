@@ -3,4 +3,4 @@
 echo ${PROJECTS}
 echo ${PROFILES}
 
-docker build -t prod --build-arg profiles=${PROFILES} --build-arg projects=${PROJECTS} ..
+docker build -t prod --build-arg profiles=${PROFILES} --build-arg projects=${PROJECTS} .
