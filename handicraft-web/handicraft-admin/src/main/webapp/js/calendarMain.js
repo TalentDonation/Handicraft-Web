@@ -77,7 +77,7 @@ function manageEvent(url, title, time) {
     var eid = $('.event-id').attr('data-eid');
     $.ajax({
         type: 'GET',
-        url: 'http://www.half-handicraft.com/calender/' + url,
+        url: 'http://localhost:8080/calender/' + url,
         data: {'title': title, 'start': frontToBack(start), 'end': frontToBack(end), 'eid': eid},
         dataType: 'json',
         success: function (response) {
