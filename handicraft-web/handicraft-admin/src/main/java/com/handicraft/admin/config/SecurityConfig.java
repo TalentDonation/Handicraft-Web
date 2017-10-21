@@ -78,7 +78,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers("/**").hasRole("ADMIN")
                     .anyRequest().authenticated()
                 .and()
-
+                .exceptionHandling().accessDeniedPage("/error401.jsp")
+                .and()
                 .addFilterAfter( oauth2Filter(), RequestCacheAwareFilter.class)
 
                 .formLogin()

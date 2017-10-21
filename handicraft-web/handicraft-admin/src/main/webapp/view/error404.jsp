@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>401</title>
+    <title>404</title>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -26,8 +26,8 @@
 
             <!-- Error title -->
             <div class="text-center content-group">
-                <h1 class="error-title">401</h1>
-                <h5>Oops, an error has occurred. Unauthorized!</h5>
+                <h1 class="error-title">404</h1>
+                <h5>Oops, an error has occurred. Page not found!</h5>
             </div>
             <!-- /error title -->
 

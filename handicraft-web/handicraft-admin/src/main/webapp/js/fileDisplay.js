@@ -30,7 +30,7 @@ $(document).ready(
 function ajax (path, url) {
     $.ajax({
         type: "GET",
-        url: "http://www.half-handicraft.com/" + url,
+        url: "http://localhost:8080/" + url,
         data: {"path": path},    // clicked를 보내서 클릭된 것까지 split한다
         dataType: "json",
         success: function (response) {
