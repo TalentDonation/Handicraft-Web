@@ -11,6 +11,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.Sheet;
@@ -49,6 +50,8 @@ public class MemberController {
     private static String spreadsheetId;
     private static String range;
 
+    private static Oauth2 oauth2;
+    private static GoogleClientSecrets clientSecrets;
 
     @Autowired
     ExcelService sheetsService;
@@ -63,36 +66,33 @@ public class MemberController {
         }
     }
 
-    public static Credential authorize() throws IOException {
-        InputStream in = MemberController.class.getResourceAsStream("/client_secret.json");
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
 
-//        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
-//                .setDataStoreFactory(DATA_STORE_FACTORY).setAccessType("offline").build();
-//
-//        Credential credential = new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-
-
-        GoogleCredential credential = new GoogleCredential.Builder()
-                .setTransport(HTTP_TRANSPORT)
-                .setJsonFactory(JSON_FACTORY)
-                .setServiceAccountId("kosb1563@gmail.com")
-                .setClientSecrets(clientSecrets)
-                .setServiceAccountScopes(SCOPES)
-                .build();
-
-        System.out.println("Credentials saved to " + DATA_STORE_DIR.getAbsolutePath());
-        return credential;
+    private static Credential authorize() throws Exception {
+        // load client secrets
+        clientSecrets = GoogleClientSecrets.load(JSON_FACTORY,
+                new InputStreamReader(MemberController.class.getResourceAsStream("/client_secrets.json")));
+        if (clientSecrets.getDetails().getClientId().startsWith("Enter")
+                || clientSecrets.getDetails().getClientSecret().startsWith("Enter ")) {
+            System.out.println("Enter Client ID and Secret from https://code.google.com/apis/console/ "
+                    + "into oauth2-cmdline-sample/src/main/resources/client_secrets.json");
+            System.exit(1);
+        }
+        // set up authorization code flow
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES).setDataStoreFactory(
+                DATA_STORE_FACTORY).build();
+        // authorize
+        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
     }
 
-    public static Sheets getSheetsService() throws IOException {
+    public static Sheets getSheetsService() throws Exception {
         Credential credential = authorize();
         return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
     }
 
     // 여기는 들어가자마자 보이는것들 ,db연동
     @RequestMapping(value = "/member", method = RequestMethod.GET)
-    public ModelAndView getMember() throws IOException{
+    public ModelAndView getMember() throws Exception {
         ModelAndView mv = new ModelAndView();
         mv.setViewName("member");
 
@@ -152,7 +152,7 @@ public class MemberController {
 
     // data 출력하는 함수, ajax url을 넣어줄때 이런 형식으로 넣어준다
     @RequestMapping(value = "/sheets/{sheets_id}/{title}", method = RequestMethod.GET)
-    public ResponseEntity getFileBySheetsId(@PathVariable(value = "sheets_id") String sheets_id, @PathVariable(value = "title") String title) throws IOException {
+    public ResponseEntity getFileBySheetsId(@PathVariable(value = "sheets_id") String sheets_id, @PathVariable(value = "title") String title) throws Exception {
 
         System.out.println("오 돌아간다!");
         ResponseEntity<ArrayList<List<Object>>> results;
