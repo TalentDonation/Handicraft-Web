@@ -1,7 +1,7 @@
 package com.handicraft.api.utils;
 
-import com.handicraft.core.dto.User;
-import com.handicraft.core.dto.UserAbs;
+import com.handicraft.core.dto.Users.User;
+import com.handicraft.core.dto.Users.UserAbs;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.BadPaddingException;
@@ -16,7 +16,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
 import java.text.SimpleDateFormat;
-import java.util.logging.SimpleFormatter;
 
 public class EncrypttionUtil {
 

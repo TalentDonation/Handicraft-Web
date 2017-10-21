@@ -2,7 +2,7 @@ package com.handicraft.api.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.RequestHandler;
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
@@ -29,14 +29,11 @@ public class SwaggerConfig {
     }
 
     private ApiInfo metaData() {
-        ApiInfo apiInfo = new ApiInfo(
-                "Handicraft REST API",
-                "Handicraft REST API",
-                "1.0",
-                "Terms of service",
-                new Contact("Ko SeungBin", "https://github.com/TalentDonation/Handicraft-Web", "kosb15@gmail.com"),
-                "Apache License Version 2.0",
-                "https://www.apache.org/licenses/LICENSE-2.0");
-        return apiInfo;
+        return  new ApiInfoBuilder().title("Handicraft REST API")
+                .description("Handicraft REST API")
+                .contact(                new Contact("Ko SeungBin", "https://github.com/TalentDonation/Handicraft-Web", "kosb15@gmail.com"))
+                .license(                "Apache License Version 2.0")
+                .licenseUrl("https://www.apache.org/licenses/LICENSE-2.0")
+                .build();
     }
 }

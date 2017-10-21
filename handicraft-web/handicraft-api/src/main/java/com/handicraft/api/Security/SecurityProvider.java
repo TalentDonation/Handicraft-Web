@@ -1,25 +1,18 @@
 package com.handicraft.api.Security;
 
-import com.handicraft.api.exception.NotAcceptableException;
 import com.handicraft.api.exception.UnAuthorizedException;
 import com.handicraft.api.utils.DecryptionUtil;
-import com.handicraft.core.dto.Authority;
-import com.handicraft.core.dto.User;
-import com.handicraft.core.dto.UserToAuthority;
-import com.handicraft.core.service.UserToAuthorityService;
+import com.handicraft.core.dto.Authorities.Authority;
+import com.handicraft.core.dto.Users.UserToAuthority;
+import com.handicraft.core.service.Users.UserToAuthorityService;
 import com.handicraft.core.utils.enums.Role;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.NoAspectBoundException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -30,14 +23,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.Period;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 

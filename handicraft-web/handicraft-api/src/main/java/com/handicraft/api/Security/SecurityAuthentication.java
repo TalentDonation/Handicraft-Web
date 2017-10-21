@@ -1,7 +1,6 @@
 package com.handicraft.api.Security;
 
-import com.handicraft.core.dto.User;
-import com.handicraft.core.dto.UserToAuthority;
+import com.handicraft.core.dto.Users.UserToAuthority;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;

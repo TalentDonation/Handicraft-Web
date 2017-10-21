@@ -1,10 +1,10 @@
 package com.handicraft.admin.controller;
 
 
-import com.handicraft.core.dto.Event;
-import com.handicraft.core.dto.EventToUser;
-import com.handicraft.core.service.EventService;
-import com.handicraft.core.service.EventToUserService;
+import com.handicraft.core.dto.Events.Event;
+import com.handicraft.core.dto.Events.EventToUser;
+import com.handicraft.core.service.Events.EventService;
+import com.handicraft.core.service.Events.EventToUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
