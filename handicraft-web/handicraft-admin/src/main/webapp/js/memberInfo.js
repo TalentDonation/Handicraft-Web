@@ -9,7 +9,7 @@ $(document).ready(
         var spreadSheetId = splitUrl[5];
         $.ajax({
             type: 'GET',
-            url: 'http://localhost:8080/sheets/' + spreadSheetId + '/' + title,
+            url: 'http://127.0.0.1:8080/member/sheets/' + spreadSheetId + '/' + title,
             data: {},
             dataType: 'json',
             success: function (response) {

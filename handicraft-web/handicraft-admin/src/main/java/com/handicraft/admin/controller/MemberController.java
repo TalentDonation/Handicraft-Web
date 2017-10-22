@@ -15,6 +15,7 @@ import com.handicraft.admin.util.GoogleOauthValue;
 import com.handicraft.core.dto.Excels.Excel;
 import com.handicraft.core.service.Excels.ExcelService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,13 +42,7 @@ public class MemberController {
     @Value("${USERID}")
     private String userId;
 
-    private static String spreadsheetId;
-
     private static String range;
-
-    private static Oauth2 oauth2;
-
-    private static GoogleClientSecrets clientSecrets;
 
     @Autowired
     ExcelService sheetsService;
@@ -95,22 +91,23 @@ public class MemberController {
         }
 */
 
-
         Credential newCredential = GoogleOauth.newTokens(userId , code);
 
-        Sheets sheets = GoogleOauth.getSheets(newCredential);
+        return new ModelAndView("forward:/member");
+    }
 
-        ModelAndView mv = setSheetsList(sheets);
-        mv.setViewName("member");
+    @RequestMapping(value = "/member/create/credentials", method = RequestMethod.GET)
+    public void createCredentials(HttpServletResponse httpServletResponse) throws Exception {
 
-        return mv;
+        httpServletResponse.sendRedirect(GoogleOauth.newAuthorize());
+
     }
 
     // 여기는 들어가자마자 보이는것들 ,db연동
     @RequestMapping(value = "/member", method = RequestMethod.GET)
-    public ModelAndView getMember(HttpServletResponse responses) throws Exception {
+    public ModelAndView getMember() throws Exception {
 
-        ModelAndView mv;
+        ModelAndView mv ;
 
         log.info("user " + userId);
 
@@ -120,12 +117,12 @@ public class MemberController {
         /*
         * token 유효성 검사
         * */
+        if(userCredential == null || userCredential.refreshToken() )
+        {
+           return new ModelAndView("forward:/member/create/credentials");
+        }
 
         log.info("access_token :  " + userCredential.getAccessToken());
-        if(userCredential.getAccessToken() == null || !userCredential.refreshToken())
-        {
-            responses.sendRedirect(GoogleOauth.newAuthorize());
-        }
 
         mv = setSheetsList(GoogleOauth.getSheets(userCredential));
 
@@ -157,10 +154,11 @@ public class MemberController {
 
 
     // data 출력하는 함수, ajax url을 넣어줄때 이런 형식으로 넣어준다
-    @RequestMapping(value = "/sheets/{sheets_id}/{title}", method = RequestMethod.GET)
-    public ResponseEntity getFileBySheetsId(HttpServletResponse responses , @PathVariable(value = "sheets_id") String sheets_id, @PathVariable(value = "title") String title) throws Exception {
+    @RequestMapping(value = "/member/sheets/{sheets_id}/{title}", method = RequestMethod.GET)
+    public ResponseEntity getFileBySheetsId( @PathVariable(value = "sheets_id") String sheets_id, @PathVariable(value = "title") String title) throws Exception {
 
         ResponseEntity<ArrayList<List<Object>>> results;
+        String spreadsheetId;
 
         GoogleAuthorizationCodeFlow flow = GoogleOauth.getFlow();
         Credential userCredential = flow.loadCredential(userId);
@@ -168,12 +166,13 @@ public class MemberController {
         /*
         * token 유효성 검사
         * */
-        log.info("access_token :  " + userCredential.getAccessToken());
-        if(userCredential.getAccessToken() == null && !userCredential.refreshToken())
+        log.info("test");
+        if(userCredential.refreshToken())
         {
-            responses.sendRedirect(GoogleOauth.newAuthorize());
+            return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
 
+        log.info("access_token :  " + userCredential.getAccessToken());
 
         Sheets service = GoogleOauth.getSheets(userCredential);
         spreadsheetId = sheets_id;
@@ -188,7 +187,7 @@ public class MemberController {
 
     }
 
-    public ResponseEntity<ArrayList<List<Object>>> getSpreadSheetsData(List<List<Object>> values) {
+    private ResponseEntity<ArrayList<List<Object>>> getSpreadSheetsData(List<List<Object>> values) {
         ResponseEntity<ArrayList<List<Object>>> results = null;
         if (values == null || values.size() == 0) {
             System.out.println("No data found");
@@ -208,8 +207,8 @@ public class MemberController {
                     }
                 }
 
-                System.out.println(row.toString());
-                System.out.println(row.getClass());
+                log.info(row.toString());
+                log.info(row.getClass().toString());
                 result.add(row);
             }
 
@@ -222,6 +221,7 @@ public class MemberController {
     private ModelAndView setSheetsList(Sheets sheetParm) throws IOException {
 
         Spreadsheet spreadsheet;
+        String spreadsheetId;
         String url[];
 
         List<Excel> sheetsList = sheetsService.findSheets();
@@ -233,29 +233,29 @@ public class MemberController {
 
         for(Excel sheets : sheetsList) {
 
-            google.add(sheets.getUrl());
+
             url = sheets.getUrl().split("/");
 
             spreadsheetId = url[5];
 
-            log.info("SpreadsheetId : " +spreadsheetId);
+            log.info("SpreadsheetId : " + spreadsheetId);
 
             spreadsheet = sheetParm.spreadsheets().get("/").setSpreadsheetId(spreadsheetId).setIncludeGridData(true)
                                     .set("fields", "sheets.properties").execute();
             List<String> subList = new ArrayList<>();
 
             for (Sheet sheet : spreadsheet.getSheets()) {
+
                 subList.add(sheet.getProperties().getTitle());
+
                 log.info(sheet.getProperties().getTitle());
             }
             list.add(subList);
+            google.add(spreadsheetId);
 
         }
         log.info(list.toString());
         log.info(google.toString());
-
-        log.info(sheetParm.toString());
-
 
         mv.addObject("title",list);
         mv.addObject("url",google);
