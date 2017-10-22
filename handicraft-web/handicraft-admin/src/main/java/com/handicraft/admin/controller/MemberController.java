@@ -93,7 +93,7 @@ public class MemberController {
 
         Credential newCredential = GoogleOauth.newTokens(userId , code);
 
-        return new ModelAndView("forward:/member");
+        return new ModelAndView("redirect:/member");
     }
 
     @RequestMapping(value = "/member/create/credentials", method = RequestMethod.GET)
@@ -166,7 +166,6 @@ public class MemberController {
         /*
         * token 유효성 검사
         * */
-        log.info("test");
         if(userCredential.refreshToken())
         {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
@@ -251,7 +250,7 @@ public class MemberController {
                 log.info(sheet.getProperties().getTitle());
             }
             list.add(subList);
-            google.add(spreadsheetId);
+            google.add(sheets.getUrl());
 
         }
         log.info(list.toString());

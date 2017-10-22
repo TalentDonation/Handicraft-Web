@@ -14,6 +14,8 @@ import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.FileSystemUtils;
+import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +23,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 @Component
 public class GoogleOauthValue {
@@ -43,7 +46,7 @@ public class GoogleOauthValue {
 
     static {
 
-        DATA_STORE_DIR = new File(System.getProperty("user.home", ".credentials/sheets.googleapis.com-java-quickstart"));
+        DATA_STORE_DIR = new File(System.getProperty("user.home", ".credentials/sheets.googleapis.spreadsheets"));
         JSON_FACTORY = JacksonFactory.getDefaultInstance();
         SCOPES = Arrays.asList(SheetsScopes.SPREADSHEETS_READONLY);
 

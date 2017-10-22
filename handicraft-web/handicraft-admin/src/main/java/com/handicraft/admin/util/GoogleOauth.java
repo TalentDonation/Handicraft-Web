@@ -27,23 +27,7 @@ public class GoogleOauth {
                             GoogleOauthValue.getHttpTransport(), GoogleOauthValue.getJSON_FACTORY() , GoogleOauthValue.getClientSecrets() , GoogleOauthValue.getSCOPES())
                             .setDataStoreFactory(GoogleOauthValue.getDataStoreFactory())
                             .setAccessType("offline")
-                            .setRefreshListeners(Arrays.asList(new CredentialRefreshListener() {
-                                @Override
-                                public void onTokenResponse(Credential credential, TokenResponse tokenResponse) throws IOException {
-
-                                    log.info("token validation success : " + tokenResponse.getAccessToken());
-                                    log.info("token validation access token : " + tokenResponse.getAccessToken());
-
-
-                                    credential.setFromTokenResponse(tokenResponse);
-                                }
-
-                                @Override
-                                public void onTokenErrorResponse(Credential credential, TokenErrorResponse tokenErrorResponse) throws IOException {
-
-                                    log.info("token validation error : " + tokenErrorResponse.getError());
-                                }
-                            }))
+                            .setRefreshListeners(Arrays.asList(getCredentialRefreshListener()))
                             .build();
         } catch (IOException e) {
             e.printStackTrace();
@@ -59,27 +43,31 @@ public class GoogleOauth {
                             GoogleOauthValue.getHttpTransport(), GoogleOauthValue.getJSON_FACTORY() , GoogleOauthValue.getClientSecrets() , GoogleOauthValue.getSCOPES())
                             .setDataStoreFactory(GoogleOauthValue.getDataStoreFactory())
                             .setAccessType("offline")
-                            .setRefreshListeners(Arrays.asList(new CredentialRefreshListener() {
-                                @Override
-                                public void onTokenResponse(Credential credential, TokenResponse tokenResponse) throws IOException {
-
-                                    log.info("token validation success : " + tokenResponse.getAccessToken());
-                                    log.info("token validation access token : " + tokenResponse.getAccessToken());
-
-
-                                    credential.setFromTokenResponse(tokenResponse);
-                                }
-
-                                @Override
-                                public void onTokenErrorResponse(Credential credential, TokenErrorResponse tokenErrorResponse) throws IOException {
-
-                                    log.info("token validation error : " + tokenErrorResponse.getError());
-                                }
-                            }))
+                            .setRefreshListeners(Arrays.asList(getCredentialRefreshListener()))
                             .build();
         }
 
         return flow;
+    }
+
+    private static CredentialRefreshListener getCredentialRefreshListener() {
+        return new CredentialRefreshListener() {
+            @Override
+            public void onTokenResponse(Credential credential, TokenResponse tokenResponse) throws IOException {
+
+                log.info("token validation success : " + tokenResponse.getAccessToken());
+                log.info("token validation access token : " + tokenResponse.getAccessToken());
+
+
+                credential.setFromTokenResponse(tokenResponse);
+            }
+
+            @Override
+            public void onTokenErrorResponse(Credential credential, TokenErrorResponse tokenErrorResponse) throws IOException {
+
+                log.info("token validation error : " + tokenErrorResponse.getError());
+            }
+        };
     }
 
     public static  String newAuthorize() throws IOException {
