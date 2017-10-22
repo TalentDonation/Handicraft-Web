@@ -1,25 +1,22 @@
 package com.handicraft.admin.controller;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
-import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
-import com.google.api.client.http.HttpTransport;
-import com.google.api.client.json.JsonFactory;
-import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.Sheet;
 import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.handicraft.admin.util.GoogleOauth;
+import com.handicraft.admin.util.GoogleOauthValue;
 import com.handicraft.core.dto.Excels.Excel;
 import com.handicraft.core.service.Excels.ExcelService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,104 +27,113 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import java.io.File;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 @Controller
+@Slf4j
 public class MemberController {
-    private static final String APPLICATION_NAME = "handicraft";
-    private static final java.io.File DATA_STORE_DIR = new java.io.File(System.getProperty("user.home", ".credentials/sheets.googleapis.com-java-quickstart"));
-    private static FileDataStoreFactory DATA_STORE_FACTORY;
-    private static final JsonFactory JSON_FACTORY = JacksonFactory.getDefaultInstance();
-    private static HttpTransport HTTP_TRANSPORT;
-    private static final List<String> SCOPES = Arrays.asList(SheetsScopes.SPREADSHEETS_READONLY);
+
+    @Value("${USERID}")
+    private String userId;
+
     private static String spreadsheetId;
+
     private static String range;
 
     private static Oauth2 oauth2;
+
     private static GoogleClientSecrets clientSecrets;
 
     @Autowired
     ExcelService sheetsService;
 
-    static {
-        try {
-            HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
-            DATA_STORE_FACTORY = new FileDataStoreFactory(DATA_STORE_DIR);
-        } catch (Throwable t) {
-            t.printStackTrace();
-            System.exit(1);
+
+    @RequestMapping(value = "/member/redirect/auth", method = RequestMethod.GET)
+    public ModelAndView googleOauthRedirectAuth(@RequestParam("code") String code) throws Exception {
+
+        log.info("auth code : " + code);
+
+        /*
+        * 직접 통신해서 새로운 token을 받아온 겅우
+        * */
+/*
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Type","application/x-www-form-urlencoded");
+
+        MultiValueMap<String , String> map = new LinkedMultiValueMap<>();
+        map.add("code" , code);
+        map.add("client_id" , GoogleOauthValue.getClientSecrets().getWeb().getClientId());
+        map.add("client_secret" , GoogleOauthValue.getClientSecrets().getWeb().getClientSecret());
+        map.add("redirect_uri" , GoogleOauthValue.getClientSecrets().getWeb().getRedirectUris().get(2));
+        map.add("grant_type" , "authorization_code");
+
+
+        HttpEntity<MultiValueMap<String, String>> httpEntity = new HttpEntity<>(map , headers);
+
+        ResponseEntity<GoogleTokens> responseEntity = restTemplate.exchange(GoogleOauthValue.getClientSecrets().getWeb().getTokenUri(), HttpMethod.POST , httpEntity , GoogleTokens.class);
+
+        GoogleTokens googleTokens = responseEntity.getBody();
+        if(responseEntity.getStatusCode() == HttpStatus.OK)
+        {
+            log.info("access_token : " + googleTokens.getAccess_token());
+            log.info("refresh_token : " + googleTokens.getRefresh_token());
+            log.info("expires_in : " + googleTokens.getExpires_in());
+            log.info("token_type : " + googleTokens.getToken_type());
+
+
         }
-    }
-
-
-    private static Credential authorize() throws Exception {
-        // load client secrets
-        clientSecrets = GoogleClientSecrets.load(JSON_FACTORY,
-                new InputStreamReader(MemberController.class.getResourceAsStream("/client_secrets.json")));
-        if (clientSecrets.getDetails().getClientId().startsWith("Enter")
-                || clientSecrets.getDetails().getClientSecret().startsWith("Enter ")) {
-            System.out.println("Enter Client ID and Secret from https://code.google.com/apis/console/ "
-                    + "into oauth2-cmdline-sample/src/main/resources/client_secrets.json");
-            System.exit(1);
+        else
+        {
+            throw new AuthorizationServiceException("Not Access Google Account");
         }
-        // set up authorization code flow
-        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-                HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES).setDataStoreFactory(
-                DATA_STORE_FACTORY).build();
-        // authorize
-        return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
-    }
+*/
 
-    public static Sheets getSheetsService() throws Exception {
-        Credential credential = authorize();
-        return new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential).setApplicationName(APPLICATION_NAME).build();
+
+        Credential newCredential = GoogleOauth.newTokens(userId , code);
+
+        Sheets sheets = GoogleOauth.getSheets(newCredential);
+
+        ModelAndView mv = setSheetsList(sheets);
+        mv.setViewName("member");
+
+        return mv;
     }
 
     // 여기는 들어가자마자 보이는것들 ,db연동
     @RequestMapping(value = "/member", method = RequestMethod.GET)
-    public ModelAndView getMember() throws Exception {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("member");
+    public ModelAndView getMember(HttpServletResponse responses) throws Exception {
 
+        ModelAndView mv;
 
-        List<Excel> sheetsList = sheetsService.findSheets();
-        List<String> google = new ArrayList<>();
-        List<List<String>> list = new ArrayList<>();
+        log.info("user " + userId);
 
-        for(Excel sheets : sheetsList){
-            google.add(sheets.getUrl());
-            String url[] = sheets.getUrl().split("/");
+        GoogleAuthorizationCodeFlow flow = GoogleOauth.getFlow();
+        Credential userCredential = flow.loadCredential(userId);
 
-            Sheets service = getSheetsService();
-            spreadsheetId = url[5];
+        /*
+        * token 유효성 검사
+        * */
 
-            Spreadsheet spreadsheet = service.spreadsheets().get("/").setSpreadsheetId(spreadsheetId).setIncludeGridData(true)
-                    .set("fields", "sheets.properties").execute();
-
-            List<String> subList = new ArrayList<>();
-
-            for (Sheet sheet : spreadsheet.getSheets()) {
-                subList.add(sheet.getProperties().getTitle());
-                System.out.println(sheet.getProperties().getTitle());
-            }
-            list.add(subList);
+        log.info("access_token :  " + userCredential.getAccessToken());
+        if(userCredential.getAccessToken() == null || !userCredential.refreshToken())
+        {
+            responses.sendRedirect(GoogleOauth.newAuthorize());
         }
-        System.out.println(list);
-        System.out.println(google);
 
-        mv.addObject("title",list);
-        mv.addObject("url",google);
+        mv = setSheetsList(GoogleOauth.getSheets(userCredential));
 
-
+        mv.setViewName("member");
         return mv;
     }
+
+
     @RequestMapping(value = "/member", method = RequestMethod.POST)
     public RedirectView insertUrl(@RequestParam("url") String url){
 
@@ -152,12 +158,24 @@ public class MemberController {
 
     // data 출력하는 함수, ajax url을 넣어줄때 이런 형식으로 넣어준다
     @RequestMapping(value = "/sheets/{sheets_id}/{title}", method = RequestMethod.GET)
-    public ResponseEntity getFileBySheetsId(@PathVariable(value = "sheets_id") String sheets_id, @PathVariable(value = "title") String title) throws Exception {
+    public ResponseEntity getFileBySheetsId(HttpServletResponse responses , @PathVariable(value = "sheets_id") String sheets_id, @PathVariable(value = "title") String title) throws Exception {
 
-        System.out.println("오 돌아간다!");
         ResponseEntity<ArrayList<List<Object>>> results;
 
-        Sheets service = getSheetsService();
+        GoogleAuthorizationCodeFlow flow = GoogleOauth.getFlow();
+        Credential userCredential = flow.loadCredential(userId);
+
+        /*
+        * token 유효성 검사
+        * */
+        log.info("access_token :  " + userCredential.getAccessToken());
+        if(userCredential.getAccessToken() == null && !userCredential.refreshToken())
+        {
+            responses.sendRedirect(GoogleOauth.newAuthorize());
+        }
+
+
+        Sheets service = GoogleOauth.getSheets(userCredential);
         spreadsheetId = sheets_id;
         range = title + "!A1:U1000";
 
@@ -167,6 +185,7 @@ public class MemberController {
         results = getSpreadSheetsData(values);
 
         return results;
+
     }
 
     public ResponseEntity<ArrayList<List<Object>>> getSpreadSheetsData(List<List<Object>> values) {
@@ -198,6 +217,50 @@ public class MemberController {
         }
 
         return results;
+    }
+
+    private ModelAndView setSheetsList(Sheets sheetParm) throws IOException {
+
+        Spreadsheet spreadsheet;
+        String url[];
+
+        List<Excel> sheetsList = sheetsService.findSheets();
+        List<String> google = new ArrayList<>();
+        List<List<String>> list = new ArrayList<>();
+
+        ModelAndView mv = new ModelAndView();
+
+
+        for(Excel sheets : sheetsList) {
+
+            google.add(sheets.getUrl());
+            url = sheets.getUrl().split("/");
+
+            spreadsheetId = url[5];
+
+            log.info("SpreadsheetId : " +spreadsheetId);
+
+            spreadsheet = sheetParm.spreadsheets().get("/").setSpreadsheetId(spreadsheetId).setIncludeGridData(true)
+                                    .set("fields", "sheets.properties").execute();
+            List<String> subList = new ArrayList<>();
+
+            for (Sheet sheet : spreadsheet.getSheets()) {
+                subList.add(sheet.getProperties().getTitle());
+                log.info(sheet.getProperties().getTitle());
+            }
+            list.add(subList);
+
+        }
+        log.info(list.toString());
+        log.info(google.toString());
+
+        log.info(sheetParm.toString());
+
+
+        mv.addObject("title",list);
+        mv.addObject("url",google);
+
+        return mv;
     }
 
 }
