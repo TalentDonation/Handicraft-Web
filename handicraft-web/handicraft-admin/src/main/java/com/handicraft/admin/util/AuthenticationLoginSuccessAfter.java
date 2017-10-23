@@ -51,7 +51,7 @@ public class AuthenticationLoginSuccessAfter implements AuthenticationSuccessHan
 
         log.info("Login Success");
 
-        UserToAuthority userToAuthority = userToAuthorityService.find(0);
+        UserToAuthority userToAuthority = userToAuthorityService.find(1);
 
         if(userToAuthority == null)
         {
