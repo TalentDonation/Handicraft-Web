@@ -1,4 +1,3 @@
-
 # arguments : development or production for profiles
 
 FROM centos:latest
@@ -18,11 +17,11 @@ RUN mkdir app
 
 COPY . ${HOME}/app
 
-# test:
 RUN ls -al /app/
 RUN ls -al /app/handicraft-web/
 
 # arg : arguments for profiles
+RUN  sh /app/shellscript/core.sh ${PROFILES}
 ENTRYPOINT sh /app/shellscript/deploy.sh ${PROFILES}  ${PROJECTS};
 
 

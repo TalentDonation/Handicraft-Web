@@ -3,8 +3,8 @@
 function deployAdmin()
 {
         cd ../handicraft-web/handicraft-admin/
-        mvnw clean
-        sh mvnw -Dspring.profiles.active="development-api" spring-boot:run
+        sh mvnw clean
+        sh mvnw -Dspring.profiles.active="production-admin" spring-boot:run
 }
 
 deployAdmin

@@ -1,0 +1,24 @@
+
+spring:
+  profiles:
+    include:  production-core , S3Config
+
+  mvc:
+    view:
+      prefix: /view/
+      suffix: .jsp
+
+
+server:
+  session:
+    timeout:  3000
+  port: 9090
+
+ADMIN:
+  PHONE: 010-8834-6771
+  ADDRESS:  경기도 성남시
+  NAME: 관리자
+
+
+USERID: user
+
