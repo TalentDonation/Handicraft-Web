@@ -1,15 +1,20 @@
 #!/bin/bash
 
 # arguments for profile
+# 1 : profiles - (development or production) , 2 : projects - (api or admin)
+
 function deploy()
 {
-	if test "$2" = "api" ;then
-		cd /app/handicraft-web/handicraft-api
-		sh mvnw -Dspring.profiles.active="$1-api" spring-boot:run
-	else
-		cd /app/handicraft-web/handicraft-admin
-		sh mvnw spring-boot:run
-	fi
+	echo ---------- build $2 core ----------
+	cd /app/handicraft-web/handicraft-core
+	sh mvnw clean
+	sh mvnw -Dspring.profiles.active="$1-core" install
+
+
+	echo ---------- build $2 $1 ----------
+	cd /app/handicraft-web/handicraft-$2/
+	sh mvnw -Dspring.profiles.active="$1-$2" spring-boot:run
+
 }
 
 deploy $1	$2

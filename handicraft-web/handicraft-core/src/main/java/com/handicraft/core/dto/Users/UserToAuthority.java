@@ -28,7 +28,7 @@ public class UserToAuthority extends UserAbs implements Serializable, UserDetail
 
     private static final long serialVersionUID = -5644826356153827379L;
 
-    @OneToOne(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER , cascade = {CascadeType.ALL})
     @JoinColumn(name = "aid")
     private Authority authority;
 

@@ -29,4 +29,9 @@ public class UserToAuthorityService implements UserDetailsService {
     {
         return userToAuthorityRepository.saveAndFlush(userToAuthority);
     }
+
+    public UserToAuthority insert(UserToAuthority userToAuthority)
+    {
+        return userToAuthorityRepository.save(userToAuthority);
+    }
 }

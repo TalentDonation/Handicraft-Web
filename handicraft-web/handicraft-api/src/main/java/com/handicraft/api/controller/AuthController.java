@@ -1,6 +1,7 @@
 package com.handicraft.api.controller;
 
 
+import com.handicraft.api.exception.NotFoundException;
 import com.handicraft.api.exception.UnAuthorizedException;
 import com.handicraft.api.utils.EncrypttionUtil;
 import com.handicraft.core.dto.Authorities.Authority;
@@ -188,6 +189,27 @@ public class AuthController {
 
 
         return new ResponseEntity(headers, HttpStatus.OK );
+    }
+
+    @PostMapping("/auth/signout")
+    @Transactional
+    public ResponseEntity signout(@RequestParam("uid") long uid)
+    {
+        UserToAuthority userToAuthority = userToAuthorityService.find(uid);
+
+        if(userToAuthority == null) throw new NotFoundException();
+
+        Authority authority = userToAuthority.getAuthority();
+            authority.setAccountExpired(false);
+            authority.setAccountLocked(false);
+            authority.setCredentialsExpired(false);
+            authority.setCredentialsLocked(false);
+            authority.setEnabled(false);
+
+        userToAuthority.setAuthority(authority);
+        userToAuthorityService.update(userToAuthority);
+
+        return new ResponseEntity( HttpStatus.OK );
     }
 
 

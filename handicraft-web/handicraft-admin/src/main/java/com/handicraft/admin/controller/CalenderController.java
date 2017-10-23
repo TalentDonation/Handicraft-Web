@@ -3,8 +3,12 @@ package com.handicraft.admin.controller;
 
 import com.handicraft.core.dto.Events.Event;
 import com.handicraft.core.dto.Events.EventToUser;
+import com.handicraft.core.dto.Users.UserToEvent;
+import com.handicraft.core.id.UserEventId;
 import com.handicraft.core.service.Events.EventService;
 import com.handicraft.core.service.Events.EventToUserService;
+import com.handicraft.core.service.UserEvent.UserEventService;
+import com.handicraft.core.service.Users.UserToEventService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,6 +32,12 @@ public class CalenderController {
 
     @Autowired
     EventToUserService eventToUserService;
+
+    @Autowired
+    UserToEventService userToEventService;
+
+    @Autowired
+    UserEventService userEventService;
 
     @Autowired
     EventService eventService;
@@ -62,15 +72,19 @@ public class CalenderController {
         log.info(title);
         log.info("This is start: "+ start);
 
+        UserToEvent userToEvent = userToEventService.find(1);
+
         Event event = new Event();
         event.setEid(0);
         event.setStart(simpleDateFormat.parse(start));
         event.setEnd(simpleDateFormat.parse(end));
         event.setTitle(title);
 
-        Event result = eventService.insert(event);
+        userToEvent.getEventList().add(event);
 
-        return new ResponseEntity<>(result , HttpStatus.ACCEPTED);
+       userToEventService.update(userToEvent);
+
+        return new ResponseEntity<>(event , HttpStatus.ACCEPTED);
 
     }
 
@@ -78,35 +92,47 @@ public class CalenderController {
     public ResponseEntity modifyEvent(@RequestParam("title") String title, @RequestParam("start") String start,
                                       @RequestParam("end") String end, @RequestParam("eid")String eid) throws ParseException
     {
-
+        long e_id = Long.parseLong(eid);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        Event event;
+
         log.info("It's in the modify");
         log.info(title);
         log.info("This is start in modify: " + start);
-        log.info("This is eid: " + eid);
+        log.info("This is eid: " + e_id);
 
-        Event event = new Event();
+        UserToEvent userToEvent = userToEventService.find(1);
+        List<Event> eventList = userToEvent.getEventList();
 
-        event.setStart(simpleDateFormat.parse(start));
-        event.setEnd(simpleDateFormat.parse(end));
-        event.setTitle(title);
-        event.setEid(Long.parseLong(eid));
-        Event result = eventService.update(event);
+        for( Event events : userToEvent.getEventList())
+        {
+            if(events.getEid() == e_id)
+            {
+                event = new Event();
+                event.setStart(simpleDateFormat.parse(start));
+                event.setEnd(simpleDateFormat.parse(end));
+                event.setTitle(title);
+                event.setEid(e_id);
 
+                eventList.set(eventList.indexOf(events) , event);
+                userToEvent.setEventList(eventList);
+                userToEventService.update(userToEvent);
 
-        return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
+                return new ResponseEntity<>(event, HttpStatus.ACCEPTED);
+            }
+        }
+
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(value = "/calender/deleteevent", method = RequestMethod.GET)
     public ResponseEntity deleteEvent(@RequestParam("id") String id) {
         log.info("I'm in delete!");
         log.info("This is id: " + id);
-        List<String> result = new ArrayList<>();
 
-        eventToUserService.remove(Long.parseLong(id));
-        result.add(id);
+        userEventService.deleteByUserEventId(new UserEventId(1, Long.parseLong(id) ));
 
-        return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(new ArrayList<>().add(id) , HttpStatus.ACCEPTED);
     }
 
 
