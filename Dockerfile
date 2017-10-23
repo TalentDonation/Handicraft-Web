@@ -22,6 +22,7 @@ RUN ls -al /app/handicraft-web/
 
 # arg : arguments for profiles
 RUN  sh /app/shellscript/core.sh ${PROFILES}
+RUN  sh /app/shellscript/deploy.sh ${PROFILES}  ${PROJECTS};
 ENTRYPOINT sh /app/shellscript/deploy.sh ${PROFILES}  ${PROJECTS};
 
 
