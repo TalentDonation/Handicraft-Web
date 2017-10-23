@@ -1,10 +1,7 @@
 package com.handicraft.admin.controller;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeTokenRequest;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.googleapis.auth.oauth2.*;
 import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.Sheet;
@@ -117,12 +114,24 @@ public class MemberController {
         /*
         * token 유효성 검사
         * */
-        if(userCredential == null || userCredential.refreshToken() )
+        if(userCredential == null || !userCredential.refreshToken())
         {
            return new ModelAndView("forward:/member/create/credentials");
         }
 
+
+        /*
+         * userCredential.refreshToken() 와 동일한 동작 수행
+         * refreshToken 요청
+         *
+         * */
+        //GoogleOauth.refreshTokens(userId , userCredential.getRefreshToken());
+
+
+
         log.info("access_token :  " + userCredential.getAccessToken());
+        log.info("refresh_token :  " + userCredential.getRefreshToken());
+        log.info("is refresh_token :  " + userCredential.refreshToken());
 
         mv = setSheetsList(GoogleOauth.getSheets(userCredential));
 
@@ -166,7 +175,7 @@ public class MemberController {
         /*
         * token 유효성 검사
         * */
-        if(userCredential.refreshToken())
+        if(!userCredential.refreshToken())
         {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }

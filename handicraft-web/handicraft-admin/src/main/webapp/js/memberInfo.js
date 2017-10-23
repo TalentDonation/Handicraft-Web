@@ -9,7 +9,7 @@ $(document).ready(
         var spreadSheetId = splitUrl[5];
         $.ajax({
             type: 'GET',
-            url: 'http://127.0.0.1:9090/member/sheets/' + spreadSheetId + '/' + title,
+            url: 'http://www.half-handicraft.com/member/sheets/' + spreadSheetId + '/' + title,
             data: {},
             dataType: 'json',
             success: function (response) {
