@@ -35,6 +35,7 @@ public class EventService {
 
     public Event findById(long eid)
     {
+        if(!eventRepository.exists(eid))    return null;
         return eventRepository.findOne(eid);
     }
 }

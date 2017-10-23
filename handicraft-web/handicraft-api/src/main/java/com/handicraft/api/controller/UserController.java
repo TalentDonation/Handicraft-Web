@@ -226,7 +226,7 @@ public class UserController {
 	@GetMapping("/users/{uid}/events")
 	@ApiOperation(value = "" , notes = "Show one user about user id")
 	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public UserToEvent findEventsOnUsers(@PathVariable("uid") int uid , @AuthenticationPrincipal Long authUid)
+	public UserToEvent findEventsOnUsersByUid(@PathVariable("uid") int uid , @AuthenticationPrincipal Long authUid)
 	{
 		if(authUid != uid)	throw new BadRequestException();
 
@@ -239,7 +239,7 @@ public class UserController {
 	@PostMapping("/users/{uid}/events")
 	@ApiOperation(value = "" , notes = "Show one user about user id")
 	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity insertEventsOnUsers(@PathVariable("uid") long uid , @ModelAttribute("event")Event event)
+	public ResponseEntity insertEventsOnUsersByUid(@PathVariable("uid") long uid , @ModelAttribute("event")Event event)
 	{
 		UserToEvent userToEvent = userToEventService.find(uid);
 
@@ -253,21 +253,11 @@ public class UserController {
 		return new ResponseEntity(HttpStatus.OK);
 	}
 
-	@PutMapping("/users/{uid}/events")
-	@ApiOperation(value="" , notes = "Update one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity updateEventOnUsers(@PathVariable("uid") int uid , @ModelAttribute("event")Event event)
-	{
-		if(eventService.update(event) == null) throw new NotFoundException();
-
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
 
 	@DeleteMapping("/users/{uid}/events")
 	@ApiOperation(value = "" , notes = "Delete one user about user id")
 	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity deleteEventsOnUsers(@RequestParam("uid") long uid)
+	public ResponseEntity deleteEventsOnUsersByUid(@RequestParam("uid") long uid)
 	{
 
 		eventToUserService.removeByUid(uid);
@@ -278,7 +268,7 @@ public class UserController {
 	@GetMapping("/users/{uid}/events/{eid}")
 	@ApiOperation(value = "" , notes = "Show one user about user id")
 	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public Event findEventOnUsers(@PathVariable("uid") int uid , @PathVariable("uid") int eid ,  @AuthenticationPrincipal Long authUid)
+	public Event findEventOnUsersByUidANDEid(@PathVariable("uid") int uid , @PathVariable("uid") int eid ,  @AuthenticationPrincipal Long authUid)
 	{
 		Event result;
 
@@ -291,12 +281,23 @@ public class UserController {
 		return result;
 	}
 
+	@PutMapping("/users/{uid}/events/{eid}")
+	@ApiOperation(value="" , notes = "Update one user about user id")
+	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
+	public ResponseEntity updateEventOnUsersByUid(@PathVariable("uid") int uid , @PathVariable("uid") int eid, @ModelAttribute("event")Event event)
+	{
 
+		if(eventService.findById(eid) == null) throw new NotFoundException();
+
+		eventService.update(event);
+
+		return new ResponseEntity(HttpStatus.OK);
+	}
 
 	@DeleteMapping("/users/{uid}/events/{eid}")
 	@ApiOperation(value = "" , notes = "Delete one user about user id")
 	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity deleteEventOnUsers(@PathVariable("uid") int uid , @PathVariable("uid") int eid ,  @AuthenticationPrincipal Long authUid)
+	public ResponseEntity deleteEventOnUsersByUidANDEid(@PathVariable("uid") int uid , @PathVariable("uid") int eid ,  @AuthenticationPrincipal Long authUid)
 	{
 		if(authUid != uid)	new BadRequestException();
 
