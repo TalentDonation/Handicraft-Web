@@ -8,11 +8,14 @@ function deploy()
  	cd /app/handicraft-web/handicraft-core
  	sh mvnw clean
  	sh mvnw -Dspring.profiles.active="$1-core" install
- 
 
- 	echo ---------- build $2 $1 ----------
- 	cd /app/handicraft-web/handicraft-$2/
- 	sh mvnw -Dspring.profiles.active="$1-$2" spring-boot:run
+	if [$2 -eq "api"];
+	 	then
+			echo ---------- build $2 $1 ----------
+		 	cd /app/handicraft-web/handicraft-$2/
+		 	sh mvnw -Dspring.profiles.active="$1-$2" spring-boot:run
+	fi
+
 }
 
 deploy $1	$2

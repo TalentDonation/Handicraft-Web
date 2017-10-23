@@ -20,7 +20,7 @@ jobs:
       script:	sudo docker build -t dev-api --build-arg profiles=development --build-arg projects=api .
 
     - stage: docker 'production - admin' build test
-      script:       sudo docker build -t prod-admin --build-arg profiles=production --build-arg projects=admin .
+      script: sudo docker build -t prod-admin --build-arg profiles=production --build-arg projects=admin .
 
     - stage: docker 'production - api' build test
       script:	sudo docker build -t prod-api --build-arg profiles=production --build-arg projects=api .
