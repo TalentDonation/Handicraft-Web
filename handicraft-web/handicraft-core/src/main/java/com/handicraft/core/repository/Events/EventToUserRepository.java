@@ -12,5 +12,5 @@ public interface EventToUserRepository extends JpaRepository<EventToUser , Long 
 
     List<EventToUser> findByStartGreaterThanEqualAndEndLessThanEqual(Date start , Date end);
 
-    void deleteAllByUserList(long uid);
+    void deleteAllByUserList_Uid(long uid);
 }

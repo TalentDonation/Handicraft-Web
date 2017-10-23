@@ -31,7 +31,14 @@ public class EventController {
     @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public List<EventToUser> findEvents()
     {
-        return eventToUserService.find();
+        List<EventToUser> eventToUserList = eventToUserService.find();
+
+        for(EventToUser eventToUser : eventToUserList)
+        {
+            eventToUser.setUid(eventToUser.getUserList().get(0).getUid());
+        }
+
+        return eventToUserList;
     }
 
     @GetMapping("/events/between")
@@ -39,6 +46,13 @@ public class EventController {
     @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
     public List<EventToUser> findEventsByDate(@RequestParam("start") Date start  , @RequestParam("end") Date end) {
 
-        return eventToUserService.findByDate(start , end);
+        List<EventToUser> eventToUserList = eventToUserService.findByDate(start , end);
+
+        for(EventToUser eventToUser : eventToUserList)
+        {
+            eventToUser.setUid(eventToUser.getUserList().get(0).getUid());
+        }
+
+        return eventToUserList;
     }
 }

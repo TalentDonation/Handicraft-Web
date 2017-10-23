@@ -1,7 +1,9 @@
 package com.handicraft.core.dto.Events;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.handicraft.core.dto.Users.UserToEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -23,6 +25,9 @@ import java.util.List;
 public class EventToUser extends EventAbs  implements Serializable{
 
     private static final long serialVersionUID = 50314411440539315L;
+
+    @Transient
+    private long uid;
 
     @JsonBackReference
     @ManyToMany(fetch = FetchType.LAZY , mappedBy = "eventList")

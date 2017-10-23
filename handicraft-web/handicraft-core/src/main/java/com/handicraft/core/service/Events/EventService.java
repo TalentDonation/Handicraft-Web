@@ -32,4 +32,9 @@ public class EventService {
     {
         eventRepository.delete(event);
     }
+
+    public Event findById(long eid)
+    {
+        return eventRepository.findOne(eid);
+    }
 }
