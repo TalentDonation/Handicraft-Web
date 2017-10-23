@@ -30,6 +30,6 @@ public class EventToUser extends EventAbs  implements Serializable{
     private long uid;
 
     @JsonBackReference
-    @ManyToMany(fetch = FetchType.LAZY , mappedBy = "eventList")
+    @ManyToMany(fetch = FetchType.LAZY , mappedBy = "eventList" )
     private List<UserToEvent> userList;
 }

@@ -3,6 +3,7 @@ package com.handicraft.core.service.Events;
 import com.handicraft.core.dto.Events.EventToUser;
 import com.handicraft.core.repository.Events.EventToUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,10 +42,4 @@ public class EventToUserService {
         eventToUserRepository.delete(eid);
     }
 
-
-    @Transactional
-    public void removeByUid(long uid)
-    {
-        eventToUserRepository.deleteAllByUserList_Uid(uid);
-    }
 }

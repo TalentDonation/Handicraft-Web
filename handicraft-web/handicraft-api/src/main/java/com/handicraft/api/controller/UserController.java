@@ -8,8 +8,10 @@ import com.handicraft.core.dto.Events.EventToUser;
 import com.handicraft.core.dto.Users.User;
 import com.handicraft.core.dto.Users.UserToEvent;
 import com.handicraft.core.dto.Users.UserToImage;
+import com.handicraft.core.id.UserEventId;
 import com.handicraft.core.service.Events.EventService;
 import com.handicraft.core.service.Events.EventToUserService;
+import com.handicraft.core.service.UserEvent.UserEventService;
 import com.handicraft.core.service.Users.UserService;
 import com.handicraft.core.service.Users.UserToAuthorityService;
 import com.handicraft.core.service.Users.UserToEventService;
@@ -54,6 +56,9 @@ public class UserController {
 
 	@Autowired
 	EventToUserService eventToUserService;
+
+	@Autowired
+	UserEventService userEventService;
 
 	@Value("${images-path}")
 	String imagePath;
@@ -260,7 +265,7 @@ public class UserController {
 	public ResponseEntity deleteEventsOnUsersByUid(@RequestParam("uid") long uid)
 	{
 
-		eventToUserService.removeByUid(uid);
+		userEventService.deleteByUid(uid);
 
 		return new ResponseEntity(HttpStatus.OK);
 	}
@@ -297,9 +302,12 @@ public class UserController {
 	@DeleteMapping("/users/{uid}/events/{eid}")
 	@ApiOperation(value = "" , notes = "Delete one user about user id")
 	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity deleteEventOnUsersByUidANDEid(@PathVariable("uid") int uid , @PathVariable("uid") int eid ,  @AuthenticationPrincipal Long authUid)
+	public ResponseEntity deleteEventOnUsersByUidANDEid(@PathVariable("uid") int uid , @PathVariable("eid") int eid ,  @AuthenticationPrincipal Long authUid)
 	{
 		if(authUid != uid)	new BadRequestException();
+
+		userEventService.deleteByUserEventId(new UserEventId(uid,eid));
+
 
 		return new ResponseEntity(HttpStatus.OK);
 	}

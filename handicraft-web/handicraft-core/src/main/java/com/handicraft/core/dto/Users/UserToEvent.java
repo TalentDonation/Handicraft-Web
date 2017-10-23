@@ -25,7 +25,7 @@ public class UserToEvent extends UserAbs implements Serializable {
     private static final long serialVersionUID = -3675134326772648025L;
 
     @JsonManagedReference
-    @ManyToMany(fetch = FetchType.LAZY , cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY , cascade = {CascadeType.PERSIST , CascadeType.DETACH , CascadeType.MERGE , CascadeType.REFRESH})
     @JoinTable(
             name = "user_event"
             ,joinColumns = {@JoinColumn(name = "uid")}

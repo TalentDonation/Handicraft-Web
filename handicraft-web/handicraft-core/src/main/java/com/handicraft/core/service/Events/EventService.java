@@ -33,6 +33,11 @@ public class EventService {
         eventRepository.delete(event);
     }
 
+    public void removeById(long eid)
+    {
+        eventRepository.delete(eid);
+    }
+
     public Event findById(long eid)
     {
         if(!eventRepository.exists(eid))    return null;
