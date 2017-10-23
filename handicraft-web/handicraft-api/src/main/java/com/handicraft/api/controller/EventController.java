@@ -44,9 +44,11 @@ public class EventController {
     @GetMapping("/events/between")
     @ApiOperation(value = "" , notes = "Delete one user about user id")
     @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public List<EventToUser> findEventsByDate(@RequestParam("start") Date start  , @RequestParam("end") Date end) {
+    public List<EventToUser> findEventsByDate(@RequestParam("start") String start  , @RequestParam("end") String end) throws ParseException {
 
-        List<EventToUser> eventToUserList = eventToUserService.findByDate(start , end);
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        List<EventToUser> eventToUserList = eventToUserService.findByDate(format.parse(start) , format.parse(end));
 
         for(EventToUser eventToUser : eventToUserList)
         {

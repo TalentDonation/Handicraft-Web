@@ -9,18 +9,18 @@ sudo:	required
 os:	linux
 
 services:
-	- docker
+  - docker
 
 jobs:
-	include:
-		- stage: docker 'development - admin' build test
-		  script:	sudo docker build -t dev-admin --build-arg profiles=development --build-arg projects=admin . 
+  include:
+    - stage: docker 'development - admin' build test
+      script:	sudo docker build -t dev-admin --build-arg profiles=development --build-arg projects=admin .
 
-		- stage: docker 'development - api' build test
-		  script:	sudo docker build -t dev-api --build-arg profiles=development --build-arg projects=api .
+    - stage: docker 'development - api' build test
+      script:	sudo docker build -t dev-api --build-arg profiles=development --build-arg projects=api .
 
-		- stage: docker 'production - api' build test
-                  script:       sudo docker build -t prod-admin --build-arg profiles=production --build-arg projects=admin .                                                                
+    - stage: docker 'production - api' build test
+      script:       sudo docker build -t prod-admin --build-arg profiles=production --build-arg projects=admin .
 
-		- stage: docker 'production - api' build test
-		  script:	sudo docker build -t prod-api --build-arg profiles=production --build-arg projects=api .
+    - stage: docker 'production - api' build test
+      script:	sudo docker build -t prod-api --build-arg profiles=production --build-arg projects=api .
