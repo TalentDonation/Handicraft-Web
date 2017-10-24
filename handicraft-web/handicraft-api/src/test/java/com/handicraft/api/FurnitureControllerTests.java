@@ -31,7 +31,7 @@ public class FurnitureControllerTests {
     @Test
     public void test() throws Exception {
 
-        this.mockMvc.perform(get("/furniture?page=1&per_page=3"))
-                    .andDo(print());
+//        this.mockMvc.perform(get("/furniture?page=1&per_page=3"))
+//                    .andDo(print());
     }
 }

@@ -1,6 +1,6 @@
 spring:
   profiles:
-    include: development-core , S3Config
+    include: development-core
 
   jackson:
     serialization:

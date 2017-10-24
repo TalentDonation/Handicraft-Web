@@ -12,7 +12,7 @@ function package()
 	if [ $2 == "api" ]	;	then
 		echo ---------- build $2 $1 ----------
 		cd /app/handicraft-web/handicraft-$2/
-		sh mvnw package -Dspring.profiles.active="$1-$2" spring-boot:repackage
+		sh mvnw -Dspring.profiles.active="$1-$2"	package	spring-boot:repackage
 	fi
 
 }
