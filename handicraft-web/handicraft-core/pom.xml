@@ -5,7 +5,7 @@
 
 	<groupId>com.handicraft</groupId>
 	<artifactId>handicraft-core</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>handicraft-core</name>
