@@ -21,12 +21,16 @@ public class UserToAuthorityService implements UserDetailsService {
     }
 
     public UserToAuthority find(long uid) {
+
+        if(!userToAuthorityRepository.exists(uid)) return null;
+
         return userToAuthorityRepository.findOne(uid);
     }
 
     @Modifying
     public UserToAuthority update(UserToAuthority userToAuthority)
     {
+
         return userToAuthorityRepository.saveAndFlush(userToAuthority);
     }
 

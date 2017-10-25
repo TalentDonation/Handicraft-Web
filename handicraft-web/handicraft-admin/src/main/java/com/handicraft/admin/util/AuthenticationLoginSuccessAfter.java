@@ -4,6 +4,8 @@ import com.handicraft.core.dto.Authorities.Authority;
 import com.handicraft.core.dto.Users.UserToAuthority;
 import com.handicraft.core.service.Users.UserToAuthorityService;
 import com.handicraft.core.utils.enums.Role;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,10 +30,10 @@ import java.io.IOException;
  */
 
 @Slf4j
+@Component
 public class AuthenticationLoginSuccessAfter implements AuthenticationSuccessHandler{
 
 
-    @Autowired
     private UserToAuthorityService userToAuthorityService;
 
     @Value("${ADMIN.NAME}")
@@ -46,16 +48,22 @@ public class AuthenticationLoginSuccessAfter implements AuthenticationSuccessHan
     @Value("${server.session.timeout}")
     private String expired;
 
+    @Autowired
+    public AuthenticationLoginSuccessAfter(UserToAuthorityService userToAuthorityService) {
+        this.userToAuthorityService = userToAuthorityService;
+    }
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Authentication authentication) throws IOException, ServletException {
 
         log.info("Login Success");
 
         UserToAuthority userToAuthority = userToAuthorityService.find(1);
+        Authority authority;
 
         if(userToAuthority == null)
         {
-            Authority authority = new Authority();
+            authority = new Authority();
             authority.setAid(0);
             authority.setAccountExpired(false);
             authority.setAccountLocked(false);
@@ -77,6 +85,17 @@ public class AuthenticationLoginSuccessAfter implements AuthenticationSuccessHan
 
             log.info("Admin Account Insert");
 
+        }
+        else
+        {
+            authority = userToAuthority.getAuthority();
+            authority.setAccountExpired(false);
+            authority.setAccountLocked(false);
+            authority.setCredentialsExpired(false);
+            authority.setCredentialsLocked(false);
+            authority.setEnabled(true);
+            userToAuthority.setAuthority(authority);
+            userToAuthorityService.update(userToAuthority);
         }
 
 

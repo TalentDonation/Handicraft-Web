@@ -94,35 +94,22 @@ public class CalenderController {
     {
         long e_id = Long.parseLong(eid);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-        Event event;
+
+        Event event = new Event();
+        event.setStart(simpleDateFormat.parse(start));
+        event.setEnd(simpleDateFormat.parse(end));
+        event.setTitle(title);
+        event.setEid(e_id);
 
         log.info("It's in the modify");
         log.info(title);
         log.info("This is start in modify: " + start);
         log.info("This is eid: " + e_id);
 
-        UserToEvent userToEvent = userToEventService.find(1);
-        List<Event> eventList = userToEvent.getEventList();
 
-        for( Event events : userToEvent.getEventList())
-        {
-            if(events.getEid() == e_id)
-            {
-                event = new Event();
-                event.setStart(simpleDateFormat.parse(start));
-                event.setEnd(simpleDateFormat.parse(end));
-                event.setTitle(title);
-                event.setEid(e_id);
+        Event newEvent = eventService.update(event);
 
-                eventList.set(eventList.indexOf(events) , event);
-                userToEvent.setEventList(eventList);
-                userToEventService.update(userToEvent);
-
-                return new ResponseEntity<>(event, HttpStatus.ACCEPTED);
-            }
-        }
-
-        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(newEvent , HttpStatus.OK);
     }
 
     @RequestMapping(value = "/calender/deleteevent", method = RequestMethod.GET)
@@ -130,7 +117,7 @@ public class CalenderController {
         log.info("I'm in delete!");
         log.info("This is id: " + id);
 
-        userEventService.deleteByUserEventId(new UserEventId(1, Long.parseLong(id) ));
+        userEventService.deleteByEid(Long.parseLong(id));
 
         return new ResponseEntity<>(new ArrayList<>().add(id) , HttpStatus.ACCEPTED);
     }

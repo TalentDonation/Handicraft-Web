@@ -1,8 +1,8 @@
 package com.handicraft.admin.config;
 
 import com.handicraft.admin.util.AuthenticationLoginSuccessAfter;
-import com.handicraft.admin.util.AuthenticationLogoutSuccessAfter;
 import com.handicraft.core.utils.enums.Role;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +18,8 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    @Autowired
+    private AuthenticationLoginSuccessAfter authenticationLoginSuccessAfter;
 
 
     @Override
@@ -46,13 +48,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
                 .formLogin()
                     .loginPage("/login")
-                    .successHandler(new AuthenticationLoginSuccessAfter())
+                    .successHandler(authenticationLoginSuccessAfter)
                     .permitAll()
                 .and()
                 .logout()
                     .logoutUrl("/logout")
                     .clearAuthentication(true)
-                    .logoutSuccessHandler(new AuthenticationLogoutSuccessAfter());
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID")
+                    ;
 
 
 

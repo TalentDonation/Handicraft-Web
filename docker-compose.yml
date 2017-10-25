@@ -1,0 +1,48 @@
+version: "3.3"
+services:
+ admin:
+  image: admin/prod
+  ports:
+   - "80:9090"
+  restart: unless-stopped
+  build:
+   context: .
+   dockerfile: Dockerfile
+   args:
+    projects: admin
+    profiles: production
+  container_name: admin-prod
+
+  logging:
+   driver: "json-file"
+    options:
+     max-size: "200k"
+     max-file: "10"
+  expose:
+   - "443"
+   - "9090"
+
+ api:
+  image: api/prod
+  ports:
+   - "8080:8080"
+  restart: unless-stopped
+  build:
+   context: .
+   dockerfile: Dockerfile
+   args:
+    projects: api
+    profiles: production
+  container_name: api-prod
+  deploy:
+   restart_policy:
+    condition: on-failure
+    max_attempts: 2
+  logging:
+      driver: "json-file"
+      options:
+        max-size: "200k"
+        max-file: "10"
+  expose:
+   - "443"
+   - "8080"

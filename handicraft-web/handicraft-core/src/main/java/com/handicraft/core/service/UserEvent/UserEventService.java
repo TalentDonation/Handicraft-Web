@@ -45,6 +45,28 @@ public class UserEventService {
 
     }
 
+    @Transactional
+    public void deleteByEid(long eid)
+    {
+        EventToUser eventToUser;
+
+        List<UserEvent> userEventList = userEventRepository.findAllByUserEventId_Eid(eid);
+
+        userEventRepository.deleteAllByUserEventId_Eid(eid);
+
+
+        for(UserEvent userEvent : userEventList)
+        {
+            eventToUser = eventToUserRepository.findOne(userEvent.getUserEventId().getEid());
+
+            if(eventToUser.getUserList().size() == 1)
+            {
+                eventToUserRepository.delete(eventToUser.getEid());
+            }
+        }
+
+    }
+
     @Transactional(rollbackFor = EmptyResultDataAccessException.class)
     public void deleteByUserEventId(UserEventId userEventId)
     {
