@@ -78,6 +78,7 @@ public class CalenderController {
         event.setEid(0);
         event.setStart(simpleDateFormat.parse(start));
         event.setEnd(simpleDateFormat.parse(end));
+        event.setColor("#81D4FA");
         event.setTitle(title);
 
         userToEvent.getEventList().add(event);
@@ -99,6 +100,7 @@ public class CalenderController {
         event.setStart(simpleDateFormat.parse(start));
         event.setEnd(simpleDateFormat.parse(end));
         event.setTitle(title);
+        event.setColor("#81D4FA");
         event.setEid(e_id);
 
         log.info("It's in the modify");
