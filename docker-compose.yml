@@ -12,12 +12,11 @@ services:
     projects: admin
     profiles: production
   container_name: admin-prod
-
   logging:
    driver: "json-file"
-    options:
-     max-size: "200k"
-     max-file: "10"
+   options:
+    max-size: "200k"
+    max-file: "10"
   expose:
    - "443"
    - "9090"
@@ -34,15 +33,11 @@ services:
     projects: api
     profiles: production
   container_name: api-prod
-  deploy:
-   restart_policy:
-    condition: on-failure
-    max_attempts: 2
   logging:
-      driver: "json-file"
-      options:
-        max-size: "200k"
-        max-file: "10"
+   driver: "json-file"
+   options:
+    max-size: "200k"
+    max-file: "10"
   expose:
    - "443"
    - "8080"
