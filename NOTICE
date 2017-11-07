@@ -1,0 +1,76 @@
+
+
+1. SpringBoot
+spring-projects/spring-boot is licensed under the
+Apache License 2.0
+https://github.com/spring-projects/spring-boot/blob/master/LICENSE.txt
+
+2. JPA
+http://hibernate.org/community/license/
+
+3. mysql-connector
+GNU General Public License, version 2
+http://www.gnu.org/licenses/old-licenses/gpl-2.0.html
+
+4. Docker
+moby/moby is licensed under the
+Apache License 2.0
+https://github.com/moby/moby/blob/master/LICENSE
+
+5. Swagger
+Apache License 2.0
+https://github.com/swagger-api/swagger.io/blob/wordpress//getting-started/license.md
+
+6. log4j
+qos-ch/slf4j is licensed under the
+MIT License
+https://github.com/qos-ch/slf4j/blob/master/LICENSE.txt
+
+7. logback
+https://github.com/qos-ch/logback/blob/master/LICENSE.txt
+
+8. jquery
+The MIT License (MIT)
+https://tldrlegal.com/license/mit-license
+
+9. AWS-SDK
+https://github.com/aws/aws-sdk-java/blob/master/LICENSE.txt
+
+10. Google-SDK
+(1) google-api-java-client
+    google/google-api-java-client is licensed under the
+    Apache License 2.0
+    https://github.com/google/google-api-java-client/blob/dev/LICENSE
+
+(2) google-oauth-java-client
+    google/google-oauth-java-client is licensed under the
+    Apache License 2.0
+    https://github.com/google/google-oauth-java-client/blob/dev/LICENSE
+
+11. Lombok
+rzwitserloot/lombok is licensed under the
+MIT License
+https://github.com/rzwitserloot/lombok/blob/master/LICENSE
+
+12. apache dbcp2
+apache/commons-dbcp is licensed under the
+Apache License 2.0
+https://github.com/apache/commons-dbcp/blob/master/LICENSE.txt
+
+13. commons-codec
+apache/commons-codec is licensed under the
+Apache License 2.0
+https://github.com/apache/commons-codec/blob/trunk/LICENSE.txt
+
+14. sitemesh
+http://wiki.sitemesh.org/wiki/display/sitemesh/License
+
+15. jstl
+apache/sling-org-apache-sling-scripting-jsp-jstl is licensed under the
+Apache License 2.0
+https://github.com/apache/sling-org-apache-sling-scripting-jsp-jstl/blob/master/LICENSE
+
+16. fullcalendar
+fullcalendar/fullcalendar is licensed under the
+MIT License
+https://github.com/fullcalendar/fullcalendar/blob/master/LICENSE.txt
