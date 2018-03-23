@@ -6,11 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -23,45 +23,33 @@ import java.security.NoSuchAlgorithmException;
 @RestControllerAdvice
 public class ExceptionController {
 
-    @ExceptionHandler(value = {BadRequestException.class })
+    @ExceptionHandler(value = {BadRequestException.class})
     @ResponseBody
-    public ResponseEntity<?> badRequestHandler()
-    {
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    public ResponseEntity badRequestHandler() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @ExceptionHandler(value = NotFoundException.class)
+    @ExceptionHandler(value = {NotFoundException.class, IllegalArgumentException.class, FileNotFoundException.class})
     @ResponseBody
-    public ResponseEntity<?> notFoundHandler()
-    {
-        return new ResponseEntity(HttpStatus.NOT_FOUND);
+    public ResponseEntity notFoundHandler() {
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     @ExceptionHandler(value = InternalServerErrorException.class)
     @ResponseBody
-    public ResponseEntity<?> internalServerErrorHandler()
-    {
-        return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity internalServerErrorHandler() {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
     @ExceptionHandler(value = {NotAcceptableException.class})
     @ResponseBody
-    public ResponseEntity<?> notAcceptableHandler()
-    {
-        return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
+    public ResponseEntity notAcceptableHandler() {
+        return  ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).build();
     }
 
-    @ExceptionHandler(value = {UnAuthorizedException.class , HttpClientErrorException.class})
+    @ExceptionHandler(value = {EncryptionException.class, UnsupportedEncodingException.class, NoSuchPaddingException.class, NoSuchAlgorithmException.class, InvalidAlgorithmParameterException.class, InvalidKeyException.class, BadPaddingException.class, IllegalBlockSizeException.class})
     @ResponseBody
-    public ResponseEntity<?> unAuthorizedHandler()
-    {
-        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(value = {EncryptionException.class , UnsupportedEncodingException.class , NoSuchPaddingException.class , NoSuchAlgorithmException.class , InvalidAlgorithmParameterException.class, InvalidKeyException.class ,BadPaddingException.class , IllegalBlockSizeException.class})
-    @ResponseBody
-    public ResponseEntity<?> encryptionException()
-    {
-        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+    public ResponseEntity encryptionException() {
+        return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

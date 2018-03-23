@@ -1,316 +1,193 @@
 package com.handicraft.api.controller;
 
 
-import com.handicraft.api.exception.BadRequestException;
-import com.handicraft.api.exception.NotFoundException;
-import com.handicraft.core.dto.Events.Event;
-import com.handicraft.core.dto.Events.EventToUser;
-import com.handicraft.core.dto.Users.User;
-import com.handicraft.core.dto.Users.UserToEvent;
-import com.handicraft.core.dto.Users.UserToImage;
-import com.handicraft.core.id.UserEventId;
-import com.handicraft.core.service.Events.EventService;
-import com.handicraft.core.service.Events.EventToUserService;
-import com.handicraft.core.service.UserEvent.UserEventService;
-import com.handicraft.core.service.Users.UserService;
-import com.handicraft.core.service.Users.UserToAuthorityService;
-import com.handicraft.core.service.Users.UserToEventService;
-import com.handicraft.core.service.Users.UserToImageService;
+import com.handicraft.core.dto.EventDto;
+import com.handicraft.core.dto.FurnitureDto;
+import com.handicraft.core.dto.UserDto;
+import com.handicraft.core.service.CommentService;
+import com.handicraft.core.service.EventService;
+import com.handicraft.core.service.FurnitureService;
+import com.handicraft.core.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.List;
 
+@Api(value = "user", description = "USER API")
 @RestController
-@Slf4j
-@Api(value = "user" , description = "USER API")
 public class UserController {
-
-	@Autowired
-	UserService userService;
-
-	@Autowired
-	EventService eventService;
-
-	@Autowired
-	UserToImageService userToImageService;
-
-	@Autowired
-	UserToAuthorityService userToAuthorityService;
-
-	@Autowired
-	UserToEventService userToEventService;
-
-	@Autowired
-	EventToUserService eventToUserService;
-
-	@Autowired
-	UserEventService userEventService;
-
-	@Value("${images-path}")
-	String imagePath;
-
-
-	@GetMapping("/users")
-	@Transactional
-	@ApiOperation(value = "" , notes = "Show one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public User findUser(@AuthenticationPrincipal Long uid)
-	{
-		UserToImage userToImage = userToImageService.findToUserToImage(uid);
-
-		StringBuffer avatar = new StringBuffer();
-		User user = new User(userToImage);
-
-		if(userToImage.getImage() != null)
-		{
-			avatar.append(imagePath)
-					.append(userToImage.getImage().getGid())
-					.append(".").append(userToImage.getImage().getExtension());
-			user.setAvatar(avatar.toString());
-		}
-		else
-			user.setAvatar(null);
-
-
-		log.info("Find User : " + user);
-
-		return user;
-	}
-
-
-	@PutMapping("/users")
-	@ApiOperation(value = "" , notes = "Update users")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity updateToUsers(@AuthenticationPrincipal Long uid , @ModelAttribute User updateUser , MultipartFile multipartFile)
-	{
-		UserToImage userToImage = userToImageService.findToUserToImage(uid);
-
-
-		updateUser.setUid(uid);
-
-		userService.updateToUser(updateUser);
-
-
-
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
-	@DeleteMapping("/users")
-	@ApiOperation(value = "" , notes = "Delete users")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity deleteToUsers(@AuthenticationPrincipal Long uid)
-	{
-		UserToImage deleteUserToImage = userToImageService.deleteUserToImage(uid);
-
-
-		StringBuffer deleteImageFilePath = new StringBuffer("classpath:static/images/")
-				.append(Long.toString(deleteUserToImage.getImage().getGid()))
-				.append(".").append(deleteUserToImage.getImage().getExtension());
-		try {
-			File file = ResourceUtils.getFile(deleteImageFilePath.toString());
-			file.delete();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
-
-
-
-	/*
-	* user - image
-	* */
-
-	@GetMapping("/users/{uid}/avatar")
-	@ApiOperation(value = "" , notes = "Show one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public User findAvatarOnUsers(@PathVariable("uid") int uid)
-	{
-		User user = userService.findByUser(uid);
-
-
-		if(user == null)	throw new NotFoundException();
-
-		return user;
-	}
-
-	@PutMapping("/users/{uid}/avatar")
-	@ApiOperation(value="" , notes = "Update one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity updateAvatarOnUsers(@ModelAttribute User userParams)
-	{
-		User user = userService.updateToUser(userParams);
-
-		if(user == null)	throw new NotFoundException();
-
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
-	@DeleteMapping("/users/{uid}/avatar")
-	@ApiOperation(value = "" , notes = "Delete one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity deleteAvatarOnUsers(@RequestParam("uid") int uid)
-	{
-		Boolean resultByDelete = userService.deleteToUser(uid);
-
-		if(!resultByDelete)	throw new NotFoundException();
-
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
-	/*
-	* user - market mid
-	* */
-
-	@GetMapping("/users/{uid}/furniture")
-	@ApiOperation(value = "" , notes = "Show one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public User findFurnitureOnUsers(@PathVariable("uid") int uid)
-	{
-		User user = userService.findByUser(uid);
-
-
-		if(user == null)	throw new NotFoundException();
-
-		return user;
-	}
-
-	@PostMapping("/users/{uid}/furniture")
-	@ApiOperation(value = "" , notes = "Show one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public User insertFurnitureOnUsers(@PathVariable("uid") int uid)
-	{
-		User user = userService.findByUser(uid);
-
-
-		if(user == null)	throw new NotFoundException();
-
-		return user;
-	}
-
-	@PutMapping("/users/{uid}/furniture")
-	@ApiOperation(value="" , notes = "Update one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity updateFurnitureOnUsers(@ModelAttribute User userParams)
-	{
-		User user = userService.updateToUser(userParams);
-
-		if(user == null)	throw new NotFoundException();
-
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
-	@DeleteMapping("/users/{uid}/furniture")
-	@ApiOperation(value = "" , notes = "Delete one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity deleteFurnitureOnUsers(@RequestParam("uid") int uid)
-	{
-		Boolean resultByDelete = userService.deleteToUser(uid);
-
-		if(!resultByDelete)	throw new NotFoundException();
-
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
-	@GetMapping("/users/{uid}/events")
-	@ApiOperation(value = "" , notes = "Show one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public UserToEvent findEventsOnUsersByUid(@PathVariable("uid") int uid , @AuthenticationPrincipal Long authUid)
-	{
-		if(authUid != uid)	throw new BadRequestException();
-
-		UserToEvent userToEvent = userToEventService.find(uid);
-
-
-		return userToEvent;
-	}
-
-	@PostMapping("/users/{uid}/events")
-	@ApiOperation(value = "" , notes = "Show one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity insertEventsOnUsersByUid(@PathVariable("uid") long uid , @ModelAttribute("event")Event event)
-	{
-		UserToEvent userToEvent = userToEventService.find(uid);
-
-		event.setEid(0);
-		List<Event> eventList = userToEvent.getEventList();
-		eventList.add(event);
-		userToEvent.setEventList(eventList);
-
-		userToEventService.update(userToEvent);
-
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
-
-	@DeleteMapping("/users/{uid}/events")
-	@ApiOperation(value = "" , notes = "Delete one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity deleteEventsOnUsersByUid(@RequestParam("uid") long uid)
-	{
-
-		userEventService.deleteByUid(uid);
-
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
-	@GetMapping("/users/{uid}/events/{eid}")
-	@ApiOperation(value = "" , notes = "Show one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public Event findEventOnUsersByUidANDEid(@PathVariable("uid") int uid , @PathVariable("uid") int eid ,  @AuthenticationPrincipal Long authUid)
-	{
-		Event result;
-
-		if(authUid != uid)	new BadRequestException();
-
-		result = eventService.findById(eid);
-
-		if(result == null) new NotFoundException();
-
-		return result;
-	}
-
-	@PutMapping("/users/{uid}/events/{eid}")
-	@ApiOperation(value="" , notes = "Update one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity updateEventOnUsersByUid(@PathVariable("uid") int uid , @PathVariable("uid") int eid, @ModelAttribute("event")Event event)
-	{
-
-		if(eventService.findById(eid) == null) throw new NotFoundException();
-
-		eventService.update(event);
-
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
-	@DeleteMapping("/users/{uid}/events/{eid}")
-	@ApiOperation(value = "" , notes = "Delete one user about user id")
-	@ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-	public ResponseEntity deleteEventOnUsersByUidANDEid(@PathVariable("uid") int uid , @PathVariable("eid") int eid ,  @AuthenticationPrincipal Long authUid)
-	{
-		if(authUid != uid)	new BadRequestException();
-
-		userEventService.deleteByUserEventId(new UserEventId(uid,eid));
-
-
-		return new ResponseEntity(HttpStatus.OK);
-	}
-
+    private final UserService userService;
+    private final FurnitureService furnitureService;
+    private final EventService eventService;
+    private final CommentService commentService;
+
+    @Autowired
+    public UserController(UserService userService, FurnitureService furnitureService, EventService eventService, CommentService commentService) {
+        this.userService = userService;
+        this.furnitureService = furnitureService;
+        this.eventService = eventService;
+        this.commentService = commentService;
+    }
+
+    @GetMapping(value = "/users")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findUsers() {
+        return ResponseEntity.ok(userService.findAll());
+    }
+
+    @GetMapping("/users/{uid}")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findUser(@PathVariable("uid") long uid) {
+        return ResponseEntity.ok(userService.findOne(uid));
+    }
+
+    @PutMapping("/users/{uid}")
+    @ApiOperation(value = "", notes = "Update users")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity updateUser(@PathVariable("uid") long uid, @RequestBody UserDto userDto) {
+        userService.update(userDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/users/{uid}")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity removeUser(@PathVariable("uid") long uid) {
+        userService.remove(uid);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/users/{uid}/avatar")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findUserAvatar(@PathVariable("uid") long uid) {
+        return ResponseEntity.ok(userService.findAvatar(uid));
+    }
+
+    @PostMapping("/users/{uid}/avatar")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findUserAvatar(@PathVariable("uid") long uid, MultipartFile multipartFile) {
+        userService.storeAvatar(uid, multipartFile);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @PutMapping("/users/{uid}/avatar")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity updateUserAvatar(@PathVariable("uid") long uid, MultipartFile multipartFile) {
+        userService.changeAvatar(uid, multipartFile);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/users/{uid}/avatar")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity removeUserAvatar(@PathVariable("uid") long uid) {
+        userService.removeAvatar(uid);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    @GetMapping("/users/{uid}/furniture")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findUserFurniture(@PathVariable("uid") long uid, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "per_page", defaultValue = "10") int perPage) {
+        return ResponseEntity.ok(furnitureService.find(uid, page, perPage));
+    }
+
+    @PutMapping("/users/{uid}/furniture")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity updateUserFurniture(@RequestBody List<FurnitureDto> furnitureDtos) {
+        furnitureService.update(furnitureDtos);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/users/{uid}/furniture")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity removeUserFurniture(@RequestParam("uid") int uid) {
+        furnitureService.removeByUid(uid);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/users/{uid}/furniture/{fid}")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findUserFurnitureOne(@PathVariable("uid") long uid, @PathVariable("fid") long fid) {
+        return ResponseEntity.ok(furnitureService.findOne(fid));
+    }
+
+    @PutMapping("/users/{uid}/furniture/{fid}")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity updateUserFurnitureOne(@PathVariable("uid") long uid, @PathVariable("fid") long fid, @ModelAttribute FurnitureDto furnitureDto) {
+        furnitureService.updateOne(furnitureDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/users/{uid}/furniture/{fid}")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity removeUserFurnitureOne(@PathVariable("uid") long uid, @PathVariable("fid") long fid) {
+        furnitureService.remove(fid);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/users/{uid}/events")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findUserEvents(@PathVariable("uid") int uid) {
+        eventService.find(uid);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/users/{uid}/events")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity createUserEvents(@PathVariable("uid") long uid, @RequestBody EventDto eventDto) {
+        eventService.create(uid, eventDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/users/{uid}/events")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity updateUserEvents(@PathVariable("uid") long uid, @ModelAttribute("event") List<EventDto> eventDtos) {
+        eventService.update(uid, eventDtos);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/users/{uid}/events")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity removeUserEvents(@RequestParam("uid") long uid) {
+        eventService.removeByUid(uid);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/users/{uid}/events/{eid}")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findUserEvent(@PathVariable("uid") int uid, @PathVariable("uid") int eid) {
+        return ResponseEntity.ok(eventService.findOne(uid, eid));
+    }
+
+    @PutMapping("/users/{uid}/events/{eid}")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity updateUserEvent(@PathVariable("uid") int uid, @PathVariable("uid") int eid, @ModelAttribute("event") EventDto eventDto) {
+        eventService.updateOne(uid, eventDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/users/{uid}/events/{eid}")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity removeUserEvent(@PathVariable("uid") int uid, @PathVariable("eid") int eid) {
+        eventService.removeByUidAndEid(uid, eid);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/users/{uid}/comments")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findUserComments(@PathVariable("uid") long uid, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "per_page", defaultValue = "10") int perPage) {
+        return ResponseEntity.ok(commentService.findByUid(uid));
+    }
+
+    @DeleteMapping("/users/{uid}/comments")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity removeUserComments(@PathVariable("uid") long uid) {
+        commentService.removeByUid(uid);
+        return ResponseEntity.ok().build();
+    }
 
 }
