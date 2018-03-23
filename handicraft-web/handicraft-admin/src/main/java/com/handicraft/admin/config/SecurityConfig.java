@@ -1,7 +1,7 @@
 package com.handicraft.admin.config;
 
 import com.handicraft.admin.util.AuthenticationLoginSuccessAfter;
-import com.handicraft.core.utils.enums.Role;
+import com.handicraft.core.support.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

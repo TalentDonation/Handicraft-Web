@@ -19,7 +19,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 public class SwaggerConfig {
 
     @Bean
-    public Docket api(){
+    public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.handicraft.api.controller"))
@@ -29,10 +29,10 @@ public class SwaggerConfig {
     }
 
     private ApiInfo metaData() {
-        return  new ApiInfoBuilder().title("Handicraft REST API")
+        return new ApiInfoBuilder().title("Handicraft REST API")
                 .description("Handicraft REST API")
-                .contact(                new Contact("Ko SeungBin", "https://github.com/TalentDonation/Handicraft-Web", "kosb15@gmail.com"))
-                .license(                "Apache License Version 2.0")
+                .contact(new Contact("Ko SeungBin", "https://github.com/TalentDonation/Handicraft-Web", "kosb15@gmail.com"))
+                .license("Apache License Version 2.0")
                 .licenseUrl("https://www.apache.org/licenses/LICENSE-2.0")
                 .build();
     }

@@ -1,501 +1,138 @@
 package com.handicraft.api.controller;
 
-import com.handicraft.api.exception.BadRequestException;
-import com.handicraft.api.exception.InternalServerErrorException;
-import com.handicraft.api.exception.NotFoundException;
-import com.handicraft.core.dto.Comments.Comment;
-import com.handicraft.core.dto.Furnitures.Furniture;
-import com.handicraft.core.dto.Furnitures.FurnitureToComment;
-import com.handicraft.core.dto.Furnitures.FurnitureToImage;
-import com.handicraft.core.dto.Images.Image;
-import com.handicraft.core.dto.Users.UserToFurniture;
-import com.handicraft.core.service.Comments.CommentService;
-import com.handicraft.core.service.Furnitures.FurnitureService;
-import com.handicraft.core.service.Furnitures.FurnitureToCommentService;
-import com.handicraft.core.service.Furnitures.FurnitureToImageService;
-import com.handicraft.core.service.Images.ImageService;
-import com.handicraft.core.service.Users.UserService;
-import com.handicraft.core.service.Users.UserToFurnitureService;
+import com.handicraft.core.dto.FurnitureDto;
+import com.handicraft.core.service.CommentService;
+import com.handicraft.core.service.FurnitureService;
+import com.handicraft.core.service.ImageService;
+import com.handicraft.core.support.AwsModule;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.util.ResourceUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by 고승빈 on 2017-07-06.
  */
 
+@Api(value = "furniture", description = "Furniture API")
 @RestController
-@Slf4j
-@Api(value = "furniture" , description = "Furniture API")
 public class FurnitureController {
-
-    /*
-   * DI
-   *
-   * */
-    @Autowired
-    FurnitureService furnitureService;
+    private final FurnitureService furnitureService;
+    private final ImageService imageService;
+    private final CommentService commentService;
+    private final AwsModule awsModule;
 
     @Autowired
-    FurnitureToImageService furnitureToImageService;
-
-    @Autowired
-    FurnitureToCommentService furnitureToCommentService;
-
-    @Autowired
-    UserToFurnitureService userToFurnitureService;
-
-    @Autowired
-    UserService userService;
-
-    @Autowired
-    ImageService imageService;
-
-    @Autowired
-    CommentService commentService;
-
-
-
-
-    @Value("${images-path}")
-    String imagesPath;
-
-
-    @GetMapping("/furniture")
-    @ApiOperation(value = "" , notes = "Show several furniture by page")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public List<Furniture> findByFurniturePerPage(@RequestParam(value = "page" , defaultValue = "0")int page , @RequestParam(value = "per_page",defaultValue = "10") int page_page)
-    {
-        PageRequest pageRequest  = new PageRequest(page , page_page , Sort.Direction.ASC , "fid");
-
-        Page<FurnitureToImage> furnitureToImagePage = furnitureToImageService.findFurniturToImagePerPage(pageRequest);
-
-        List<Furniture> furnitureList  = new ArrayList<>();
-
-        for(FurnitureToImage furnitureToImage : furnitureToImagePage)
-        {
-            Furniture furniture = new Furniture(furnitureToImage);
-
-            List<String> imageLists = null;
-            if(!furnitureToImage.getImageList().isEmpty())
-            {
-                imageLists = new ArrayList<>();
-
-                for(Image image : furnitureToImage.getImageList())
-                {
-                    imageLists.add(image.getName()+image.getGid()+"."+image.getExtension());
-                }
-            }
-            furniture.setImages(imageLists);
-            furnitureList.add(furniture);
-        }
-
-
-        return furnitureList;
+    public FurnitureController(FurnitureService furnitureService, ImageService imageService, AwsModule awsModule, CommentService commentService) {
+        this.furnitureService = furnitureService;
+        this.imageService = imageService;
+        this.awsModule = awsModule;
+        this.commentService = commentService;
     }
 
-    @PostMapping(value = "/furniture")
-    @ApiOperation(value = "" , notes = "Create a new furniture")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity insertFurnitureByFid(@ModelAttribute("furniture") Furniture furniture , MultipartFile multipartFile , @AuthenticationPrincipal Long uid) throws IOException {
 
-        furniture.setFid(0);
-        FurnitureToImage furnitureToImage = new FurnitureToImage(furniture);
+    @PostMapping(value = "/furniture", produces = "application/json")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity createFurniture(@RequestBody FurnitureDto furnitureDto) {
+        furnitureService.create(furnitureDto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
 
-        UserToFurniture userToFurniture = userToFurnitureService.find(uid);
-        List<FurnitureToImage> furnitureToImageList = userToFurniture.getFurnitureToImageList();
-
-
-        File file;
-        Image image;
-
-        // upload file
-        image = new Image();
-        image.setGid(0);
-        image.setExtension(StringUtils.getFilenameExtension(multipartFile.getOriginalFilename()));
-        image.setCreateAt(null);
-        image.setUpdateAt(null);
-        image.setName(imagesPath);
-
-        log.info(imagesPath);
-
-
-        List<Image> imageList = new ArrayList<>();
-        imageList.add(image);
-        furnitureToImage.setImageList(imageList);
-
-        furnitureToImageList.add(furnitureToImage);
-        userToFurniture.setFurnitureToImageList(furnitureToImageList);
-
-        UserToFurniture result = userToFurnitureService.update(userToFurniture);
-
-
-        StringBuffer uri = new StringBuffer();
-                uri.append(ResourceUtils.getFile("classpath:static/images").getPath())
-                .append("/").append(result.getFurnitureToImageList().get(result.getFurnitureToImageList().size() - 1).getImageList().get(0).getGid())
-                .append(".").append(result.getFurnitureToImageList().get(result.getFurnitureToImageList().size() - 1).getImageList().get(0).getExtension());
-
-        file = new File(uri.toString());
-
-
-        try {
-            multipartFile.transferTo(file);
-        } catch (Exception e) {
-            e.printStackTrace();
-            new InternalServerErrorException();
-        }
-
-
-        return new ResponseEntity(HttpStatus.CREATED);
+    //    @PreAuthorize("hasAuthority('ROLE_USER') and isAuthenticated()")
+    @GetMapping(value = "/furniture", produces = "application/json")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findFurniture(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "per_page", defaultValue = "10") int perPage) {
+        return ResponseEntity.ok(furnitureService.find(page, perPage));
     }
 
     @PutMapping("/furniture")
-    @ApiOperation(value = "" , notes = "Update multiple furniture")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity updateFurnitureList(@ModelAttribute List<Furniture> furnitureList)
-    {
-        List<Furniture> furnitureListResult = furnitureService.updateFurnitureList(furnitureList);
-
-        if(furnitureListResult == null) throw new NotFoundException();
-
-        return new ResponseEntity(HttpStatus.OK);
-
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity updateFurniture(@RequestBody List<FurnitureDto> furnitureDtos) {
+        furnitureService.update(furnitureDtos);
+        return ResponseEntity.ok().build();
     }
-
-    @DeleteMapping("/furniture")
-    @ApiOperation(value = "" , notes = "Delete all furniture")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity deleteFurnitureList() throws FileNotFoundException {
-        List<FurnitureToImage> furnitureToImageList = furnitureToImageService.find();
-
-        File file;
-        StringBuffer uri;
-
-        for(FurnitureToImage furnitureToImage : furnitureToImageList)
-        {
-            for(Image image : furnitureToImage.getImageList())
-            {
-                uri = new StringBuffer();
-                uri.append(ResourceUtils.getFile("classpath:static/images"))
-                        .append("/").append(image.getGid())
-                        .append(".").append(image.getExtension());
-                file = new File(uri.toString());
-                file.delete();
-            }
-
-        }
-        furnitureToImageService.delete();
-
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
-     /*
-    * Specific Layer
-    *
-    * */
 
     @GetMapping("/furniture/{fid}")
-    @ApiOperation(value = "" , notes = "Show a furniture about furniture id")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public Furniture findByFurnitureByFid(@PathVariable("fid") long fid )
-    {
-
-       FurnitureToImage furnitureToImage = furnitureToImageService.findById(fid);
-
-       if(furnitureToImage == null)   throw new NotFoundException();
-
-       Furniture furniture = new Furniture (furnitureToImage);
-
-       List<String> imageList = new ArrayList<>();
-
-       for(Image image : furnitureToImage.getImageList())
-       {
-            imageList.add(image.getName()+image.getGid()+"."+image.getExtension());
-       }
-
-       furniture.setImages(imageList);
-
-        return  furniture;
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findFurnitureOne(@PathVariable("fid") long fid) {
+        return ResponseEntity.ok(furnitureService.findOne(fid));
     }
 
     @PutMapping("/furniture/{fid}")
-    @ApiOperation(value = "" , notes = "Update one furniture about furniture id" )
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity updateFurnitureById(@ModelAttribute Furniture furniture , @AuthenticationPrincipal Long uid)
-    {
-        UserToFurniture userToFurniture = userToFurnitureService.find(uid);
-
-        for(FurnitureToImage furnitureToImage : userToFurniture.getFurnitureToImageList())
-        {
-            if(furnitureToImage.getFid() == furniture.getFid())
-            {
-                furniture.setCreateAt(furnitureToImage.getCreateAt());
-                FurnitureToImage newFurnitureToImage = new FurnitureToImage(furniture);
-                newFurnitureToImage.setImageList(furnitureToImage.getImageList());
-
-                userToFurniture.getFurnitureToImageList().set(userToFurniture.getFurnitureToImageList().indexOf(furnitureToImage) , newFurnitureToImage);
-                break;
-            }
-        }
-
-        userToFurnitureService.update(userToFurniture);
-
-        return new ResponseEntity(HttpStatus.OK);
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity updateFurnitureOne(@RequestBody FurnitureDto furnitureDto) {
+        furnitureService.updateOne(furnitureDto);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/furniture/{fid}")
-    @ApiOperation(value = "" , notes = "Delete one furniture about furniture id")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity deleteFurnitureById(@PathVariable("fid") long fid ) throws FileNotFoundException {
-        FurnitureToImage furnitureToImage = furnitureToImageService.findById(fid);
-
-        File file;
-        StringBuffer uri;
-
-        for(Image image : furnitureToImage.getImageList())
-        {
-            uri = new StringBuffer();
-            uri.append(ResourceUtils.getFile("classpath:static/images"))
-                    .append("/").append(image.getGid())
-                    .append(".").append(image.getExtension());
-            file = new File(uri.toString());
-            file.delete();
-        }
-
-
-        furnitureToImageService.deleteById(furnitureToImage.getFid());
-
-        return new ResponseEntity(HttpStatus.OK);
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity removeFurnitureOne(@PathVariable("fid") long fid) {
+        furnitureService.remove(fid);
+        return ResponseEntity.ok().build();
     }
-
-    /*
-    *
-    * f_id 에 대한 전체 images
-    * */
 
     @PostMapping("/furniture/{fid}/images")
-    @ApiOperation(value = "" , notes = "Insert images by furniture id")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity InsertImagesByFid(@PathVariable("fid") long fid , MultipartFile multipartFile) throws IOException {
-
-        FurnitureToImage furnitureToImage = furnitureToImageService.findById(fid);
-
-        List<Image> images = furnitureToImage.getImageList();
-
-        File file;
-
-        Image image = new Image();
-        image.setGid(0);
-        image.setExtension(StringUtils.getFilenameExtension(multipartFile.getOriginalFilename()));
-        image.setCreateAt(null);
-        image.setUpdateAt(null);
-        image.setName(imagesPath);
-
-        images.add(image);
-        furnitureToImage.setImageList(images);
-
-        StringBuffer uri = new StringBuffer();
-
-        FurnitureToImage result = furnitureToImageService.updateFurnitureToImageByFid(furnitureToImage);
-
-        uri.append(ResourceUtils.getFile("classpath:static/images").getPath())
-                .append("/").append(result.getImageList().get(result.getImageList().size() - 1).getGid())
-                .append(".").append(result.getImageList().get(result.getImageList().size() - 1).getExtension());
-
-        file = new File(uri.toString());
-
-        multipartFile.transferTo(file);
-
-        return new ResponseEntity(HttpStatus.OK);
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity createFurnitureImages(@PathVariable("fid") long fid, MultipartFile multipartFile) throws IOException {
+        imageService.upload(fid, multipartFile);
+        return ResponseEntity.ok().build();
     }
 
-
-    /*
-    *
-    *   image 1개
-    * */
-
     @GetMapping("/furniture/{fid}/images")
-    @ApiOperation(value = "" , notes = "Get images by furniture id")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public List<String> findImagesByFid(@PathVariable("fid") long fid )
-    {
-
-        FurnitureToImage furnitureToImage = furnitureToImageService.findById(fid);
-
-        if(furnitureToImage == null)   throw new NotFoundException();
-
-
-        List<String> imageList = new ArrayList<>();
-
-        for(Image image : furnitureToImage.getImageList())
-        {
-            imageList.add(image.getName()+image.getGid()+"."+image.getExtension());
-        }
-
-        return  imageList;
+    @ApiOperation(value = "", notes = "Get images by furniture id")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findFurnitureImages(@PathVariable("fid") long fid) {
+        return ResponseEntity.ok(imageService.findByFid(fid));
     }
 
     @DeleteMapping("/furniture/{fid}/images")
-    @ApiOperation(value = "" , notes = "Delete images by furniture id")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity DeleteImagesByFid(@PathVariable("fid") long fid ) throws FileNotFoundException {
-        FurnitureToImage furnitureToImage = furnitureToImageService.findById(fid);
-
-        List<Image> imageList = furnitureToImage.getImageList();
-        StringBuffer stringBuffer;
-        File file;
-
-        for(Image image : imageList)
-        {
-            stringBuffer = new StringBuffer()
-                    .append(ResourceUtils.getFile("classpath:static/images").getPath())
-                    .append("/").append(image.getGid())
-                    .append(".").append(image.getExtension());
-
-            file = new File(stringBuffer.toString());
-            file.delete();
-        }
-
-        imageService.delete(imageList);
-
-
-        return new ResponseEntity(HttpStatus.OK);
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity removeFurnitureImages(@PathVariable("fid") long fid) throws FileNotFoundException {
+        imageService.removeAllByFid(fid);
+        return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/furniture/{fid}/images/{gid}")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findFurnitureImage(@PathVariable("fid") long fid, @PathVariable("gid") long gid) {
+        return ResponseEntity.ok(imageService.findOne(gid));
+    }
 
     @PutMapping("/furniture/{fid}/images/{gid}")
-    @ApiOperation(value = "" , notes = "Update images by furniture id")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity UpdateImagesByFidAndGid(@PathVariable("fid") long fid , @PathVariable("gid") long gid , MultipartFile multipartFile) throws IOException {
-        Image image = imageService.findById(gid);
-
-        StringBuffer stringBuffer;
-        File file;
-
-        stringBuffer = new StringBuffer()
-                .append(ResourceUtils.getFile("classpath:static/images").getPath())
-                .append("/").append(image.getGid())
-                .append(".").append(image.getExtension());
-
-        file = new File(stringBuffer.toString());
-
-        file.delete();
-
-        image.setExtension(StringUtils.getFilenameExtension(multipartFile.getOriginalFilename()));
-//        image.setUpdateAt(null);
-
-        stringBuffer = new StringBuffer()
-                .append(ResourceUtils.getFile("classpath:static/images").getPath())
-                .append("/").append(image.getGid())
-                .append(".").append(image.getExtension());
-
-        file = new File(stringBuffer.toString());
-
-        multipartFile.transferTo(file);
-
-        return new ResponseEntity(HttpStatus.OK);
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity updateFurnitureImage(@PathVariable("fid") long fid, @PathVariable("gid") long gid, MultipartFile multipartFile) throws IOException {
+        imageService.change(fid, gid, multipartFile);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/furniture/{fid}/images/{gid}")
-    @ApiOperation(value = "" , notes = "Delete images by furniture id")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity DeleteImagesByFidAndGid(@PathVariable("fid") long fid , @PathVariable("gid") long gid) throws FileNotFoundException {
-
-        Image image = imageService.findById(gid);
-
-        StringBuffer stringBuffer;
-        File file;
-
-        stringBuffer = new StringBuffer()
-                .append(ResourceUtils.getFile("classpath:static/images").getPath())
-                .append("/").append(image.getGid())
-                .append(".").append(image.getExtension());
-
-        file = new File(stringBuffer.toString());
-
-        file.delete();
-
-        imageService.deleteById(image.getGid());
-
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
-
-    @PostMapping("/furniture/{fid}/comments")
-    @ApiOperation(value = "" , notes = "insert comment about furniture")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity InsertCommentByFid(@PathVariable("fid") long fid , @AuthenticationPrincipal Long uid , @ModelAttribute("comment") Comment comment)
-    {
-        if(commentService.insert(uid , fid , comment) == null) throw new BadRequestException();
-
-        return new ResponseEntity(HttpStatus.OK);
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity removeFurnitureImage(@PathVariable("fid") long fid, @PathVariable("gid") long gid) throws FileNotFoundException {
+        imageService.remove(gid);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/furniture/{fid}/comments")
-    @ApiOperation(value = "" , notes = "find comment about furniture")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public FurnitureToComment findCommentByFid(@PathVariable("fid") long fid )
-    {
-        return furnitureToCommentService.find(fid);
+    @ApiOperation(value = "", notes = "find comment about furniture")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findFurnitureComments(@PathVariable("fid") long fid) {
+        return ResponseEntity.ok(commentService.findByFid(fid));
     }
 
     @DeleteMapping("/furniture/{fid}/comments")
-    @ApiOperation(value = "" , notes = "delete comment about furniture")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity removeCommentByFid(@PathVariable("fid") long fid )
-    {
-        commentService.deleteByFid(fid);
-
-        return new ResponseEntity(HttpStatus.OK);
-
+    @ApiOperation(value = "", notes = "delete comment about furniture")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity removeFurnitureComments(@PathVariable("fid") long fid) {
+        commentService.removeByFid(fid);
+        return ResponseEntity.ok().build();
     }
-
-    // TODO: 2017. 10. 18.  processing about comment
-    @GetMapping("/furniture/{fid}/comments/{cid}")
-    @ApiOperation(value = "" , notes = "find comment about furniture")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public FurnitureToComment findCommentByFidAndCid(@PathVariable("fid") long fid , @PathVariable("cid") long cid )
-    {
-        return furnitureToCommentService.find(fid);
-    }
-
-    @PutMapping("/furniture/{fid}/comments/{cid}")
-    @ApiOperation(value = "" , notes = "modify comment about furniture")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public FurnitureToComment updateCommentByFidAndCid(@PathVariable("fid") long fid , @PathVariable("cid") long cid )
-    {
-        return furnitureToCommentService.find(fid);
-    }
-
-    @DeleteMapping("/furniture/{fid}/comments/{cid}")
-    @ApiOperation(value = "" , notes = "delete comment about furniture")
-    @ApiImplicitParam(name = "authorization", value="authorization", dataType = "string", paramType = "header")
-    public ResponseEntity removeCommentByFidAndCid(@PathVariable("fid") long fid , @PathVariable("cid") long cid)
-    {
-        commentService.deleteByFid(fid);
-
-        return new ResponseEntity(HttpStatus.OK);
-
-    }
-
 }
