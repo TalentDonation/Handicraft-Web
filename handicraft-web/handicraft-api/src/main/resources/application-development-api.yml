@@ -1,16 +1,11 @@
 spring:
   profiles:
     include: development-core
-
   jackson:
     serialization:
       fail_on_empty_beans:  false
-
+      WRITE_DATES_AS_TIMESTAMPS : false
 server:
-  port: 9090
+  port: 9091
 
-
-Authentication: MASTERHANDICRAFT
-
-images-path: http://www.half-handicraft.com:9090/images/
 

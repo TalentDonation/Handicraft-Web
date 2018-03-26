@@ -1,19 +1,11 @@
 package com.handicraft.admin.controller;
 
 import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.googleapis.auth.oauth2.*;
-import com.google.api.services.oauth2.Oauth2;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.Sheet;
-import com.google.api.services.sheets.v4.model.Spreadsheet;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.handicraft.admin.util.GoogleOauth;
-import com.handicraft.admin.util.GoogleOauthValue;
-import com.handicraft.core.dto.Excels.Excel;
-import com.handicraft.core.service.Excels.ExcelService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.HttpResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.view.RedirectView;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,9 +31,6 @@ public class MemberController {
     private String userId;
 
     private static String range;
-
-    @Autowired
-    ExcelService sheetsService;
 
 
     @RequestMapping(value = "/member/redirect/auth", method = RequestMethod.GET)
@@ -88,7 +76,7 @@ public class MemberController {
         }
 */
 
-        Credential newCredential = GoogleOauth.newTokens(userId , code);
+        Credential newCredential = GoogleOauth.newTokens(userId, code);
 
         return new ModelAndView("redirect:/member");
     }
@@ -104,7 +92,7 @@ public class MemberController {
     @RequestMapping(value = "/member", method = RequestMethod.GET)
     public ModelAndView getMember() throws Exception {
 
-        ModelAndView mv ;
+        ModelAndView mv;
 
         log.info("user " + userId);
 
@@ -114,9 +102,8 @@ public class MemberController {
         /*
         * token 유효성 검사
         * */
-        if(userCredential == null || !userCredential.refreshToken())
-        {
-           return new ModelAndView("forward:/member/create/credentials");
+        if (userCredential == null || !userCredential.refreshToken()) {
+            return new ModelAndView("forward:/member/create/credentials");
         }
 
 
@@ -126,7 +113,6 @@ public class MemberController {
          *
          * */
         //GoogleOauth.refreshTokens(userId , userCredential.getRefreshToken());
-
 
 
         log.info("access_token :  " + userCredential.getAccessToken());
@@ -141,30 +127,30 @@ public class MemberController {
 
 
     @RequestMapping(value = "/member", method = RequestMethod.POST)
-    public RedirectView insertUrl(@RequestParam("url") String url){
+    public RedirectView insertUrl(@RequestParam("url") String url) {
 
-        Excel sheets = new Excel();
-        Excel lastSheets = sheetsService.findLastSheetsBySid();
-        if(lastSheets == null)
-        {
-            sheets.setSid(1);
-        }
-        else
-        {
-            sheets.setSid(lastSheets.getSid()+1);
-        }
-
-        sheets.setUrl(url);
-
-        sheetsService.insertSheets(sheets);
-
+//        Excel sheets = new Excel();
+//        Excel lastSheets = sheetsService.findLastSheetsBySid();
+//        if(lastSheets == null)
+//        {
+//            sheets.setSid(1);
+//        }
+//        else
+//        {
+//            sheets.setSid(lastSheets.getSid()+1);
+//        }
+//
+//        sheets.setUrl(url);
+//
+//        sheetsService.insertSheets(sheets);
+//
         return new RedirectView("/member");
     }
 
 
     // data 출력하는 함수, ajax url을 넣어줄때 이런 형식으로 넣어준다
     @RequestMapping(value = "/member/sheets/{sheets_id}/{title}", method = RequestMethod.GET)
-    public ResponseEntity getFileBySheetsId( @PathVariable(value = "sheets_id") String sheets_id, @PathVariable(value = "title") String title) throws Exception {
+    public ResponseEntity getFileBySheetsId(@PathVariable(value = "sheets_id") String sheets_id, @PathVariable(value = "title") String title) throws Exception {
 
         ResponseEntity<ArrayList<List<Object>>> results;
         String spreadsheetId;
@@ -175,8 +161,7 @@ public class MemberController {
         /*
         * token 유효성 검사
         * */
-        if(!userCredential.refreshToken())
-        {
+        if (!userCredential.refreshToken()) {
             return new ResponseEntity(HttpStatus.UNAUTHORIZED);
         }
 
@@ -228,47 +213,48 @@ public class MemberController {
 
     private ModelAndView setSheetsList(Sheets sheetParm) throws IOException {
 
-        Spreadsheet spreadsheet;
-        String spreadsheetId;
-        String url[];
+//        Spreadsheet spreadsheet;
+//        String spreadsheetId;
+//        String url[];
+//
+//        List<Excel> sheetsList = sheetsService.findSheets();
+//        List<String> google = new ArrayList<>();
+//        List<List<String>> list = new ArrayList<>();
+//
+//        ModelAndView mv = new ModelAndView();
+//
+//
+//        for(Excel sheets : sheetsList) {
+//
+//
+//            url = sheets.getUrl().split("/");
+//
+//            spreadsheetId = url[5];
+//
+//            log.info("SpreadsheetId : " + spreadsheetId);
+//
+//            spreadsheet = sheetParm.spreadsheets().get("/").setSpreadsheetId(spreadsheetId).setIncludeGridData(true)
+//                                    .set("fields", "sheets.properties").execute();
+//            List<String> subList = new ArrayList<>();
+//
+//            for (Sheet sheet : spreadsheet.getSheets()) {
+//
+//                subList.add(sheet.getProperties().getTitle());
+//
+//                log.info(sheet.getProperties().getTitle());
+//            }
+//            list.add(subList);
+//            google.add(sheets.getUrl());
+//
+//        }
+//        log.info(list.toString());
+//        log.info(google.toString());
+//
+//        mv.addObject("title",list);
+//        mv.addObject("url",google);
 
-        List<Excel> sheetsList = sheetsService.findSheets();
-        List<String> google = new ArrayList<>();
-        List<List<String>> list = new ArrayList<>();
-
-        ModelAndView mv = new ModelAndView();
-
-
-        for(Excel sheets : sheetsList) {
-
-
-            url = sheets.getUrl().split("/");
-
-            spreadsheetId = url[5];
-
-            log.info("SpreadsheetId : " + spreadsheetId);
-
-            spreadsheet = sheetParm.spreadsheets().get("/").setSpreadsheetId(spreadsheetId).setIncludeGridData(true)
-                                    .set("fields", "sheets.properties").execute();
-            List<String> subList = new ArrayList<>();
-
-            for (Sheet sheet : spreadsheet.getSheets()) {
-
-                subList.add(sheet.getProperties().getTitle());
-
-                log.info(sheet.getProperties().getTitle());
-            }
-            list.add(subList);
-            google.add(sheets.getUrl());
-
-        }
-        log.info(list.toString());
-        log.info(google.toString());
-
-        mv.addObject("title",list);
-        mv.addObject("url",google);
-
-        return mv;
+//        return mv;
+        return null;
     }
 
 }

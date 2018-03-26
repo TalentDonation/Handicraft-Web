@@ -6,16 +6,10 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
-import com.google.api.services.oauth2.Oauth2;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.handicraft.admin.controller.MemberController;
-import com.handicraft.core.service.Excels.ExcelService;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.FileSystemUtils;
-import org.springframework.util.ResourceUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,7 +17,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Properties;
 
 @Component
 public class GoogleOauthValue {

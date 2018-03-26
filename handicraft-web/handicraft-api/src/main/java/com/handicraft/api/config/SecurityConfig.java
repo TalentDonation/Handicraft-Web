@@ -1,19 +1,17 @@
 package com.handicraft.api.config;
 
 
-import com.handicraft.api.Security.SecurityAuthenticationFailure;
-import com.handicraft.api.Security.SecurityProvider;
-import com.handicraft.api.Security.SecurityFilter;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.handicraft.api.security.SecurityFilter;
+import com.handicraft.api.security.SecurityProvider;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.Http403ForbiddenEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -25,69 +23,51 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-
-
-    @Autowired
-    SecurityProvider securityProvider;
-
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    AuthenticationFailureHandler authenticationFailureHandler;
-
-    /*
-    * provider를 통한 인증
-    * */
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-
-        auth.authenticationProvider(securityProvider);
+        auth.authenticationProvider(getSecurityProvider());
     }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
-        http
-
-                .csrf().disable()
+        http.csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .addFilterBefore(getSecurityFilter() , UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(getSecurityFilter(), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                    .antMatchers("/auth/**" ).permitAll()
-                    .anyRequest().authenticated()
+                .antMatchers("/auth/**").permitAll()
+                .anyRequest().authenticated()
                 .and()
-                .exceptionHandling().authenticationEntryPoint(new Http403ForbiddenEntryPoint())
-                ;
+                .exceptionHandling().authenticationEntryPoint(new Http403ForbiddenEntryPoint());
     }
 
     @Override
     public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/images/**","/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagge‌​r-ui.html", "/swagger-resources/configuration/security");
+        web.ignoring().antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagge‌​r-ui.html", "/swagger-resources/configuration/security");
     }
 
-    private RequestMatcher getRequestMatcher() {
-
-        List<RequestMatcher> requestMatchers = new ArrayList<>();
-
-        requestMatchers.add(new AntPathRequestMatcher("/users/**"));
-        requestMatchers.add(new AntPathRequestMatcher("/furniture/**"));
-        requestMatchers.add(new AntPathRequestMatcher("/recycle/**"));
-        requestMatchers.add(new AntPathRequestMatcher("/events/**"));
-
-
-        return new OrRequestMatcher(requestMatchers);
+    @Bean
+    public SecurityProvider getSecurityProvider() {
+        return new SecurityProvider();
     }
 
-    private SecurityFilter getSecurityFilter() throws Exception {
+    @Bean
+    public SecurityFilter getSecurityFilter() throws Exception {
         SecurityFilter filter = new SecurityFilter(getRequestMatcher());
         filter.setAuthenticationManager(authenticationManager());
-        filter.setAuthenticationFailureHandler(authenticationFailureHandler);
-
         return filter;
     }
 
-
+    private RequestMatcher getRequestMatcher() {
+        List<RequestMatcher> requestMatchers = new ArrayList<>();
+        requestMatchers.add(new AntPathRequestMatcher("/users/**"));
+        requestMatchers.add(new AntPathRequestMatcher("/furniture/**"));
+        requestMatchers.add(new AntPathRequestMatcher("/images/**"));
+        requestMatchers.add(new AntPathRequestMatcher("/avatar/**"));
+        requestMatchers.add(new AntPathRequestMatcher("/events/**"));
+        requestMatchers.add(new AntPathRequestMatcher("/comments/**"));
+        return new OrRequestMatcher(requestMatchers);
+    }
 }
