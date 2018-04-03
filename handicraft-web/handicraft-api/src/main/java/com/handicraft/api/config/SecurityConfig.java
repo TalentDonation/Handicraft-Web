@@ -1,7 +1,7 @@
 package com.handicraft.api.config;
 
 
-import com.handicraft.api.security.SecurityFilter;
+import com.handicraft.api.config.filter.SecurityFilter;
 import com.handicraft.api.security.SecurityProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

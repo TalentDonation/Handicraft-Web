@@ -1,15 +1,16 @@
 package com.handicraft.api.controller;
 
 
+import com.handicraft.core.dto.EventDto;
 import com.handicraft.core.service.EventService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 
@@ -24,6 +25,37 @@ public class EventController {
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity findEvents() {
         return ResponseEntity.ok(eventService.findAll());
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN') and #uid == principal")
+    @PostMapping(value = "/events", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity createEvents(@RequestBody EventDto eventDto) {
+        eventService.create(eventDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN') and #uid == principal")
+    @GetMapping(value = "/events/{eid}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity findEvent(@PathVariable("uid") int eid) {
+        return ResponseEntity.ok(eventService.findOne(eid));
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN') and #uid == principal")
+    @PutMapping(value = "/events/{eid}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity updateEvent(@PathVariable("uid") int eid, @RequestBody EventDto eventDto) {
+        eventService.updateOne(eventDto);
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN') and #uid == principal")
+    @DeleteMapping("/events/{eid}")
+    @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
+    public ResponseEntity removeEvent(@PathVariable("eid") int eid) {
+        eventService.removeByEid(eid);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/events/between")

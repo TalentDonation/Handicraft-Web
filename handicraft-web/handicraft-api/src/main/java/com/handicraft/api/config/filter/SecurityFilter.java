@@ -1,5 +1,6 @@
-package com.handicraft.api.security;
+package com.handicraft.api.config.filter;
 
+import com.handicraft.api.security.SecurityAuthentication;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
@@ -28,7 +29,7 @@ public class SecurityFilter extends AbstractAuthenticationProcessingFilter {
             SecurityAuthentication securityAuthentication = new SecurityAuthentication(token);
             return getAuthenticationManager().authenticate(securityAuthentication);
         } else {
-            throw new AccessDeniedException("Not empty Token In Header");
+            throw new AccessDeniedException("Empty Token In Header");
         }
     }
 

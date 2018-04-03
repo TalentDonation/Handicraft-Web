@@ -1,281 +1,280 @@
 package com.handicraft.api.controller;
 
-import com.handicraft.api.service.AuthService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.handicraft.core.domain.Avatar;
 import com.handicraft.core.domain.User;
 import com.handicraft.core.dto.FurnitureDto;
 import com.handicraft.core.dto.UserDto;
 import com.handicraft.core.service.FurnitureService;
 import com.handicraft.core.service.UserService;
+import com.handicraft.core.support.AESUtil;
+import com.handicraft.core.support.Role;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.*;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Java6Assertions.assertThat;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @Slf4j
 @RunWith(SpringRunner.class)
+@AutoConfigureMockMvc()
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserControllerTests {
-
     @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
     private UserService userService;
 
-    @Autowired
-    private AuthService authService;
-
-    @Autowired
+    @MockBean
     private FurnitureService furnitureService;
 
-    @Autowired
-    private TestRestTemplate restTemplate;
+    private static String token;
+    private static final long USER_ID = 1;
+    private static User USER;
 
-    @Before
-    public void setUp() {
-
+    @BeforeClass
+    public static void setUpClass() throws NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+        USER = toUser(USER_ID);
+        String secretKey = AESUtil.genererateRandomKey();
+        token = AESUtil.encrypt(USER, secretKey);
+        USER.setSecretKey(secretKey);
+        USER.setToken(token);
     }
 
     @Test
-    public void shouldFindAll(){
+    public void shouldFindAll() throws Exception {
         // given
-        int tryCnt = 10;
-        User user = null;
-        for(int i = 1 ; i <= tryCnt ; ++i) {
-            user = userService.create(toUser(i));
+        int cnt = 10;
+        List<UserDto> userDtos = new LinkedList<>();
+        for (int i = 0; i < cnt; ++i) {
+            UserDto userDto = toUserDto(i);
+            userDtos.add(userDto);
         }
 
-        Optional<String> token = authService.createToken(user.getUid());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authorization", "craft " + token.get());
-        HttpEntity httpEntity = new HttpEntity(headers);
+        when(userService.loadUserByUsername(token)).thenReturn(USER);
+        when(userService.findAll()).thenReturn(userDtos);
+
 
         // when
-        ResponseEntity<List> responseEntity = restTemplate.exchange("/users", HttpMethod.GET, httpEntity, List.class);
-        List<UserDto> users = responseEntity.getBody();
+        MvcResult mvcResult = mockMvc.perform(get("/users").header("authorization", "craft " + token).contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andReturn();
 
         // then
-        assertThat(users).isNotNull();
-        assertThat(users.size()).isGreaterThanOrEqualTo(tryCnt);
+        MockHttpServletResponse response = mvcResult.getResponse();
+        assertThat(response.getContentLength()).isGreaterThanOrEqualTo(0);
+        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        assertThat(response.getContentAsString()).isNotNull();
     }
 
     @Test
-    public void shouldFindUser() {
+    public void shouldFindUser() throws Exception {
         // given
-        long uid = 111;
-        User user = userService.create(toUser(uid));
-        Optional<String> token = authService.createToken(user.getUid());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authorization", "craft " + token.get());
-        HttpEntity httpEntity = new HttpEntity(headers);
+        UserDto userDto = toUserDto(USER_ID);
+        when(userService.loadUserByUsername(token)).thenReturn(USER);
+        when(userService.findOne(USER_ID)).thenReturn(userDto);
 
-        ResponseEntity<UserDto> responseEntity = restTemplate.exchange("/users/" + uid, HttpMethod.GET, httpEntity, UserDto.class);
-        UserDto result = responseEntity.getBody();
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/users/{userId}", USER_ID).header("authorization", "craft " + token).contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.uid").value(userDto.getUid()))
+                .andExpect(jsonPath("$.name").value(userDto.getName()))
+                .andExpect(jsonPath("$.phone").value(userDto.getPhone()))
+                .andExpect(jsonPath("$.nickname").value(userDto.getNickname()))
+                .andExpect(jsonPath("$.birthday").value(userDto.getBirthday()))
+                .andExpect(jsonPath("$.address").value(userDto.getAddress()))
+                .andExpect(jsonPath("$.joinAt").value(userDto.getJoinAt().toString()))
+                .andReturn();
+
 
         // then
-        assertThat(result).isNotNull();
-        assertThat(result.getUid()).isEqualTo(user.getUid());
-        assertThat(result.getAddress()).isEqualTo(user.getAddress());
-        assertThat(result.getNickname()).isEqualTo(user.getNickname());
-        assertThat(result.getName()).isEqualTo(user.getName());
-        assertThat(result.getBirthday()).isEqualTo(user.getBirthday());
-        assertThat(result.getJoinAt()).isEqualTo(user.getJoinAt());
-        assertThat(result.getAvatar()).isNull();
+        MockHttpServletResponse response = mvcResult.getResponse();
+        assertThat(response.getContentLength()).isGreaterThanOrEqualTo(0);
+        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        assertThat(response.getContentAsString()).isNotNull();
+
+    }
+
+
+    @Test
+    public void shouldUpdateUser() throws Exception {
+        // given
+        UserDto userDto = toUserDto(USER_ID);
+        when(userService.loadUserByUsername(token)).thenReturn(USER);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"));
+        String userDtoToString = objectMapper.writeValueAsString(userDto);
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(put("/users/{userId}", USER_ID).header("authorization", "craft " + token).contentType(MediaType.APPLICATION_JSON_UTF8).content(userDtoToString))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // then
+        MockHttpServletResponse response = mvcResult.getResponse();
+        assertThat(response.getContentLength()).isEqualTo(0);
+        assertThat(response.getContentAsString()).isNotNull();
+    }
+
+
+    @Test
+    public void shouldRemoveUser() throws Exception {
+        // given
+        UserDto userDto = toUserDto(USER_ID);
+        when(userService.loadUserByUsername(token)).thenReturn(USER);
+
+        // when
+        MvcResult mvcResult = mockMvc.perform(delete("/users/{userId}", USER_ID).header("authorization", "craft " + token).contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        // then
+        MockHttpServletResponse response = mvcResult.getResponse();
+        assertThat(response.getContentLength()).isEqualTo(0);
+        assertThat(response.getContentAsString()).isNotNull();
     }
 
     @Test
-    public void shouldFindUserNotFound() {
+    public void shouldFindUserAvatar() throws Exception {
         // given
-        long uid = 111;
-        User user = userService.create(toUser(uid));
-        Optional<String> token = authService.createToken(user.getUid());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authorization", "craft " + token.get());
-        HttpEntity httpEntity = new HttpEntity(headers);
+        long gid = 1;
+        Avatar avatar = toAvatar(gid);
+        when(userService.loadUserByUsername(token)).thenReturn(USER);
+        when(userService.findAvatar(USER_ID)).thenReturn(avatar);
 
-        long badUid = 222;
-        ResponseEntity<UserDto> responseEntity = restTemplate.exchange("/users/" + badUid, HttpMethod.GET, httpEntity, UserDto.class);
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/users/{userId}/avatar", USER_ID).header("authorization", "craft " + token).contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.gid").value(avatar.getGid()))
+                .andExpect(jsonPath("$.name").value(avatar.getName()))
+                .andExpect(jsonPath("$.size").value(avatar.getSize()))
+                .andExpect(jsonPath("$.extension").value(avatar.getExtension()))
+                .andExpect(jsonPath("$.updateAt").value(avatar.getUpdateAt().toString()))
+                .andExpect(jsonPath("$.createAt").value(avatar.getCreateAt().toString()))
+                .andReturn();
+
 
         // then
-        assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+        MockHttpServletResponse response = mvcResult.getResponse();
+        assertThat(response.getContentLength()).isGreaterThanOrEqualTo(0);
+        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        assertThat(response.getContentAsString()).isNotNull();
     }
 
     @Test
-    public void shouldUpdateUser() {
+    public void shouldCreateUserAvatar() throws Exception {
         // given
-        long uid = 111;
-        User user = userService.create(toUser(uid));
-        Optional<String> token = authService.createToken(user.getUid());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authorization", "craft " + token.get());
-        UserDto userDto = new UserDto(user);
-        userDto.setAddress(user.getAddress() + " update");
-        userDto.setBirthday(user.getBirthday() + " update");
-        userDto.setNickname(user.getNickname() + " update");
-        userDto.setPhone(user.getPhone() + " update");
-        userDto.setName(user.getName() + " update");
-        HttpEntity<UserDto> httpEntity = new HttpEntity<>(userDto, headers);
+        when(userService.loadUserByUsername(token)).thenReturn(USER);
+        MockMultipartFile file = new MockMultipartFile("file", "test.png", MediaType.IMAGE_PNG_VALUE, "FileUploadTest".getBytes("UTF8"));
+        when(userService.storeAvatar(USER_ID, file)).thenReturn(101L);
 
-        ResponseEntity<UserDto> responseEntity = restTemplate.exchange("/users/" + uid, HttpMethod.PUT, httpEntity, UserDto.class);
-        UserDto result = userService.findOne(uid);
+        // when
+        MvcResult mvcResult = mockMvc.perform(fileUpload("/users/{uid}/avatar", USER_ID)
+                .file(file)
+                .contentType(MediaType.MULTIPART_FORM_DATA_VALUE)
+                .header("authorization", "craft " + token))
+                .andExpect(status().isCreated())
+                .andReturn();
+
 
         // then
-        assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
-        assertThat(result).isNotNull();
-        assertThat(result.getUid()).isEqualTo(userDto.getUid());
-        assertThat(result.getNickname()).isEqualTo(userDto.getNickname());
-        assertThat(result.getAddress()).isEqualTo(userDto.getAddress());
-        assertThat(result.getName()).isEqualTo(userDto.getName());
-        assertThat(result.getBirthday()).isEqualTo(userDto.getBirthday());
-        assertThat(result.getJoinAt()).isEqualTo(userDto.getJoinAt());
-        assertThat(result.getAvatar()).isNull();
+        MockHttpServletResponse response = mvcResult.getResponse();
+        assertThat(response.getContentLength()).isGreaterThanOrEqualTo(0);
+        assertThat(response.getContentAsString()).isNotNull();
     }
 
     @Test
-    public void shouldUpdateUserNotFound() {
+    public void shouldFindUserFurniture() throws Exception {
         // given
-        long uid = 111;
-        User user = userService.create(toUser(uid));
-        Optional<String> token = authService.createToken(user.getUid());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authorization", "craft " + token.get());
-        UserDto userDto = new UserDto(user);
-        userDto.setUid(222);
-        userDto.setAddress(user.getAddress() + " update");
-        userDto.setBirthday(user.getBirthday() + " update");
-        userDto.setNickname(user.getNickname() + " update");
-        userDto.setPhone(user.getPhone() + " update");
-        userDto.setName(user.getName() + " update");
-        HttpEntity<UserDto> httpEntity = new HttpEntity<>(userDto, headers);
-
-        ResponseEntity<UserDto> responseEntity = restTemplate.exchange("/users/" + uid, HttpMethod.PUT, httpEntity, UserDto.class);
-
-        // then
-        assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);
-    }
-
-    @Test
-    public void shouldRemoveUser() {
-        // given
-        long uid = 111;
-        User user = userService.create(toUser(uid));
-        Optional<String> token = authService.createToken(user.getUid());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authorization", "craft " + token.get());
-        HttpEntity<UserDto> httpEntity = new HttpEntity<>(headers);
-
-        ResponseEntity<UserDto> responseEntity = restTemplate.exchange("/users/" + uid, HttpMethod.DELETE, httpEntity, UserDto.class);
-
-        // then
-        assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
-    }
-
-    @Test
-    public void shouldRemoveUserNotFound() {
-        // given
-        long uid = 111;
-        User user = userService.create(toUser(uid));
-        Optional<String> token = authService.createToken(user.getUid());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authorization", "craft " + token.get());
-        HttpEntity<UserDto> httpEntity = new HttpEntity<>(headers);
-
-        long badUid = 222;
-        ResponseEntity<UserDto> responseEntity = restTemplate.exchange("/users/" + badUid, HttpMethod.DELETE, httpEntity, UserDto.class);
-
-        // then
-        assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);
-    }
-
-    // TODO: 2018. 3. 21. Add avatar test code
-
-    @Test
-    public void shouldFindFurniture() {
-        // given
-        long uid = 111;
-        long fid = 222;
-        User user = userService.create(toUser(uid));
-        Optional<String> token = authService.createToken(user.getUid());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authorization", "craft " + token.get());
-        int tryCnt = 9;
-        for(int cnt = 0; cnt < tryCnt; ++cnt) {
-            System.out.println(fid + cnt);
-            FurnitureDto furnitureDto = toFurnitureDto(fid + cnt);
-            furnitureService.create(furnitureDto);
+        int tryCnt = 10;
+        when(userService.loadUserByUsername(token)).thenReturn(USER);
+        List<FurnitureDto> furnitureDtos = new LinkedList<>();
+        for(int i =0 ; i < tryCnt ; ++i) {
+            furnitureDtos.add(toFurnitureDto(i));
         }
 
-        HttpEntity httpEntity = new HttpEntity(headers);
+        when(furnitureService.find(USER_ID, 0, 10)).thenReturn(furnitureDtos);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
 
-        ResponseEntity<List> responseEntity = restTemplate.exchange("/users/" + uid + "/furniture", HttpMethod.GET, httpEntity, List.class);
-        List<FurnitureDto> furnitureDtos = responseEntity.getBody();
+        // when
+        MvcResult mvcResult = mockMvc.perform(get("/users/{uid}/furniture", USER_ID)
+                .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                .header("authorization", "craft " + token))
+                .andExpect(status().isOk())
+                .andReturn();
 
-        // then
-        assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
-        assertThat(furnitureDtos.size()).isGreaterThanOrEqualTo(tryCnt);
-    }
-
-    @Test
-    public void shouldCreateFurniture() {
-        // given
-        long uid = 111;
-        long fid = 222;
-        User user = userService.create(toUser(uid));
-        Optional<String> token = authService.createToken(user.getUid());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authorization", "craft " + token.get());
-        FurnitureDto furnitureDto = toFurnitureDto(fid);
-        HttpEntity<FurnitureDto> httpEntity = new HttpEntity<>(furnitureDto, headers);
-
-        ResponseEntity<FurnitureDto> responseEntity = restTemplate.exchange("/users/" + uid + "/furniture", HttpMethod.POST, httpEntity, FurnitureDto.class);
 
         // then
-        assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
-    }
-
-    @Test
-    public void shouldNotFoundCreateFurniture() {
-        // given
-        long uid = 111;
-        long fid = 222;
-        User user = userService.create(toUser(uid));
-        Optional<String> token = authService.createToken(user.getUid());
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("authorization", "craft " + token.get());
-        FurnitureDto furnitureDto = toFurnitureDto(fid);
-        HttpEntity<FurnitureDto> httpEntity = new HttpEntity<>(furnitureDto, headers);
-
-        long badUid = 222;
-        ResponseEntity<FurnitureDto> responseEntity = restTemplate.exchange("/users/" + badUid + "/furniture", HttpMethod.POST, httpEntity, FurnitureDto.class);
-
-        // then
-        assertThat(responseEntity.getStatusCode()).isEqualByComparingTo(HttpStatus.NOT_FOUND);
+        MockHttpServletResponse response = mvcResult.getResponse();
+        List furnitureDtoList = objectMapper.readValue(response.getContentAsString(), List.class);
+        assertThat(response.getContentLength()).isGreaterThanOrEqualTo(0);
+        assertThat(response.getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8_VALUE);
+        assertThat(furnitureDtoList).isNotNull();
+        assertThat(furnitureDtoList.size()).isEqualTo(tryCnt);
     }
 
 
-
-    private User toUser(long uid) {
+    private static User toUser(long uid) {
         User user = new User();
         user.setUid(uid);
         user.setName("name " + uid);
         user.setPhone("phone " + uid);
-        user.setNickname("nickname "+ uid);
+        user.setNickname("nickname " + uid);
         user.setBirthday("birthday " + uid);
         user.setAddress("address " + uid);
+        user.setRole(Role.ADMIN.name());
         user.setJoinAt(ZonedDateTime.now());
+        user.setAccountExpired(false);
+        user.setAccountLocked(false);
+        user.setEnabled(true);
         return user;
     }
 
-    private FurnitureDto toFurnitureDto(long fid) {
+    private static UserDto toUserDto(long uid) {
+        UserDto userDto = new UserDto();
+        userDto.setUid(uid);
+        userDto.setName("name " + uid);
+        userDto.setPhone("phone " + uid);
+        userDto.setNickname("nickname " + uid);
+        userDto.setBirthday("birthday " + uid);
+        userDto.setAddress("address " + uid);
+        userDto.setJoinAt(ZonedDateTime.now());
+        return userDto;
+    }
+
+    private static FurnitureDto toFurnitureDto(long fid) {
         FurnitureDto furnitureDto = new FurnitureDto();
         furnitureDto.setFid(fid);
         furnitureDto.setBrand("brand " + fid);
@@ -293,8 +292,19 @@ public class UserControllerTests {
         furnitureDto.setUpdateAt(ZonedDateTime.now());
         furnitureDto.setSellerPhone("phone " + fid);
         furnitureDto.setType("type " + fid);
-        furnitureDto.setTitle("title "+ fid);
-        furnitureDto.setState("state "+ fid);
+        furnitureDto.setTitle("title " + fid);
+        furnitureDto.setState("state " + fid);
         return furnitureDto;
+    }
+
+    private static Avatar toAvatar(long gid) {
+        Avatar avatar = new Avatar();
+        avatar.setSize(gid);
+        avatar.setName("name " + gid);
+        avatar.setExtension(".png");
+        avatar.setGid(gid);
+        avatar.setUpdateAt(ZonedDateTime.now());
+        avatar.setCreateAt(ZonedDateTime.now());
+        return avatar;
     }
 }
