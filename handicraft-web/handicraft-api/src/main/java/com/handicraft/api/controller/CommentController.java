@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class CommentController {
         this.commentService = commentService;
     }
 
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @PostMapping("/comments")
     @ApiOperation(value = "", notes = "insert comment about furniture")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
@@ -27,6 +29,7 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @GetMapping("/comments")
     @ApiOperation(value = "", notes = "find comment about furniture")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
@@ -34,6 +37,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.find(page, perPage));
     }
 
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @PutMapping("/comments")
     @ApiOperation(value = "", notes = "modify comment about furniture")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
@@ -42,6 +46,7 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @DeleteMapping("/comments")
     @ApiOperation(value = "", notes = "delete comment about furniture")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
@@ -50,6 +55,7 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping("/comments/{cid}")
     @ApiOperation(value = "", notes = "find comment about furniture")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
@@ -65,6 +71,7 @@ public class CommentController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @DeleteMapping("/comments/{cid}")
     @ApiOperation(value = "", notes = "delete comment about furniture")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")

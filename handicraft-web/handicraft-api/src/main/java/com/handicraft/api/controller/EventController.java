@@ -20,6 +20,7 @@ public class EventController {
     @Autowired
     private EventService eventService;
 
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
     @GetMapping("/events")
     @ApiOperation(value = "", notes = "Delete one user about user id")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
@@ -27,7 +28,7 @@ public class EventController {
         return ResponseEntity.ok(eventService.findAll());
     }
 
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN') and #uid == principal")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @PostMapping(value = "/events", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity createEvents(@RequestBody EventDto eventDto) {
@@ -35,14 +36,14 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN') and #uid == principal")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping(value = "/events/{eid}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity findEvent(@PathVariable("uid") int eid) {
         return ResponseEntity.ok(eventService.findOne(eid));
     }
 
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN') and #uid == principal")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @PutMapping(value = "/events/{eid}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity updateEvent(@PathVariable("uid") int eid, @RequestBody EventDto eventDto) {
@@ -50,7 +51,7 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
-    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN') and #uid == principal")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @DeleteMapping("/events/{eid}")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity removeEvent(@PathVariable("eid") int eid) {
@@ -58,6 +59,7 @@ public class EventController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping("/events/between")
     @ApiOperation(value = "", notes = "Delete one user about user id")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")

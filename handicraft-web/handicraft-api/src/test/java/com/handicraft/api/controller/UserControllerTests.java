@@ -10,7 +10,6 @@ import com.handicraft.core.service.FurnitureService;
 import com.handicraft.core.service.UserService;
 import com.handicraft.core.support.AESUtil;
 import com.handicraft.core.support.Role;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,7 +43,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@Slf4j
 @RunWith(SpringRunner.class)
 @AutoConfigureMockMvc()
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -63,7 +61,7 @@ public class UserControllerTests {
     private static User USER;
 
     @BeforeClass
-    public static void setUpClass() throws NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
+    public static void setUp() throws NoSuchPaddingException, InvalidKeyException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException {
         USER = toUser(USER_ID);
         String secretKey = AESUtil.genererateRandomKey();
         token = AESUtil.encrypt(USER, secretKey);
@@ -220,7 +218,7 @@ public class UserControllerTests {
         int tryCnt = 10;
         when(userService.loadUserByUsername(token)).thenReturn(USER);
         List<FurnitureDto> furnitureDtos = new LinkedList<>();
-        for(int i =0 ; i < tryCnt ; ++i) {
+        for (int i = 0; i < tryCnt; ++i) {
             furnitureDtos.add(toFurnitureDto(i));
         }
 
