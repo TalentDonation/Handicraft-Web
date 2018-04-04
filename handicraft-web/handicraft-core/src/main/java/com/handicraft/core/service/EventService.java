@@ -42,14 +42,14 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public EventDto findOne(long uid, long eid) {
+    public EventDto findOne(long eid) {
         Event event = eventRepository.findOne(eid);
         return new EventDto(event);
     }
 
 
-    public Event create(long uid, EventDto eventDto) {
-        User user = userRepository.findOne(uid);
+    public Event create(EventDto eventDto) {
+        User user = userRepository.findOne(eventDto.getUid());
         if (user == null) {
             throw new IllegalArgumentException();
         }
@@ -73,7 +73,7 @@ public class EventService {
         eventRepository.save(events);
     }
 
-    public void updateOne(long uid, EventDto eventDto) {
+    public void updateOne(EventDto eventDto) {
         if (!eventRepository.exists(eventDto.getEid())) {
             throw new IllegalArgumentException();
         }
@@ -86,7 +86,7 @@ public class EventService {
         eventRepository.deleteByUserUid(uid);
     }
 
-    public void removeByUidAndEid(long uid, long eid) {
+    public void removeByEid(long eid) {
         eventRepository.delete(eid);
     }
 }

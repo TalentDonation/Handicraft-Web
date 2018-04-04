@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -114,10 +115,12 @@ public class CommentService {
         commentRepository.delete(cid);
     }
 
+    @Transactional
     public void removeByUid(long uid) {
         commentRepository.removeAllByUserUid(uid);
     }
 
+    @Transactional
     public void removeByFid(long fid) {
         commentRepository.removeAllByFurnitureFid(fid);
     }

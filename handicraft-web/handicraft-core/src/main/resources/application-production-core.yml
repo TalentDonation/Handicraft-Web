@@ -1,0 +1,44 @@
+spring:
+  jpa:
+    show-sql: true
+    database: mysql
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+      ddl-auto: update
+  datasource:
+      driverClassName: com.mysql.jdbc.Driver
+      url: jdbc:mysql://52.78.80.115/handicraft?autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Seoul
+      username: ellim
+      password: Tmd20203!!!!
+    dbcp2:
+      initial-size: 3
+      max-total: 10
+      max-idle: 8
+      min-idle: 3
+      max-wait-millis: 10000
+      validation-query: SELECT 1
+      validation-query-timeout: 1
+      test-on-create: true
+  data:
+    jpa:
+      repositories:
+        enabled: true
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Seoul
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
+
+logging:
+  level:
+    com.handicraft.*: debug
+
+
+aws:
+  s3:
+    bucket: www.image.half-handicraft.com
+  credentials:
+    accessKey: AKIAJSWAQNQ53OE5ZUCA
+    secretKey: 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

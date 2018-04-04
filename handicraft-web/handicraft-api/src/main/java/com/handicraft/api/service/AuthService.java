@@ -3,6 +3,7 @@ package com.handicraft.api.service;
 import com.handicraft.core.support.AESUtil;
 import com.handicraft.core.domain.User;
 import com.handicraft.core.repository.UserRepository;
+import com.handicraft.core.support.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,8 @@ public class AuthService {
                 String secretKey = AESUtil.genererateRandomKey();
                 String token = AESUtil.encrypt(checkedUser.get(), secretKey);
                 User user = checkedUser.get();
-                user.modifyAuthToken(token, null, secretKey);
+                user.setRole(Role.USER.name());
+                user.modifyAuthToken(token, secretKey);
                 userRepository.save(user);
                 result = Optional.of("craft " + token);
             } catch (Exception e) {
@@ -74,7 +76,7 @@ public class AuthService {
             return Optional.empty();
         }
 
-        user.modifyAuthStatus(false, false, false, false, true);
+        user.modifyAuthStatus(false, false, true);
         return Optional.of(userRepository.save(user));
     }
 }

@@ -16,6 +16,7 @@ public class ImageDto implements Serializable {
     private long fileSize;
     private ZonedDateTime updateAt;
     private ZonedDateTime createAt;
+    private long fid;
 
     public ImageDto() {
     }

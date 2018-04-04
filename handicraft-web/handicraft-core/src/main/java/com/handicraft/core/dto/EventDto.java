@@ -15,6 +15,7 @@ public class EventDto implements Serializable {
     private String color;
     private ZonedDateTime start;
     private ZonedDateTime end;
+    private long uid;
 
     public EventDto() {
     }

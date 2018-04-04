@@ -35,7 +35,7 @@ public class SecurityProvider implements AuthenticationProvider {
 
         String expired = StringUtils.substringAfter(decryptedToken, "/");
         if (ZonedDateTime.now().compareTo(ZonedDateTime.parse(expired)) > 0) {
-            user.modifyAuthStatus(true, true, true, true, false);
+            user.modifyAuthStatus(true, true, false);
             userService.update(user);
             throw new NotAcceptableException("Expired Token");
         }

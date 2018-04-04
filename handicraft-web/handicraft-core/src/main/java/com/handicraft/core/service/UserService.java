@@ -8,6 +8,7 @@ import com.handicraft.core.repository.AvatarRepository;
 import com.handicraft.core.repository.UserRepository;
 import com.handicraft.core.support.FileModule;
 import com.handicraft.core.support.HashUtil;
+import com.handicraft.core.support.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,10 +84,19 @@ public class UserService implements UserDetailsService {
         return userRepository.saveAndFlush(user);
     }
 
+    @Transactional
     public void update(UserDto userDto) {
-        if (!userRepository.exists(userDto.getUid()))
+        User user = userRepository.findOne(userDto.getUid());
+        if (user == null) {
             throw new IllegalArgumentException();
+        }
 
+        user.setJoinAt(userDto.getJoinAt());
+        user.setName(userDto.getName());
+        user.setAddress(userDto.getAddress());
+        user.setNickname(userDto.getNickname());
+        user.setBirthday(userDto.getBirthday());
+        user.setPhone(userDto.getPhone());
         userRepository.saveAndFlush(new User(userDto));
     }
 
@@ -104,7 +114,7 @@ public class UserService implements UserDetailsService {
         userRepository.delete(uid);
     }
 
-    @Transactional(rollbackFor = NotFoundException.class)
+    @Transactional
     public long storeAvatar(long uid, MultipartFile multipartFile) {
         User user = userRepository.findOne(uid);
         if (multipartFile == null || user == null) return 0L;
@@ -131,7 +141,7 @@ public class UserService implements UserDetailsService {
         return fileSize;
     }
 
-    @Transactional(rollbackFor = {IllegalArgumentException.class, IOException.class})
+    @Transactional
     public long changeAvatar(long uid, MultipartFile multipartFile) {
         User user = userRepository.findOne(uid);
         if (multipartFile == null || user == null || user.getAvatar() == null) throw new IllegalArgumentException();
@@ -155,7 +165,7 @@ public class UserService implements UserDetailsService {
         return fileSize;
     }
 
-    @Transactional(rollbackFor = {IllegalArgumentException.class, NotFoundException.class})
+    @Transactional(rollbackFor = IllegalArgumentException.class)
     public void removeAvatar(long uid) {
         User user = userRepository.findOne(uid);
         if (user == null || user.getAvatar() == null) throw new IllegalArgumentException();

@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +22,6 @@ import java.util.stream.Collectors;
  * Created by 고승빈 on 2017-07-26.
  */
 @Service
-@Transactional
 public class ImageService {
     private final ImageRepository imageRepository;
     private final FurnitureRepository furnitureRepository;
@@ -36,7 +34,7 @@ public class ImageService {
         this.awsModule = awsModule;
     }
 
-    @Transactional(rollbackFor = IOException.class)
+    @Transactional
     public long upload(long fid, MultipartFile multipartFile) {
         Furniture furniture = furnitureRepository.findOne(fid);
         if (multipartFile == null || furniture == null) return 0L;
@@ -62,7 +60,7 @@ public class ImageService {
         return fileSize;
     }
 
-    @Transactional(rollbackFor = IOException.class)
+    @Transactional
     public long change(long fid, long mid, MultipartFile multipartFile) {
         Image image = imageRepository.findOne(mid);
         if (multipartFile == null || image == null || image.getFurniture() == null) return 0L;

@@ -8,8 +8,8 @@ import org.springframework.security.core.authority.AuthorityUtils;
 import java.util.Collection;
 
 public class SecurityAuthentication extends AbstractAuthenticationToken {
-    private String token;
     private User user;
+    private String token;
 
     public SecurityAuthentication(String token) {
         super(AuthorityUtils.NO_AUTHORITIES);
@@ -19,29 +19,29 @@ public class SecurityAuthentication extends AbstractAuthenticationToken {
 
     public SecurityAuthentication(String token, User user) {
         super(AuthorityUtils.NO_AUTHORITIES);
-        this.token = token;
         this.user = user;
+        this.token = token;
         this.setAuthenticated(false);
     }
 
     @Override
     public Object getCredentials() {
-        return token;
+        return this.token;
     }
 
     @Override
     public Object getPrincipal() {
-        return user.getUid();
+        return this.user.getUid();
     }
 
     @Override
     public void eraseCredentials() {
-        this.token = null;
+        super.eraseCredentials();
     }
 
     @Override
     public Collection<GrantedAuthority> getAuthorities() {
-        return user.getGrantedAuthorities();
+        return (Collection<GrantedAuthority>) user.getAuthorities();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class SecurityAuthentication extends AbstractAuthenticationToken {
 
     @Override
     public User getDetails() {
-        return user;
+        return this.user;
     }
 
     @Override
@@ -63,5 +63,13 @@ public class SecurityAuthentication extends AbstractAuthenticationToken {
     public void setDetails(Object details) {
         super.setDetails(details);
         this.user = (User) details;
+    }
+
+    @Override
+    public String toString() {
+        return "SecurityAuthentication{" +
+                "user=" + user +
+                ", token='" + token + '\'' +
+                '}';
     }
 }

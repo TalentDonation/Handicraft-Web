@@ -12,6 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +39,7 @@ public class ProxyController {
         this.userService = userService;
     }
 
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping("/images/{fileName}")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity imagesProxy(@PathVariable("fileName") String fileName) throws IOException {
@@ -63,6 +65,7 @@ public class ProxyController {
                 .body(media);
     }
 
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
     @GetMapping("/avatar/{fileName}")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity<byte[]> avatarProxy(@PathVariable("fileName") String fileName) throws IOException {

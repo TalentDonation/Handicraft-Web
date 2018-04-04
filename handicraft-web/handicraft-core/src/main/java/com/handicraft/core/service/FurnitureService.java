@@ -93,7 +93,6 @@ public class FurnitureService {
         furnitureList.forEach(furniture -> {
             remove(furniture.getFid());
         });
-
         furnitureRepository.delete(furnitureList);
     }
 
@@ -101,7 +100,7 @@ public class FurnitureService {
     public void remove(long fid) {
         Furniture furniture = furnitureRepository.findOne(fid);
         List<Image> images = furniture.getImages();
-        if (images != null) {
+        if(images != null) {
             images.forEach(image -> {
                 awsModule.remove(fid, image.getName() + "." + image.getExtension());
             });
