@@ -5,6 +5,7 @@ import com.handicraft.core.service.CommentService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class CommentController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @PostMapping("/comments")
+    @PostMapping(value = "/comments", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "", notes = "insert comment about furniture")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity createComments(@RequestBody CommentDto commentDto) {
@@ -30,7 +31,7 @@ public class CommentController {
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @GetMapping("/comments")
+    @GetMapping(value = "/comments", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "", notes = "find comment about furniture")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity findComments(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "per_page", defaultValue = "10") int perPage) {
@@ -38,7 +39,7 @@ public class CommentController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @PutMapping("/comments")
+    @PutMapping(value = "/comments", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "", notes = "modify comment about furniture")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity updateComments(@RequestBody List<CommentDto> commentDtos) {
@@ -56,14 +57,15 @@ public class CommentController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @GetMapping("/comments/{cid}")
+    @GetMapping(value = "/comments/{cid}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "", notes = "find comment about furniture")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity findComment(@PathVariable("cid") long cid) {
         return ResponseEntity.ok(commentService.findByCid(cid));
     }
 
-    @PutMapping("/comments/{cid}")
+    @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
+    @PutMapping(value = "/comments/{cid}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "", notes = "modify comment about furniture")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity updateComment(@PathVariable("cid") long cid, @RequestBody CommentDto commentDto) {

@@ -7,6 +7,7 @@ import com.handicraft.core.dto.UserTokenDto;
 import com.handicraft.core.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,7 +27,7 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping(value = "/auth/signin", consumes = "application/json")
+    @PostMapping(value = "/auth/signin", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity signin(@RequestBody String accessToken) {
         Optional<Map<String, String>> profile = authService.findProfile(accessToken);
         if (profile.isPresent()) {
@@ -42,7 +43,7 @@ public class AuthController {
     }
 
 
-    @PostMapping(value = "/auth/signup", consumes = "application/json")
+    @PostMapping(value = "/auth/signup", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity signup(@RequestBody UserTokenDto userTokenDto) {
         Optional<Map<String, String>> profile = authService.findProfile(userTokenDto.getAccessToken());
         UserDto userDto = userTokenDto.getUserDto();

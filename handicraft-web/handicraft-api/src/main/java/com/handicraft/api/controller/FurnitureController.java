@@ -10,6 +10,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +42,7 @@ public class FurnitureController {
 
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @PostMapping(value = "/furniture", produces = "application/json")
+    @PostMapping(value = "/furniture", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity createFurniture(@RequestBody FurnitureDto furnitureDto) {
         furnitureService.create(furnitureDto);
@@ -49,14 +50,14 @@ public class FurnitureController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @GetMapping(value = "/furniture", produces = "application/json")
+    @GetMapping(value = "/furniture", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity findFurniture(@RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value = "per_page", defaultValue = "10") int perPage) {
         return ResponseEntity.ok(furnitureService.find(page, perPage));
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @PutMapping("/furniture")
+    @PutMapping(value = "/furniture", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity updateFurniture(@RequestBody List<FurnitureDto> furnitureDtos) {
         furnitureService.update(furnitureDtos);
@@ -64,14 +65,14 @@ public class FurnitureController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @GetMapping("/furniture/{fid}")
+    @GetMapping(value = "/furniture/{fid}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity findFurnitureOne(@PathVariable("fid") long fid) {
         return ResponseEntity.ok(furnitureService.findOne(fid));
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @PutMapping("/furniture/{fid}")
+    @PutMapping(value = "/furniture/{fid}", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity updateFurnitureOne(@RequestBody FurnitureDto furnitureDto) {
         furnitureService.updateOne(furnitureDto);
@@ -87,7 +88,7 @@ public class FurnitureController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @PostMapping("/furniture/{fid}/images")
+    @PostMapping(value = "/furniture/{fid}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity createFurnitureImages(@PathVariable("fid") long fid, @RequestParam("file") MultipartFile multipartFile) throws IOException {
         imageService.upload(fid, multipartFile);
@@ -95,7 +96,7 @@ public class FurnitureController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @GetMapping("/furniture/{fid}/images")
+    @GetMapping(value = "/furniture/{fid}/images", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "", notes = "Get images by furniture id")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity findFurnitureImages(@PathVariable("fid") long fid) {
@@ -111,14 +112,14 @@ public class FurnitureController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @GetMapping("/furniture/{fid}/images/{gid}")
+    @GetMapping(value = "/furniture/{fid}/images/{gid}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity findFurnitureImage(@PathVariable("fid") long fid, @PathVariable("gid") long gid) {
         return ResponseEntity.ok(imageService.findOne(gid));
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @PutMapping("/furniture/{fid}/images/{gid}")
+    @PutMapping(value = "/furniture/{fid}/images/{gid}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity updateFurnitureImage(@PathVariable("fid") long fid, @PathVariable("gid") long gid, @RequestParam("file") MultipartFile multipartFile) throws IOException {
         imageService.change(fid, gid, multipartFile);
@@ -134,7 +135,7 @@ public class FurnitureController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @GetMapping("/furniture/{fid}/comments")
+    @GetMapping(value = "/furniture/{fid}/comments", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "", notes = "find comment about furniture")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity findFurnitureComments(@PathVariable("fid") long fid) {
