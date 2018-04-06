@@ -35,8 +35,3 @@ spring:
 logging:
   level:
     com.handicraft.*: debug
-
-
-bucket: www.image.half-handicraft.com
-access-key: AKIAJSWAQNQ53OE5ZUCA
-secret-key: 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
