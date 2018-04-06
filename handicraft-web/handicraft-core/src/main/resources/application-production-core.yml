@@ -34,11 +34,3 @@ spring:
 logging:
   level:
     com.handicraft.*: debug
-
-
-aws:
-  s3:
-    bucket: www.image.half-handicraft.com
-  credentials:
-    accessKey: AKIAJSWAQNQ53OE5ZUCA
-    secretKey: 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
