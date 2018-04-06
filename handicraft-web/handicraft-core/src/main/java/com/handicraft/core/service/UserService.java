@@ -8,7 +8,6 @@ import com.handicraft.core.repository.AvatarRepository;
 import com.handicraft.core.repository.UserRepository;
 import com.handicraft.core.support.FileModule;
 import com.handicraft.core.support.HashUtil;
-import com.handicraft.core.support.Role;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,10 +47,10 @@ public class UserService implements UserDetailsService {
     }
 
     public UserDto findOne(long uid) {
-        if (!userRepository.exists(uid))
+        User user = userRepository.findOne(uid);
+        if (user == null)
             throw new IllegalArgumentException();
 
-        User user = userRepository.findOne(uid);
         UserDto userDto = new UserDto(user);
         userDto.makeAvatar(user.getAvatar());
         return userDto;
@@ -60,7 +59,7 @@ public class UserService implements UserDetailsService {
     public User findOneByFileName(String avatarName) {
         User user = userRepository.findByAvatarName(avatarName);
         if (user == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Not Exist User.");
         }
 
         return user;
@@ -69,7 +68,7 @@ public class UserService implements UserDetailsService {
     public Avatar findAvatar(long uid) {
         User user = userRepository.findOne(uid);
         if (user == null || user.getAvatar() == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Not Exist User.");
         }
 
         return user.getAvatar();
@@ -88,7 +87,7 @@ public class UserService implements UserDetailsService {
     public void update(UserDto userDto) {
         User user = userRepository.findOne(userDto.getUid());
         if (user == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Not Exist User.");
         }
 
         user.setJoinAt(userDto.getJoinAt());
@@ -102,14 +101,14 @@ public class UserService implements UserDetailsService {
 
     public void update(User user) {
         if (!userRepository.exists(user.getUid()))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Not Exist User.");
 
         userRepository.saveAndFlush(user);
     }
 
     public void remove(long uid) {
         if (!userRepository.exists(uid))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Not Exist User.");
 
         userRepository.delete(uid);
     }

@@ -27,14 +27,15 @@ public class AuthService {
     private static final URI URI_INFO = URI.create("https://openapi.naver.com/v1/nid/me");
 
     private final UserRepository userRepository;
+    private final RestTemplate restTemplate;
 
     @Autowired
-    public AuthService(UserRepository userRepository) {
+    public AuthService(UserRepository userRepository, RestTemplate restTemplate) {
         this.userRepository = userRepository;
+        this.restTemplate = restTemplate;
     }
 
     public Optional<Map<String, String>> findProfile(String accessToken) {
-        RestTemplate restTemplate = new RestTemplate();
         RequestEntity requestEntity = RequestEntity.post(URI_INFO).header("Authorization", "Bearer " + accessToken).build();
         ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity, String.class);
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
@@ -46,6 +47,8 @@ public class AuthService {
 
             return Optional.of(profile);
         }
+
+        log.error("{}", responseEntity.getBody());
 
         return Optional.empty();
     }

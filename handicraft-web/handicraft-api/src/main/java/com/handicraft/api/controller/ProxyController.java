@@ -40,7 +40,7 @@ public class ProxyController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @GetMapping("/images/{fileName}")
+    @GetMapping(value ="/images/{fileName}", produces = "image/**")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity imagesProxy(@PathVariable("fileName") String fileName) throws IOException {
         Image image = imageService.findOneByFileName(fileName);
@@ -66,7 +66,7 @@ public class ProxyController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @GetMapping("/avatar/{fileName}")
+    @GetMapping(value = "/avatar/{fileName}", produces = "image/**")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity<byte[]> avatarProxy(@PathVariable("fileName") String fileName) throws IOException {
         User user = userService.findOneByFileName(fileName);

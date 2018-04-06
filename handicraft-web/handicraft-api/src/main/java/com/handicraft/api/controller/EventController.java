@@ -21,7 +21,7 @@ public class EventController {
     private EventService eventService;
 
     @PreAuthorize("hasAnyAuthority('ADMIN')")
-    @GetMapping("/events")
+    @GetMapping(value = "/events", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "", notes = "Delete one user about user id")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity findEvents() {
@@ -60,7 +60,7 @@ public class EventController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @GetMapping("/events/between")
+    @GetMapping(value = "/events/between", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ApiOperation(value = "", notes = "Delete one user about user id")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity findEventsBetween(@RequestParam("start") String start, @RequestParam("end") String end) throws ParseException {
