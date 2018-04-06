@@ -12,7 +12,4 @@ spring:
 server:
   port: 9091
 
-Authentication: MASTERHANDICRAFT
-
-images-path: http://www.half-handicraft.com:9090/images/
 

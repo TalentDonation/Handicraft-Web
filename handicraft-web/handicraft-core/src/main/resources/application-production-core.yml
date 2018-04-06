@@ -1,17 +1,15 @@
+
 spring:
-  jpa:
-    show-sql: true
-    database: mysql
-    hibernate:
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
-        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
-      ddl-auto: update
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Seoul
   datasource:
-      driverClassName: com.mysql.jdbc.Driver
-      url: jdbc:mysql://52.78.80.115/handicraft?autoReconnect=true&useUnicode=true&characterEncoding=utf8&useSSL=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Seoul
-      username: ellim
-      password: Tmd20203!!!!
+    driverClassName: com.mysql.jdbc.Driver
+    url:
+    username:
+    password:
     dbcp2:
       initial-size: 3
       max-total: 10
@@ -21,16 +19,21 @@ spring:
       validation-query: SELECT 1
       validation-query-timeout: 1
       test-on-create: true
+  jpa:
+    show-sql: true
+    database: mysql
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
+      ddl-auto: update
   data:
     jpa:
       repositories:
         enabled: true
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: Asia/Seoul
-  mvc:
-    date-format: yyyy-MM-dd HH:mm:ss
+
 
 logging:
   level:
     com.handicraft.*: debug
+
