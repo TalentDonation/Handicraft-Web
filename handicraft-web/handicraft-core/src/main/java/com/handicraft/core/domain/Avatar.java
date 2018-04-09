@@ -10,6 +10,9 @@ import java.time.ZonedDateTime;
 
 @Getter
 @Setter
+@Table(name = "avatar", indexes = {
+        @Index(name = "avatar_idx_name", columnList = "name", unique = true)
+})
 @Entity
 @EntityListeners(value = {AuditingEntityListener.class})
 public class Avatar implements Serializable {
@@ -22,8 +25,16 @@ public class Avatar implements Serializable {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "size")
     private long size;
+
+    @Column(name = "extension")
     private String extension;
+
+    @Column(name = "update_at", nullable = false)
     private ZonedDateTime updateAt;
+
+    @Column(name = "create_at", nullable = false)
     private ZonedDateTime createAt;
 }

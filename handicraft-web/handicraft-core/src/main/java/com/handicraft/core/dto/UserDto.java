@@ -26,11 +26,8 @@ public class UserDto implements Serializable {
 
     public void makeAvatar(Avatar avatar) {
         if (avatar == null) return;
-        StringBuffer url = new StringBuffer("http://localhost:9090/images/")
-                .append(avatar.getName())
-                .append(".")
-                .append(avatar.getExtension());
-        this.avatar = url.toString();
+
+        this.avatar = "http://www.half-handicraft.com:8080/avatar/" + avatar.getName();
     }
 
     private long uid;

@@ -57,11 +57,8 @@ public class ProxyController {
             throw new NotFoundException();
         }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setCacheControl(CacheControl.noCache().getHeaderValue());
-        headers.setContentType(mediaType.get());
         return ResponseEntity.status(HttpStatus.OK)
-                .headers(headers)
+                .contentType(mediaType.get())
                 .body(media);
     }
 
@@ -82,10 +79,9 @@ public class ProxyController {
             throw new NotFoundException();
         }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setCacheControl(CacheControl.noCache().getHeaderValue());
-        headers.setContentType(mediaType.get());
-        return new ResponseEntity<>(media, headers, HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK)
+                .contentType(mediaType.get())
+                .body(media);
     }
 
 }

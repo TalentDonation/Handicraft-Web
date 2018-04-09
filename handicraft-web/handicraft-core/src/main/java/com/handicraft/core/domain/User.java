@@ -1,7 +1,6 @@
 package com.handicraft.core.domain;
 
 import com.handicraft.core.dto.UserDto;
-import com.handicraft.core.support.Role;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -20,6 +19,11 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Table(name = "user", indexes = {
+        @Index(name = "user_idx_name", columnList = "name"),
+        @Index(name = "user_idx_nickname", columnList = "nickname"),
+        @Index(name = "user_idx_token", columnList = "token")
+})
 @EntityListeners(value = {AuditingEntityListener.class})
 public class User implements Serializable, UserDetails {
     private static final long serialVersionUID = 7299389372048448961L;
@@ -38,20 +42,37 @@ public class User implements Serializable, UserDetails {
     }
 
     @Id
-    @Column(nullable = false)
+    @Column(name = "uid", nullable = false)
     private long uid;
+
+    @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "nickname", nullable = false)
     private String nickname;
+
+    @Column(name = "phone", nullable = false)
     private String phone;
+
+    @Column(name = "address", nullable = false)
     private String address;
+
+    @Column(name = "secret_key")
+    private String secretKey;
+
+    @Column(name = "account_expired")
+    private boolean accountExpired;
+
+    @Column(name = "account_locked")
+    private boolean accountLocked;
+
+    @Column(name = "join_at", nullable = false)
+    private ZonedDateTime joinAt;
+
+    private boolean enabled;
     private String birthday;
     private String role;
     private String token;
-    private String secretKey;
-    private boolean accountExpired;
-    private boolean accountLocked;
-    private boolean enabled;
-    private ZonedDateTime joinAt;
 
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "gid")

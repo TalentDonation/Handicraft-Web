@@ -27,5 +27,6 @@ public class ImageDto implements Serializable {
         this.extension = image.getExtension();
         this.updateAt = image.getUpdateAt();
         this.createAt = image.getCreateAt();
+        this.fid = image.getFurniture().getFid();
     }
 }

@@ -11,6 +11,9 @@ import java.time.ZonedDateTime;
 
 @Getter
 @Setter
+@Table(name = "event", indexes = {
+        @Index(name = "event_idx_title", columnList = "title")
+})
 @Entity
 @EntityListeners(value = {AuditingEntityListener.class})
 public class Event implements Serializable {
@@ -18,10 +21,19 @@ public class Event implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "eid", nullable = false)
     private long eid;
+
+    @Column(name = "title", nullable = false)
     private String title;
+
+    @Column(name = "color", nullable = false)
     private String color;
+
+    @Column(name = "start", nullable = false)
     private ZonedDateTime start;
+
+    @Column(name = "end", nullable = false)
     private ZonedDateTime end;
 
     @ManyToOne(fetch = FetchType.EAGER)
