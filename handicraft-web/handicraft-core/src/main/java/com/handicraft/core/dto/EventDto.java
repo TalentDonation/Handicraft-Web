@@ -26,5 +26,6 @@ public class EventDto implements Serializable {
         this.color = event.getColor();
         this.start = event.getStart();
         this.end = event.getEnd();
+        this.uid = event.getUser().getUid();
     }
 }

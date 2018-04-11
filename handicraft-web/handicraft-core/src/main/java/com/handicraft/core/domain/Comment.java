@@ -11,16 +11,27 @@ import java.time.ZonedDateTime;
 @Getter
 @Setter
 @Entity
+@Table(name = "comment", indexes = {
+        @Index(name = "comment_idx_title", columnList = "title")
+})
 public class Comment implements Serializable {
     private static final long serialVersionUID = -2535545684434235058L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(nullable = false)
+    @Column(name = "cid", nullable = false)
     private long cid;
+
+    @Column(name = "title", nullable = false)
     private String title;
+
+    @Column(name = "contents", nullable = false)
     private String contents;
+
+    @Column(name = "update_at", nullable = false)
     private ZonedDateTime updateAt;
+
+    @Column(name = "create_at", nullable = false)
     private ZonedDateTime createAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

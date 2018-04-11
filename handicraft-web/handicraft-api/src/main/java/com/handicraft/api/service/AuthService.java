@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
@@ -53,6 +54,7 @@ public class AuthService {
         return Optional.empty();
     }
 
+    @Transactional
     public Optional<String> createToken(long uid) {
         Optional<User> checkedUser = initLogin(uid);
         Optional result = Optional.empty();

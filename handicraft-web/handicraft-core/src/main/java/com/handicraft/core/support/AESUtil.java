@@ -41,6 +41,6 @@ public class AESUtil {
     }
 
     public static String genererateRandomKey() {
-        return RandomStringUtils.random(16);
+        return RandomStringUtils.randomAscii(16);
     }
 }

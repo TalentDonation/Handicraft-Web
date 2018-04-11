@@ -1,5 +1,6 @@
 package com.handicraft.core.support;
 
+import com.amazonaws.util.IOUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.util.ResourceUtils;
@@ -23,17 +24,16 @@ public class FileModule {
         }
     }
 
-    public static FileInputStream readFile(String fileName) {
+    public static byte[] readFile(String fileName) {
         String filePath = storage + "/" + fileName;
         FileInputStream inputStream = null;
         try {
             inputStream = new FileInputStream(filePath);
-        } catch (FileNotFoundException e) {
+            return IOUtils.toByteArray(inputStream);
+        } catch (IOException e) {
             log.error("File = {} Not Found", filePath);
             throw new IllegalArgumentException();
         }
-
-        return inputStream;
     }
 
     public static long storeFile(String fileName, InputStream inputStream) {
