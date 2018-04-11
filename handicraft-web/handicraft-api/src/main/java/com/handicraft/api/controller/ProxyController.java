@@ -1,6 +1,5 @@
 package com.handicraft.api.controller;
 
-import com.amazonaws.util.IOUtils;
 import com.handicraft.api.exception.NotFoundException;
 import com.handicraft.core.domain.Avatar;
 import com.handicraft.core.domain.Image;
@@ -11,15 +10,15 @@ import com.handicraft.core.support.AwsModule;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Optional;
 
 import static com.handicraft.core.support.FileModule.checkExtension;
@@ -40,7 +39,7 @@ public class ProxyController {
     }
 
     @PreAuthorize("hasAnyAuthority('USER', 'ADMIN')")
-    @GetMapping(value ="/images/{fileName}", produces = "image/**")
+    @GetMapping(value = "/images/{fileName}", produces = "image/**")
     @ApiImplicitParam(name = "authorization", value = "authorization", dataType = "string", paramType = "header")
     public ResponseEntity imagesProxy(@PathVariable("fileName") String fileName) throws IOException {
         Image image = imageService.findOneByFileName(fileName);
@@ -50,8 +49,7 @@ public class ProxyController {
 
         String path = image.getName() + "." + image.getExtension();
 
-        InputStream in = awsService.load(image.getFurniture().getFid(), path);
-        byte[] media = IOUtils.toByteArray(in);
+        byte[] media = awsService.load(image.getFurniture().getFid(), path);
         Optional<MediaType> mediaType = checkExtension(image.getExtension());
         if (!mediaType.isPresent()) {
             throw new NotFoundException();
@@ -72,8 +70,7 @@ public class ProxyController {
         }
 
         Avatar avatar = user.getAvatar();
-        FileInputStream inputStream = readFile(fileName);
-        byte[] media = IOUtils.toByteArray(inputStream);
+        byte[] media = readFile(fileName);
         Optional<MediaType> mediaType = checkExtension(avatar.getExtension());
         if (!mediaType.isPresent()) {
             throw new NotFoundException();

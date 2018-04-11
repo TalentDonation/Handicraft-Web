@@ -9,11 +9,15 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectResult;
+import com.amazonaws.util.IOUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.io.InputStream;
 
+@Slf4j
 @Component
 public class AwsModule {
     private final AmazonS3 amazonS3;
@@ -37,11 +41,17 @@ public class AwsModule {
         return putObjectResult.getMetadata().getContentLength();
     }
 
-    public InputStream load(long fid, String fileName) {
+    public byte[] load(long fid, String fileName) {
         StringBuffer path = new StringBuffer(dir)
                 .append("/").append(fid)
                 .append("/").append(fileName);
-        return amazonS3.getObject(awsCredential.getBucket(), path.toString()).getObjectContent();
+        InputStream in = amazonS3.getObject(awsCredential.getBucket(), path.toString()).getObjectContent();
+        try {
+            return IOUtils.toByteArray(in);
+        } catch (IOException e) {
+            log.error("File = {} Not Found", fileName);
+            throw new IllegalArgumentException();
+        }
     }
 
     public long change(long fid, String originalFileName, String newFileName, InputStream inputStream) {
