@@ -1,33 +1,35 @@
 spring:
-  profiles:
-    include: developmentdb
-
+  mvc:
+    date-format: yyyy-MM-dd HH:mm:ss
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Seoul
+  datasource:
+    driverClassName: org.h2.Driver
+    url: jdbc:h2:~/apps/h2db/crm;AUTO_SERVER=TRUE;
+    username: sa
+    password: sa
+    dbcp2:
+      initial-size: 3
+      max-total: 10
+      max-idle: 8
+      min-idle: 3
+      max-wait-millis: 10000
+      validation-query: SELECT 1
+      validation-query-timeout: 1
+      test-on-create: true
   jpa:
     show-sql: true
-    database: mysql
+    database: h2
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyJpaCompliantImpl
       ddl-auto: update
-
-
-
   data:
     jpa:
       repositories:
         enabled: true
-
-
-
-  mvc:
-    date-format: yyyy-MM-dd HH:mm:ss
-
-  jackson:
-    date-format: yyyy-MM-dd HH:mm:ss
-    time-zone: Asia/Seoul
-
-
 
 
 logging:

@@ -18,13 +18,10 @@ EXPOSE 443
 EXPOSE 8080
 EXPOSE 9090
 
-RUN yum install -y java-1.8.0-openjdk-devel.x86_64
+RUN yum install -y java-1.8.0-openjdk-devel
 RUN mkdir app
 
 COPY . ${HOME}/app
-
-RUN ls -al /app/
-RUN ls -al /app/handicraft-web/
 
 # arg : arguments for profiles
 # RUN  sh ${BASE_SHELL_DIR_PATH}/core.sh ${PROFILES}

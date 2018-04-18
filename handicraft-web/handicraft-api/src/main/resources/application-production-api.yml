@@ -1,16 +1,14 @@
 spring:
   profiles:
     include: production-core
-
   jackson:
     serialization:
       fail_on_empty_beans:  false
-
-
-
+  http:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 2MB
 server:
   port: 8080
+  display-name: www.half-handicraft.com
 
-Authentication: MASTERHANDICRAFT
-
-images-path: http://www.half-handicraft.com:8080/images/

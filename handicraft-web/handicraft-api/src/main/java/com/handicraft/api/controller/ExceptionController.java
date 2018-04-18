@@ -1,17 +1,17 @@
 package com.handicraft.api.controller;
 
 import com.handicraft.api.exception.*;
+import com.handicraft.api.support.ErrorMsg;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.AccessDeniedException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -23,45 +23,31 @@ import java.security.NoSuchAlgorithmException;
 @RestControllerAdvice
 public class ExceptionController {
 
-    @ExceptionHandler(value = {BadRequestException.class })
-    @ResponseBody
-    public ResponseEntity<?> badRequestHandler()
-    {
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(value = {BadRequestException.class, AccessDeniedException.class})
+    public ErrorMsg badRequestHandler(RuntimeException e) {
+        return new ErrorMsg(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = NotFoundException.class)
-    @ResponseBody
-    public ResponseEntity<?> notFoundHandler()
-    {
-        return new ResponseEntity(HttpStatus.NOT_FOUND);
+    @ExceptionHandler(value = {NotFoundException.class, IllegalArgumentException.class, FileNotFoundException.class})
+    public ErrorMsg notFoundHandler(RuntimeException e) {
+        return new ErrorMsg(e.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(value = InternalServerErrorException.class)
-    @ResponseBody
-    public ResponseEntity<?> internalServerErrorHandler()
-    {
-        return new ResponseEntity<Object>(HttpStatus.INTERNAL_SERVER_ERROR);
+    public ErrorMsg internalServerErrorHandler(RuntimeException e) {
+        return new ErrorMsg(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(value = {NotAcceptableException.class})
-    @ResponseBody
-    public ResponseEntity<?> notAcceptableHandler()
-    {
-        return new ResponseEntity(HttpStatus.NOT_ACCEPTABLE);
+    public ErrorMsg notAcceptableHandler(RuntimeException e) {
+        return new ErrorMsg(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
     }
 
-    @ExceptionHandler(value = {UnAuthorizedException.class , HttpClientErrorException.class})
-    @ResponseBody
-    public ResponseEntity<?> unAuthorizedHandler()
-    {
-        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler(value = {EncryptionException.class , UnsupportedEncodingException.class , NoSuchPaddingException.class , NoSuchAlgorithmException.class , InvalidAlgorithmParameterException.class, InvalidKeyException.class ,BadPaddingException.class , IllegalBlockSizeException.class})
-    @ResponseBody
-    public ResponseEntity<?> encryptionException()
-    {
-        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+    @ExceptionHandler(value = {EncryptionException.class, UnsupportedEncodingException.class,
+            NoSuchPaddingException.class, NoSuchAlgorithmException.class,
+            InvalidAlgorithmParameterException.class, InvalidKeyException.class,
+            BadPaddingException.class, IllegalBlockSizeException.class})
+    public ErrorMsg encryptHandler(RuntimeException e) {
+        return new ErrorMsg(e.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 }
